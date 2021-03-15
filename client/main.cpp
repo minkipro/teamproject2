@@ -1,6 +1,3 @@
-#define _WINSOCK_DEPRECATED_NO_WARNINGS
-#define WIN32_LEAN_AND_MEAN
-#include <windows.h>
 #include <thread>
 #include "Server/SocketCommunication.h"
 #include "engine.h"
@@ -9,13 +6,19 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	_In_ LPWSTR    lpCmdLine,
 	_In_ int       nCmdShow)
 {
-	/*ourServer server;
-	server.init();*/
-	//std::thread t1(ourServer::listenFunction);
+	/*SocketCommunication server;
+	server.Init();
+	std::thread t1(SocketCommunication::ListenFunction);*/
 	
 	Engine engine;
-	DEVMODE dmScreenSettings;;
-	ChangeDisplaySettings(&dmScreenSettings, CDS_FULLSCREEN);
+	if (engine.Initialize(hInstance, 800, 600))
+	{
+		while (engine.ProcessMessages() == true)
+		{
+			engine.Update();
+			engine.RenderFrame();
+		}
+	}
 	//t1.join();
 	return 0;
 }

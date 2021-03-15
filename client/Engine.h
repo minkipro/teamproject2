@@ -1,8 +1,14 @@
 #pragma once
-class Engine
+#include "WindowContainer.h"
+#include "GameObject.h"
+class Engine : WindowContainer
 {
 private:
+	GameObject gameObject;
 public:
-	bool Initialize(HINSTANCE hInstance, )
+	bool Initialize(HINSTANCE hInstance, int width, int height);
+	bool ProcessMessages();
+	void Update();
+	void RenderFrame();
 };
 

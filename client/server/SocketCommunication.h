@@ -5,10 +5,10 @@
 class SocketCommunication
 {
 public:
-	bool init();
+	bool Init();
 	~SocketCommunication();
 public:
-	static void listenFunction();
+	static void ListenFunction();
 private:
 	static SOCKET _socket; 
 	static std::atomic<char> _buffer[1024];

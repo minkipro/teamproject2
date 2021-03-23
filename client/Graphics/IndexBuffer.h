@@ -13,7 +13,20 @@ private:
 	UINT bufferSize = 0;
 public:
 	IndexBuffer() {}
-
+	static void GetIndexArray(DWORD* indexArray, int vertexNum)
+	{
+		if (vertexNum % 4 != 0)
+			return;
+		for (int i = 0; i < vertexNum / 4; i++)
+		{
+			indexArray[0 + i * 6] = 0 + i * 4;
+			indexArray[1 + i * 6] = 1 + i * 4;
+			indexArray[2 + i * 6] = 2 + i * 4;
+			indexArray[3 + i * 6] = 0 + i * 4;
+			indexArray[4 + i * 6] = 2 + i * 4;
+			indexArray[5 + i * 6] = 3 + i * 4;
+		}
+	}
 	ID3D11Buffer* Get()const
 	{
 		return buffer.Get();

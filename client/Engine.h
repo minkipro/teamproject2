@@ -1,10 +1,10 @@
 #pragma once
 #include "WindowContainer.h"
-#include "GameObject.h"
+#include "Scene.h"
 class Engine : WindowContainer
 {
 private:
-	GameObject gameObject;
+	Scene scene;
 public:
 	bool Initialize(HINSTANCE hInstance, int width, int height);
 	bool ProcessMessages();

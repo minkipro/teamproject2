@@ -10,20 +10,20 @@ bool Graphics::Initialize(HWND hwnd, int width, int height)
 	if (!InitializeShaders())
 		return false;
 
-	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	//deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	deviceContext->RSSetState(rasterizerState.Get());
 	deviceContext->PSSetSamplers(0, 1, samplerState.GetAddressOf());
 	deviceContext->OMSetBlendState(blendState.Get(), NULL, 0xFFFFFFFF);
 	deviceContext->OMSetDepthStencilState(depthStencilState.Get(), 0);
 
-	deviceContext->VSSetShader(vertexshader.GetShader(), NULL, 0);
+	/*deviceContext->VSSetShader(vertexshader.GetShader(), NULL, 0);
 	deviceContext->PSSetShader(pixelshader.GetShader(), NULL, 0);
-	deviceContext->IASetInputLayout(vertexshader.GetInputLayout());
+	deviceContext->IASetInputLayout(vertexshader.GetInputLayout());*/
 
 	return true;
 }
 
-void Graphics::RenderFrame()
+void Graphics::ClearFrame()
 {
 	float bgcolor[] = { 0.0f, 0.0f, 0.0f, 1.0f };
 	deviceContext->ClearRenderTargetView(renderTargetView.Get(), bgcolor);
@@ -33,6 +33,31 @@ void Graphics::RenderFrame()
 void Graphics::Present()
 {
 	swapchain->Present(0, NULL);
+}
+
+void Graphics::SetTopologyAndShader(bool tri, bool isColor)
+{
+	if (tri)
+	{
+		deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	}
+	else
+	{
+		deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D10_PRIMITIVE_TOPOLOGY_LINELIST);
+	}
+
+	if (isColor)
+	{
+		deviceContext->VSSetShader(vertexshader.GetShader(), NULL, 0);
+		deviceContext->PSSetShader(pixelshader.GetShader(), NULL, 0);
+		deviceContext->IASetInputLayout(vertexshader.GetInputLayout());
+	}
+	else
+	{
+		deviceContext->VSSetShader(color_vertexshader.GetShader(), NULL, 0);
+		deviceContext->PSSetShader(color_pixelshader.GetShader(), NULL, 0);
+		deviceContext->IASetInputLayout(color_vertexshader.GetInputLayout());
+	}
 }
 
 bool Graphics::InitializeDirectX(HWND hwnd, int width, int height)
@@ -68,7 +93,7 @@ bool Graphics::InitializeDirectX(HWND hwnd, int width, int height)
 		scd.Windowed = TRUE;
 		scd.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
 		scd.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
-
+		//scd.Windowed = false;
 		HRESULT hr;
 		hr = D3D11CreateDeviceAndSwapChain(adapters[0].pAdapter, //IDXGI Adapter
 			D3D_DRIVER_TYPE_UNKNOWN,
@@ -199,12 +224,24 @@ bool Graphics::InitializeShaders()
 		{"TEXCOORD", 0, DXGI_FORMAT::DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_CLASSIFICATION::D3D11_INPUT_PER_VERTEX_DATA, 0  },
 	};
 
+	D3D11_INPUT_ELEMENT_DESC layout2Dcolor[] =
+	{
+		{"POSITION", 0, DXGI_FORMAT::DXGI_FORMAT_R32G32_FLOAT, 0, 0, D3D11_INPUT_CLASSIFICATION::D3D11_INPUT_PER_VERTEX_DATA, 0  }
+	};
+
 	UINT numElements2D = ARRAYSIZE(layout2D);
+	UINT numElements2Dcolor = ARRAYSIZE(layout2Dcolor);
 
 	if (!vertexshader.Initialize(this->device, shaderfolder + L"vertexshader.cso", layout2D, numElements2D))
 		return false;
 
+	if (!color_vertexshader.Initialize(this->device, shaderfolder + L"color_vertexshader.cso", layout2Dcolor, numElements2Dcolor))
+		return false;
+
 	if (!pixelshader.Initialize(this->device, shaderfolder + L"pixelshader.cso"))
+		return false;
+
+	if (!color_pixelshader.Initialize(this->device, shaderfolder + L"color_pixelshader.cso"))
 		return false;
 
 	return true;

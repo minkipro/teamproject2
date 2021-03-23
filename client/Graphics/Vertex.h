@@ -10,3 +10,11 @@ struct Vertex
 	DirectX::XMFLOAT2 pos;
 	DirectX::XMFLOAT2 texCoord;
 };
+
+struct ColorVertex
+{
+	ColorVertex() {}
+	ColorVertex(float x, float y)
+		: pos(x, y){}
+	DirectX::XMFLOAT2 pos;
+};

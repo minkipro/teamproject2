@@ -2,6 +2,19 @@
 #include "WindowContainer.h"
 bool RenderWindow::Initialize(WindowContainer* pWindowContainer, HINSTANCE hInstance, std::string window_title, std::string window_class, int width, int height)
 {
+	bool isFullScreen = true;
+	if (isFullScreen)
+	{
+		DEVMODE devMode = { 0 };
+		devMode.dmSize = sizeof(DEVMODE);
+		devMode.dmPelsWidth = 1920;
+		devMode.dmPelsHeight = 1080;
+		devMode.dmBitsPerPel = 32;
+		devMode.dmFields = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT;
+
+		ChangeDisplaySettings(&devMode, CDS_FULLSCREEN);
+	}
+
 	this->hInstance = hInstance;
 	this->width = width;
 	this->height = height;
@@ -46,9 +59,7 @@ bool RenderWindow::Initialize(WindowContainer* pWindowContainer, HINSTANCE hInst
 	SetForegroundWindow(this->handle);
 	SetFocus(this->handle);
 
-	/*DEVMODE dmScreenSettings;
-	ChangeDisplaySettings(&dmScreenSettings, CDS_FULLSCREEN);*/
-
+	
 	return true;
 }
 

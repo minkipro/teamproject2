@@ -8,7 +8,7 @@ bool Engine::Initialize(HINSTANCE hInstance, int width, int height)
 	if (!gfx.Initialize(render_window.GetHWND(), width, height))
 		return false;
 
-	gameObject.Initialize(gfx.GetDevice(), gfx.GetDeviceContext());
+	scene.Init(gfx.GetDevice(), gfx.GetDeviceContext(), &keyboard);
 	return true;
 }
 
@@ -34,33 +34,12 @@ void Engine::Update()
 	{
 		MouseEvent me = mouse.ReadEvent();
 	}
-
-	DirectX::XMMATRIX orthoMatrix = DirectX::XMMatrixOrthographicOffCenterLH(0.0f, 800.0f, 600.0f, 0.0f, 0.0f, 1.0f);
-
-	static float pos[2] = { 0.0f, 0.0f };
-	if (keyboard.KeyIsPressed('W'))
-	{
-		pos[1] -= 0.1f;
-	}
-	if (keyboard.KeyIsPressed('A'))
-	{
-		pos[0] -= 0.1f;
-	}
-	if (keyboard.KeyIsPressed('S'))
-	{
-		pos[1] += 0.1f;
-	}
-	if (keyboard.KeyIsPressed('D'))
-	{
-		pos[0] += 0.1f;
-	}
-	DirectX::XMMATRIX cameraWorldMatirx = DirectX::XMMatrixTranslation(-pos[0], -pos[1], 0.0f);
-	gameObject.Update(cameraWorldMatirx * orthoMatrix);
+	scene.Update();
 }
 
 void Engine::RenderFrame()
 {
-	gfx.RenderFrame();
-	gameObject.Draw(gfx.GetDeviceContext());
+	gfx.ClearFrame();
+	scene.Draw();
 	gfx.Present();
 }

@@ -76,6 +76,15 @@
     <ClCompile Include="..\Common\Source\Includes\HCDevice.cpp">
       <Filter>Common</Filter>
     </ClCompile>
+    <ClCompile Include="Camera.cpp">
+      <Filter>Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="panel.cpp">
+      <Filter>Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="TextureManager.cpp">
+      <Filter>Scene</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Scene.h">
@@ -135,12 +144,27 @@
     <ClInclude Include="..\Common\Source\Includes\HCDevice.h">
       <Filter>Common</Filter>
     </ClInclude>
+    <ClInclude Include="Camera.h">
+      <Filter>Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="panel.h">
+      <Filter>Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="TextureManager.h">
+      <Filter>Scene</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="vertexshader.hlsl">
       <Filter>리소스 파일</Filter>
     </FxCompile>
     <FxCompile Include="pixelshader.hlsl">
+      <Filter>리소스 파일</Filter>
+    </FxCompile>
+    <FxCompile Include="color_pixelshader.hlsl">
+      <Filter>리소스 파일</Filter>
+    </FxCompile>
+    <FxCompile Include="color_vertexshader.hlsl">
       <Filter>리소스 파일</Filter>
     </FxCompile>
   </ItemGroup>

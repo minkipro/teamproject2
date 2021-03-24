@@ -5,8 +5,9 @@ class Graphics
 {
 public:
 	bool Initialize(HWND hwnd, int width, int height);
-	void RenderFrame();
+	void ClearFrame();
 	void Present();
+	void SetTopologyAndShader(bool tri=true, bool isColor=false);
 
 	ID3D11Device* GetDevice() { return device.Get(); }
 	ID3D11DeviceContext* GetDeviceContext() { return deviceContext.Get(); }
@@ -25,7 +26,10 @@ private:
 	Microsoft::WRL::ComPtr<ID3D11RenderTargetView> renderTargetView;
 
 	VertexShader vertexshader;
+	VertexShader color_vertexshader;
 	PixelShader pixelshader;
+	PixelShader color_pixelshader;
+
 
 	
 	Microsoft::WRL::ComPtr<ID3D11DepthStencilView> depthStencilView;

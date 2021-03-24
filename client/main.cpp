@@ -11,7 +11,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	std::thread t1(SocketCommunication::ListenFunction);*/
 	
 	Engine engine;
-	if (engine.Initialize(hInstance, 1920, 1080))
+	if (engine.Initialize(hInstance, 1920, 1080 ))
 	{
 		while (engine.ProcessMessages() == true)
 		{

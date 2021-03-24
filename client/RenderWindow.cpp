@@ -1,5 +1,6 @@
 #include "RenderWindow.h"
 #include "WindowContainer.h"
+#include "shellscalingapi.h"
 bool RenderWindow::Initialize(WindowContainer* pWindowContainer, HINSTANCE hInstance, std::string window_title, std::string window_class, int width, int height)
 {
 	bool isFullScreen = true;
@@ -7,8 +8,8 @@ bool RenderWindow::Initialize(WindowContainer* pWindowContainer, HINSTANCE hInst
 	{
 		DEVMODE devMode = { 0 };
 		devMode.dmSize = sizeof(DEVMODE);
-		devMode.dmPelsWidth = 1920;
-		devMode.dmPelsHeight = 1080;
+		devMode.dmPelsWidth = width;
+		devMode.dmPelsHeight = height;
 		devMode.dmBitsPerPel = 32;
 		devMode.dmFields = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT;
 
@@ -23,11 +24,11 @@ bool RenderWindow::Initialize(WindowContainer* pWindowContainer, HINSTANCE hInst
 	this->window_class = window_class;
 	this->window_class_wide = StringHelper::StringToWide(this->window_class); //wide string representation of class string (used for registering class and creating window)
 
+	SetThreadDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE);
 	this->RegisterWindowClass();
-
-	int centerScreenX = GetSystemMetrics(SM_CXSCREEN) / 2 - this->width / 2;
-	int centerScreenY = GetSystemMetrics(SM_CYSCREEN) / 2 - this->height / 2;
-
+	int centerScreenX = (float)GetSystemMetrics(SM_CXSCREEN) / 2 - this->width / 2;
+	int centerScreenY = (float)GetSystemMetrics(SM_CYSCREEN) / 2 - this->height / 2;
+	
 	RECT wr; //Widow Rectangle
 	wr.left = centerScreenX;
 	wr.top = centerScreenY;

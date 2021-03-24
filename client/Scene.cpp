@@ -8,7 +8,7 @@ void Scene::Init(ID3D11Device* device, ID3D11DeviceContext* dc, KeyboardClass* k
 	pKeyboard = keyboard;
 	camera.Init();
 	gameObject.Initialize(pDevice, pDc, &textureManager,L"Data\\Textures\\character.gif");
-	panel.Initialize(pDevice, pDc, 0.0f, 0.0f, 100.0f, 100.0f, XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f));
+	//panel.Initialize(pDevice, pDc, 0.0f, 0.0f, 100.0f, 100.0f, XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f));
 }
 
 void Scene::Update()
@@ -25,6 +25,6 @@ void Scene::Draw()
 	gfx->SetTopologyAndShader(true, false);
 	gameObject.Draw(pDc);
 
-	gfx->SetTopologyAndShader(false, true);
-	panel.Draw(pDc);
+	//gfx->SetTopologyAndShader(false, true);
+	//panel.Draw(pDc);
 }

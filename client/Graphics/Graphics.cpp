@@ -48,15 +48,15 @@ void Graphics::SetTopologyAndShader(bool tri, bool isColor)
 
 	if (isColor)
 	{
-		deviceContext->VSSetShader(vertexshader.GetShader(), NULL, 0);
-		deviceContext->PSSetShader(pixelshader.GetShader(), NULL, 0);
-		deviceContext->IASetInputLayout(vertexshader.GetInputLayout());
-	}
-	else
-	{
 		deviceContext->VSSetShader(color_vertexshader.GetShader(), NULL, 0);
 		deviceContext->PSSetShader(color_pixelshader.GetShader(), NULL, 0);
 		deviceContext->IASetInputLayout(color_vertexshader.GetInputLayout());
+	}
+	else
+	{
+		deviceContext->VSSetShader(vertexshader.GetShader(), NULL, 0);
+		deviceContext->PSSetShader(pixelshader.GetShader(), NULL, 0);
+		deviceContext->IASetInputLayout(vertexshader.GetInputLayout());
 	}
 }
 

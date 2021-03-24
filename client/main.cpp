@@ -1,24 +1,29 @@
 #include <thread>
-#include "Server/SocketCommunication.h"
+#include "TCPSocket/SocketCommunication.h"
+#include "COMException.h"
 #include "engine.h"
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	_In_opt_ HINSTANCE hPrevInstance,
 	_In_ LPWSTR    lpCmdLine,
 	_In_ int       nCmdShow)
 {
-	/*SocketCommunication server;
-	server.Init();
-	std::thread t1(SocketCommunication::ListenFunction);*/
-	
-	Engine engine;
-	if (engine.Initialize(hInstance, 800, 600))
+	try 
 	{
-		while (engine.ProcessMessages() == true)
+		Engine engine;
+		if (engine.Initialize(hInstance, 800, 600))
 		{
-			engine.Update();
-			engine.RenderFrame();
+			while (engine.ProcessMessages() == true)
+			{
+				engine.Update();
+				engine.RenderFrame();
+			}
 		}
 	}
-	//t1.join();
+	catch (COMException& error)
+	{
+		std::wstring error_message = error.what();
+		MessageBoxW(NULL, error_message.c_str(), L"Error", MB_ICONERROR);
+	}
+	
 	return 0;
 }

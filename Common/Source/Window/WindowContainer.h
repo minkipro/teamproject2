@@ -1,8 +1,8 @@
 #pragma once
 #include "RenderWindow.h"
-#include "Keyboard/KeyboardClass.h"
-#include "Mouse/MouseClass.h"
 #include "Graphics/Graphics.h"
+#include "InputDevice/KeyboardClass.h"
+#include "InputDevice/MouseClass.h"
 
 class WindowContainer
 {
@@ -15,4 +15,3 @@ protected:
 	MouseClass mouse;
 	Graphics gfx;
 };
-

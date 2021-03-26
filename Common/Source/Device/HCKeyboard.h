@@ -1,6 +1,6 @@
 #pragma once
-#include "HCDevice.h"
 #include <Keyboard.h>
+#include "HCDevice.h"
 
 class HCKeyboard : public HCDevice, DirectX::Keyboard::KeyboardStateTracker
 {

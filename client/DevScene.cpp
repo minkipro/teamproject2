@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "DevScene.h"
 #include "HCDevice.h"
 

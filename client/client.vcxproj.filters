@@ -26,6 +26,9 @@
     <Filter Include="Common\Util">
       <UniqueIdentifier>{ecb4c82c-4732-4f35-9594-936f040f679f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="PCH">
+      <UniqueIdentifier>{94060252-c7ab-4a79-bdef-f296c5d13c6d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -52,6 +55,9 @@
     </ClCompile>
     <ClCompile Include="..\Common\Source\Device\HCMouse.cpp">
       <Filter>Common\Devices</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Common\Source\stdafx.cpp">
+      <Filter>PCH</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -82,6 +88,12 @@
     </ClInclude>
     <ClInclude Include="..\Common\Source\Device\HCMouse.h">
       <Filter>Common\Devices</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\Source\Window\WindowHeader.h">
+      <Filter>Common\Window</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\Source\stdafx.h">
+      <Filter>PCH</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

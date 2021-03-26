@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "COMException.h"
 #include "engine.h"
 

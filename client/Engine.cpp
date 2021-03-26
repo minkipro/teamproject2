@@ -1,6 +1,5 @@
+#include "stdafx.h"
 #include "Engine.h"
-#define WIN32_LEAN_AND_MEAN      
-#include <Windows.h>
 #include "Device/HCKeyboard.h"
 #include "Device/HCMouse.h"
 #include "Window/HCWindow.h"

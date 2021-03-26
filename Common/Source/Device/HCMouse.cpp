@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "HCMouse.h"
 
 void HCMouse::Init()

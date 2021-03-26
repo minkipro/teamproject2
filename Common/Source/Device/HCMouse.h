@@ -1,6 +1,6 @@
 #pragma once
-#include "HCDevice.h"
 #include <Mouse.h>
+#include "HCDevice.h"
 
 class HCMouse : public HCDevice, DirectX::Mouse::ButtonStateTracker
 {

@@ -1,6 +1,6 @@
+#include "stdafx.h"
 #include "StringHelper.h"
 #include <algorithm>
-#include <Windows.h>
 
 std::wstring StringHelper::StringToWide(std::string str)
 {

@@ -128,6 +128,7 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>Default</LanguageStandard>
       <AdditionalIncludeDirectories>./../Common/Source;./../Common/Source/Includes;</AdditionalIncludeDirectories>
+      <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -158,6 +159,7 @@
     <ClCompile Include="..\Common\Source\Device\HCKeyboard.cpp" />
     <ClCompile Include="..\Common\Source\Device\HCMouse.cpp" />
     <ClCompile Include="..\Common\Source\HCScene.cpp" />
+    <ClCompile Include="..\Common\Source\stdafx.cpp" />
     <ClCompile Include="..\Common\Source\Util\StringHelper.cpp" />
     <ClCompile Include="..\Common\Source\Window\HCWindow.cpp" />
     <ClCompile Include="DevScene.cpp" />
@@ -174,8 +176,10 @@
     <ClInclude Include="..\Common\Source\Includes\GameObject.h" />
     <ClInclude Include="..\Common\Source\Includes\GlobalOption.h" />
     <ClInclude Include="..\Common\Source\Includes\HCDevice.h" />
+    <ClInclude Include="..\Common\Source\stdafx.h" />
     <ClInclude Include="..\Common\Source\Util\StringHelper.h" />
     <ClInclude Include="..\Common\Source\Window\HCWindow.h" />
+    <ClInclude Include="..\Common\Source\Window\WindowHeader.h" />
     <ClInclude Include="DevScene.h" />
     <ClInclude Include="Engine.h" />
   </ItemGroup>

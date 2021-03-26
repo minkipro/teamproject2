@@ -1,8 +1,9 @@
+#include "stdafx.h"
 #include "HCWindow.h"
-#include <Keyboard.h>
-#include <Mouse.h>
 #include "GlobalOption.h"
 #include "COMException.h"
+#include <Mouse.h>
+#include <Keyboard.h>
 
 std::vector<HCDevice*> HCWindow::s_Proces;
 DirectX::Mouse mouse;

@@ -61,5 +61,20 @@ LRESULT HCWindow::WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		it->WindowProc(hwnd, uMsg, wParam, lParam);
 	}
 
+	switch (uMsg)
+	{
+	case WM_DESTROY:
+		PostQuitMessage(0);
+		return 0;
+
+	case WM_MENUCHAR:
+		return MAKELRESULT(0, MNC_CLOSE);
+
+	case WM_GETMINMAXINFO:
+		((MINMAXINFO*)lParam)->ptMinTrackSize.x = 200;
+		((MINMAXINFO*)lParam)->ptMinTrackSize.y = 200;
+		return 0;
+	}
+
 	return DefWindowProc(hwnd, uMsg, wParam, lParam);
 }

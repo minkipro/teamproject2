@@ -14,11 +14,11 @@
     <Filter Include="Common\Window">
       <UniqueIdentifier>{8ed4c8e5-a862-4e01-b5cd-7824e5509ed2}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Common\Window\Keyboard">
-      <UniqueIdentifier>{58c3d36f-c5c1-464c-836a-596425e783b6}</UniqueIdentifier>
+    <Filter Include="Client">
+      <UniqueIdentifier>{135caab1-4a8c-4b59-8bad-f69e20fe8fdc}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Common\Window\Mouse">
-      <UniqueIdentifier>{262c4182-fdc5-443c-83d3-9f0fca8c98d6}</UniqueIdentifier>
+    <Filter Include="Common\Devices">
+      <UniqueIdentifier>{43623ced-2c56-4931-8bf0-c11cb97923a0}</UniqueIdentifier>
     </Filter>
     <Filter Include="Common\Graphics">
       <UniqueIdentifier>{c5a16727-f26f-4033-9860-cb9eaff4a160}</UniqueIdentifier>
@@ -26,44 +26,11 @@
     <Filter Include="Common\Util">
       <UniqueIdentifier>{ecb4c82c-4732-4f35-9594-936f040f679f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Client">
-      <UniqueIdentifier>{135caab1-4a8c-4b59-8bad-f69e20fe8fdc}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Scene.cpp">
-      <Filter>Scene</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Common\Source\Graphics\AdapterReader.cpp">
-      <Filter>Common\Graphics</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Common\Source\Graphics\Graphics.cpp">
-      <Filter>Common\Graphics</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Common\Source\Graphics\Shaders.cpp">
-      <Filter>Common\Graphics</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Common\Source\InputDevice\KeyboardClass.cpp">
-      <Filter>Common\Window\Keyboard</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Common\Source\InputDevice\KeyboardEvent.cpp">
-      <Filter>Common\Window\Keyboard</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Common\Source\InputDevice\MouseClass.cpp">
-      <Filter>Common\Window\Mouse</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Common\Source\InputDevice\MouseEvent.cpp">
-      <Filter>Common\Window\Mouse</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Common\Source\Window\RenderWindow.cpp">
-      <Filter>Common\Window</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Common\Source\Window\WindowContainer.cpp">
-      <Filter>Common\Window</Filter>
-    </ClCompile>
     <ClCompile Include="..\Common\Source\Util\StringHelper.cpp">
       <Filter>Common\Util</Filter>
     </ClCompile>
@@ -73,65 +40,21 @@
     <ClCompile Include="Engine.cpp">
       <Filter>Client</Filter>
     </ClCompile>
-    <ClCompile Include="..\Common\Source\Includes\HCDevice.cpp">
-      <Filter>Common</Filter>
-    </ClCompile>
-    <ClCompile Include="Camera.cpp">
+    <ClCompile Include="..\Common\Source\HCScene.cpp">
       <Filter>Scene</Filter>
     </ClCompile>
-    <ClCompile Include="panel.cpp">
-      <Filter>Scene</Filter>
+    <ClCompile Include="DevScene.cpp" />
+    <ClCompile Include="..\Common\Source\Window\HCWindow.cpp">
+      <Filter>Common\Window</Filter>
     </ClCompile>
-    <ClCompile Include="TextureManager.cpp">
-      <Filter>Scene</Filter>
+    <ClCompile Include="..\Common\Source\Device\HCKeyboard.cpp">
+      <Filter>Common\Devices</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Common\Source\Device\HCMouse.cpp">
+      <Filter>Common\Devices</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Scene.h">
-      <Filter>Scene</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Common\Source\Graphics\AdapterReader.h">
-      <Filter>Common\Graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Common\Source\Graphics\ConstantBuffer.h">
-      <Filter>Common\Graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Common\Source\Graphics\ConstantBufferTypes.h">
-      <Filter>Common\Graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Common\Source\Graphics\Graphics.h">
-      <Filter>Common\Graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Common\Source\Graphics\IndexBuffer.h">
-      <Filter>Common\Graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Common\Source\Graphics\Shaders.h">
-      <Filter>Common\Graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Common\Source\Graphics\Vertex.h">
-      <Filter>Common\Graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Common\Source\Graphics\VertexBuffer.h">
-      <Filter>Common\Graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Common\Source\InputDevice\KeyboardClass.h">
-      <Filter>Common\Window\Keyboard</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Common\Source\InputDevice\KeyboardEvent.h">
-      <Filter>Common\Window\Keyboard</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Common\Source\InputDevice\MouseClass.h">
-      <Filter>Common\Window\Mouse</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Common\Source\InputDevice\MouseEvent.h">
-      <Filter>Common\Window\Mouse</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Common\Source\Window\RenderWindow.h">
-      <Filter>Common\Window</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Common\Source\Window\WindowContainer.h">
-      <Filter>Common\Window</Filter>
-    </ClInclude>
     <ClInclude Include="..\Common\Source\Util\StringHelper.h">
       <Filter>Common\Util</Filter>
     </ClInclude>
@@ -141,31 +64,24 @@
     <ClInclude Include="Engine.h">
       <Filter>Client</Filter>
     </ClInclude>
+    <ClInclude Include="..\Common\Source\HCScene.h">
+      <Filter>Scene</Filter>
+    </ClInclude>
     <ClInclude Include="..\Common\Source\Includes\HCDevice.h">
-      <Filter>Common</Filter>
+      <Filter>Common\Devices</Filter>
     </ClInclude>
-    <ClInclude Include="Camera.h">
-      <Filter>Scene</Filter>
+    <ClInclude Include="DevScene.h" />
+    <ClInclude Include="..\Common\Source\Includes\GlobalOption.h">
+      <Filter>Common\Util</Filter>
     </ClInclude>
-    <ClInclude Include="panel.h">
-      <Filter>Scene</Filter>
+    <ClInclude Include="..\Common\Source\Window\HCWindow.h">
+      <Filter>Common\Window</Filter>
     </ClInclude>
-    <ClInclude Include="TextureManager.h">
-      <Filter>Scene</Filter>
+    <ClInclude Include="..\Common\Source\Device\HCKeyboard.h">
+      <Filter>Common\Devices</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <FxCompile Include="vertexshader.hlsl">
-      <Filter>리소스 파일</Filter>
-    </FxCompile>
-    <FxCompile Include="pixelshader.hlsl">
-      <Filter>리소스 파일</Filter>
-    </FxCompile>
-    <FxCompile Include="color_pixelshader.hlsl">
-      <Filter>리소스 파일</Filter>
-    </FxCompile>
-    <FxCompile Include="color_vertexshader.hlsl">
-      <Filter>리소스 파일</Filter>
-    </FxCompile>
+    <ClInclude Include="..\Common\Source\Device\HCMouse.h">
+      <Filter>Common\Devices</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

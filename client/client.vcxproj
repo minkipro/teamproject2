@@ -155,86 +155,29 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\Common\Source\Graphics\AdapterReader.cpp" />
-    <ClCompile Include="..\Common\Source\Graphics\Graphics.cpp" />
-    <ClCompile Include="..\Common\Source\Graphics\Shaders.cpp" />
-    <ClCompile Include="..\Common\Source\Includes\HCDevice.cpp" />
-    <ClCompile Include="..\Common\Source\InputDevice\KeyboardClass.cpp" />
-    <ClCompile Include="..\Common\Source\InputDevice\KeyboardEvent.cpp" />
-    <ClCompile Include="..\Common\Source\InputDevice\MouseClass.cpp" />
-    <ClCompile Include="..\Common\Source\InputDevice\MouseEvent.cpp" />
+    <ClCompile Include="..\Common\Source\Device\HCKeyboard.cpp" />
+    <ClCompile Include="..\Common\Source\Device\HCMouse.cpp" />
+    <ClCompile Include="..\Common\Source\HCScene.cpp" />
     <ClCompile Include="..\Common\Source\Util\StringHelper.cpp" />
-    <ClCompile Include="..\Common\Source\Window\RenderWindow.cpp" />
-    <ClCompile Include="..\Common\Source\Window\WindowContainer.cpp" />
+    <ClCompile Include="..\Common\Source\Window\HCWindow.cpp" />
+    <ClCompile Include="DevScene.cpp" />
     <ClCompile Include="Engine.cpp" />
     <ClCompile Include="Main.cpp" />
-    <ClCompile Include="Scene.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\Common\Source\Graphics\AdapterReader.h" />
-    <ClInclude Include="..\Common\Source\Graphics\ConstantBuffer.h" />
-    <ClInclude Include="..\Common\Source\Graphics\ConstantBufferTypes.h" />
-    <ClInclude Include="..\Common\Source\Graphics\Graphics.h" />
-    <ClInclude Include="..\Common\Source\Graphics\IndexBuffer.h" />
-    <ClInclude Include="..\Common\Source\Graphics\Shaders.h" />
-    <ClInclude Include="..\Common\Source\Graphics\Vertex.h" />
-    <ClInclude Include="..\Common\Source\Graphics\VertexBuffer.h" />
+    <ClInclude Include="..\Common\Source\Device\HCKeyboard.h" />
+    <ClInclude Include="..\Common\Source\Device\HCMouse.h" />
+    <ClInclude Include="..\Common\Source\HCScene.h" />
     <ClInclude Include="..\Common\Source\Includes\GameObject.h" />
+    <ClInclude Include="..\Common\Source\Includes\GlobalOption.h" />
     <ClInclude Include="..\Common\Source\Includes\HCDevice.h" />
-    <ClInclude Include="..\Common\Source\InputDevice\KeyboardClass.h" />
-    <ClInclude Include="..\Common\Source\InputDevice\KeyboardEvent.h" />
-    <ClInclude Include="..\Common\Source\InputDevice\MouseClass.h" />
-    <ClInclude Include="..\Common\Source\InputDevice\MouseEvent.h" />
     <ClInclude Include="..\Common\Source\Util\StringHelper.h" />
-    <ClInclude Include="..\Common\Source\Window\RenderWindow.h" />
-    <ClInclude Include="..\Common\Source\Window\WindowContainer.h" />
+    <ClInclude Include="..\Common\Source\Window\HCWindow.h" />
+    <ClInclude Include="DevScene.h" />
     <ClInclude Include="Engine.h" />
-    <ClInclude Include="Scene.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <FxCompile Include="color_pixelshader.hlsl">
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">5.0</ShaderModel>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
-    </FxCompile>
-    <FxCompile Include="color_vertexshader.hlsl">
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">5.0</ShaderModel>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
-    </FxCompile>
-    <FxCompile Include="pixelshader.hlsl">
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">5.0</ShaderModel>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
-    </FxCompile>
-    <FxCompile Include="vertexshader.hlsl">
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">5.0</ShaderModel>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
-    </FxCompile>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

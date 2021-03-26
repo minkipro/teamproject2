@@ -1,45 +1,44 @@
 #include "Engine.h"
-#include <DirectXMath.h>
-bool Engine::Initialize(HINSTANCE hInstance, int width, int height)
+#define WIN32_LEAN_AND_MEAN      
+#include <Windows.h>
+#include "Device/HCKeyboard.h"
+#include "Device/HCMouse.h"
+#include "Window/HCWindow.h"
+
+void Engine::Init(HINSTANCE hInstance)
 {
-	if (!render_window.Initialize(this, hInstance, "win_title", "win_class", width, height))
-		return false;
+	m_Window = std::make_unique<HCWindow>();
 
-	if (!gfx.Initialize(render_window.GetHWND(), width, height))
-		return false;
+	m_Devices.emplace_back(std::make_unique<HCMouse>());
+	m_Devices.emplace_back(std::make_unique<HCKeyboard>());
 
-	scene.Init(gfx.GetDevice(), gfx.GetDeviceContext(), &keyboard);
-	return true;
+	m_Window->Init(hInstance);
+
+	for (auto& it : m_Devices)
+	{
+		it->Init();
+	}
 }
 
-bool Engine::ProcessMessages()
+int Engine::Run()
 {
-	return render_window.ProcessMessages();
-}
+	MSG msg = {};
 
-void Engine::Update()
-{
-	while (!keyboard.CharBufferIsEmpty())
+	while (msg.message != WM_QUIT)
 	{
-		unsigned char ch = keyboard.ReadChar();
+		if (PeekMessage(&msg, 0, 0, 0, PM_REMOVE))
+		{
+			TranslateMessage(&msg);
+			DispatchMessage(&msg);
+		}
+		else
+		{
+			for (auto& it : m_Devices)
+			{
+				it->Update();
+			}
+		}
 	}
 
-	while (!keyboard.KeyBufferIsEmpty())
-	{
-		KeyboardEvent kbe = keyboard.ReadKey();
-		unsigned char keycode = kbe.GetKeyCode();
-	}
-
-	while (!mouse.EventBufferIsEmpty())
-	{
-		MouseEvent me = mouse.ReadEvent();
-	}
-	scene.Update();
-}
-
-void Engine::RenderFrame()
-{
-	gfx.ClearFrame();
-	scene.Draw();
-	gfx.Present();
+	return (int)msg.wParam;
 }

@@ -1,5 +1,5 @@
 #include "Texture.h"
-#include "ErrorLogger.h"
+#include "COMException.h"
 #include <WICTextureLoader.h>
 ID3D11Device* Texture::_device = nullptr;
 ID3D11DeviceContext* Texture::_dc = nullptr;
@@ -11,15 +11,16 @@ bool Texture::Initialize(std::wstring filePath)
 	if (currentTexture == textures.end())
 	{
 		textures[filePath];
-		HRESULT hr = DirectX::CreateWICTextureFromFile(_device, filePath.c_str(), nullptr, textures[filePath].GetAddressOf());
-		if (FAILED(hr))
-		{
-			ErrorLogger::Log(hr, "Failed to create wic texture from file.");
-			return false;
-		}
+
+		COM_HRESULT_IF_FAILED(DirectX::CreateWICTextureFromFile(
+			_device, filePath.c_str(), nullptr, textures[filePath].GetAddressOf()),
+			"Failed to create wic texture from file.");
+		
 		texture = textures[filePath].Get();
 		/*D3D11_SHADER_RESOURCE_VIEW_DESC desc;
-		texture->GetDesc(&desc);
+		
+		
+		->GetDesc(&desc);
 		desc.ViewDimension;*/
 		int a = 1;
 	}

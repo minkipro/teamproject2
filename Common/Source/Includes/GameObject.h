@@ -1,5 +1,6 @@
 #pragma once
 #include <vector>
+#include "HCDevice.h"
 
 class HCDevice;
 
@@ -12,4 +13,3 @@ public:
 protected:
 
 };
-

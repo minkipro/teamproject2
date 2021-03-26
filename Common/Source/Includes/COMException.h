@@ -1,8 +1,9 @@
 #pragma once
 #include <comdef.h>
+#include <string>
 
 #define COM_HRESULT_IF_FAILED( hr, msg ) if( FAILED( hr ) ) throw COMException( hr, msg, __FILE__, __FUNCTION__, __LINE__ )
-#define COM_THROW_IF_FAILED( result, msg ) if( result ) throw COMException( msg, __FILE__, __FUNCTION__, __LINE__ )
+#define COM_THROW_IF_FAILED( result, msg ) if( !result ) throw COMException( msg, __FILE__, __FUNCTION__, __LINE__ )
 
 class COMException
 {

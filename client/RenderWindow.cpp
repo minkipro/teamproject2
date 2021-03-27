@@ -24,7 +24,7 @@ bool RenderWindow::Initialize(WindowContainer* pWindowContainer, HINSTANCE hInst
 	this->window_class_wide = StringHelper::StringToWide(this->window_class); //wide string representation of class string (used for registering class and creating window)
 
 	this->RegisterWindowClass();
-
+	SetThreadDpiAwarenessContext(nullptr);
 	int centerScreenX = GetSystemMetrics(SM_CXSCREEN) / 2 - this->width / 2;
 	int centerScreenY = GetSystemMetrics(SM_CYSCREEN) / 2 - this->height / 2;
 

@@ -8,7 +8,7 @@ bool Engine::Initialize(HINSTANCE hInstance, int width, int height)
 	if (!gfx.Initialize(render_window.GetHWND(), width, height))
 		return false;
 
-	scene.Init(gfx.GetDevice(), gfx.GetDeviceContext(), &keyboard);
+	scene.Init(gfx.GetDevice(), gfx.GetDeviceContext(), &keyboard, &gfx);
 	return true;
 }
 

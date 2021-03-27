@@ -46,7 +46,7 @@ void Graphics::SetTopologyAndShader(bool tri, bool isColor)
 		deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D10_PRIMITIVE_TOPOLOGY_LINELIST);
 	}
 
-	if (isColor)
+	if (!isColor)
 	{
 		deviceContext->VSSetShader(vertexshader.GetShader(), NULL, 0);
 		deviceContext->PSSetShader(pixelshader.GetShader(), NULL, 0);

@@ -1,14 +1,20 @@
 #pragma once
-#include "WindowContainer.h"
-#include "Scene.h"
-class Engine : WindowContainer
+#include <vector>
+#include <memory>
+#include "HCDevice.h"
+#include "Window/HCWindow.h"
+
+class Engine
 {
-private:
-	Scene scene;
 public:
-	bool Initialize(HINSTANCE hInstance, int width, int height);
-	bool ProcessMessages();
-	void Update();
-	void RenderFrame();
+	Engine() = default;
+	~Engine() = default;
+
+	void	Init(HINSTANCE hInstance);
+	int		Run();
+
+private:
+	std::vector<std::unique_ptr<HCDevice>>	m_Devices;
+	std::unique_ptr<HCWindow>				m_Window;
 };
 

@@ -20,14 +20,17 @@
     <Filter Include="Common\Devices">
       <UniqueIdentifier>{43623ced-2c56-4931-8bf0-c11cb97923a0}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Common\Graphics">
-      <UniqueIdentifier>{c5a16727-f26f-4033-9860-cb9eaff4a160}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Common\Util">
       <UniqueIdentifier>{ecb4c82c-4732-4f35-9594-936f040f679f}</UniqueIdentifier>
     </Filter>
     <Filter Include="PCH">
       <UniqueIdentifier>{94060252-c7ab-4a79-bdef-f296c5d13c6d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common\Devices\Graphic_DX11">
+      <UniqueIdentifier>{ed1befd3-08e1-4ade-8263-0e41192d08ea}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common\Devices\Graphics_Base">
+      <UniqueIdentifier>{c5a16727-f26f-4033-9860-cb9eaff4a160}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -59,6 +62,24 @@
     <ClCompile Include="..\Common\Source\stdafx.cpp">
       <Filter>PCH</Filter>
     </ClCompile>
+    <ClCompile Include="HCGraphic.cpp">
+      <Filter>Common\Devices\Graphics_Base</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Common\Source\Graphics\AdapterReader.cpp">
+      <Filter>Common\Devices\Graphic_DX11</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Common\Source\Graphics\Graphics.cpp">
+      <Filter>Common\Devices\Graphic_DX11</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Common\Source\Graphics\Shaders.cpp">
+      <Filter>Common\Devices\Graphic_DX11</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Common\Source\Graphics\Texture.cpp">
+      <Filter>Common\Devices\Graphic_DX11</Filter>
+    </ClCompile>
+    <ClCompile Include="HCGraphicDX11.cpp">
+      <Filter>Common\Devices\Graphic_DX11</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Common\Source\Util\StringHelper.h">
@@ -89,11 +110,44 @@
     <ClInclude Include="..\Common\Source\Device\HCMouse.h">
       <Filter>Common\Devices</Filter>
     </ClInclude>
-    <ClInclude Include="..\Common\Source\Window\WindowHeader.h">
-      <Filter>Common\Window</Filter>
-    </ClInclude>
     <ClInclude Include="..\Common\Source\stdafx.h">
       <Filter>PCH</Filter>
+    </ClInclude>
+    <ClInclude Include="HCGraphic.h">
+      <Filter>Common\Devices\Graphics_Base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\Source\Graphics\Graphics.h">
+      <Filter>Common\Devices\Graphic_DX11</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\Source\Graphics\AdapterReader.h">
+      <Filter>Common\Devices\Graphic_DX11</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\Source\Graphics\ConstantBuffer.h">
+      <Filter>Common\Devices\Graphic_DX11</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\Source\Graphics\ConstantBufferTypes.h">
+      <Filter>Common\Devices\Graphic_DX11</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\Source\Graphics\AdapterData.h">
+      <Filter>Common\Devices\Graphic_DX11</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\Source\Graphics\IndexBuffer.h">
+      <Filter>Common\Devices\Graphic_DX11</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\Source\Graphics\Shaders.h">
+      <Filter>Common\Devices\Graphic_DX11</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\Source\Graphics\Texture.h">
+      <Filter>Common\Devices\Graphic_DX11</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\Source\Graphics\Vertex.h">
+      <Filter>Common\Devices\Graphic_DX11</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\Source\Graphics\VertexBuffer.h">
+      <Filter>Common\Devices\Graphic_DX11</Filter>
+    </ClInclude>
+    <ClInclude Include="HCGraphicDX11.h">
+      <Filter>Common\Devices\Graphic_DX11</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

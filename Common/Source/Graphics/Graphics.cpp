@@ -20,6 +20,8 @@ bool Graphics::Initialize(HWND hwnd, int width, int height)
 	deviceContext->PSSetShader(pixelshader.GetShader(), NULL, 0);
 	deviceContext->IASetInputLayout(vertexshader.GetInputLayout());
 
+	deviceContext->DrawInstancedIndirect()
+
 	return true;
 }
 

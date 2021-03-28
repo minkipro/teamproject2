@@ -2,7 +2,7 @@
 #include <Keyboard.h>
 #include "HCDevice.h"
 
-class HCKeyboard : public HCDevice, DirectX::Keyboard::KeyboardStateTracker
+class HCKeyboard : public IHCDevice, DirectX::Keyboard::KeyboardStateTracker
 {
 public:
 	HCKeyboard() = default;

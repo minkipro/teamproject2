@@ -79,25 +79,24 @@ private:
 
 class HCGraphic : public IHCDevice
 {
-public:
+public: //pure virtual method
 	virtual void		Init(HWND windowHandle) = 0;
 	virtual void		Update() = 0;
 	virtual void		Resize() = 0;
 
-	void				ReserveRender(const std::string& pipeLineName, const std::string& textureBufferName,const GameObject* object);
-	void				ReserveRender(size_t pipeLineSlot, const std::string& textureBufferName,const GameObject* object);
-	void				Render();
-
-	virtual LRESULT		WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) { return LRESULT(0); }
-
-public://HCGraphic virtual
-
 	virtual HRESULT		CreateGraphicPipeLine(const std::string& pipeLineName, HCGraphicPipeLine** out) = 0;
 	virtual HRESULT		CreateTextureBuffer(const std::string& bufferName, IHCTextureBuffer** out) = 0;
 	virtual HRESULT		CreateGraphicOut(IHCGraphicOut** out) = 0;
-	virtual HRESULT		CreateShader(HC::SHADERTYPE type,const std::wstring& filePath,const std::string& entryPoint, IHCSahder** out) = 0;
+	virtual HRESULT		CreateShader(HC::SHADERTYPE type, const std::wstring& filePath, const std::string& entryPoint, IHCSahder** out) = 0;
 
+public: //Optional virtual function
+	virtual LRESULT		WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) { return LRESULT(0); }
 	virtual void		NumberingGraphicPipeLineSlot(size_t slot, HCGraphicPipeLine* pipeLine);
+
+public:
+	void				ReserveRender(const std::string& pipeLineName, const std::string& textureBufferName, const GameObject* object);
+	void				ReserveRender(size_t pipeLineSlot, const std::string& textureBufferName, const GameObject* object);
+	void				Render();
 
 protected:
 	virtual void		RenderBegin() = 0;

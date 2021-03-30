@@ -201,6 +201,22 @@
     <FxCompile Include="..\Common\Shader\pixelshader.hlsl" />
     <FxCompile Include="..\Common\Shader\vertexshader.hlsl" />
   </ItemGroup>
+  <ItemGroup>
+    <Image Include="..\Common\Texture\apple.png" />
+    <Image Include="..\Common\Texture\banana.png" />
+    <Image Include="..\Common\Texture\brick.png" />
+    <Image Include="..\Common\Texture\copper.png" />
+    <Image Include="..\Common\Texture\glod.png" />
+    <Image Include="..\Common\Texture\Iron.png" />
+    <Image Include="..\Common\Texture\leaf.png" />
+    <Image Include="..\Common\Texture\meat.png" />
+    <Image Include="..\Common\Texture\money.png" />
+    <Image Include="..\Common\Texture\silver.png" />
+    <Image Include="..\Common\Texture\stone.png" />
+    <Image Include="..\Common\Texture\water.png" />
+    <Image Include="..\Common\Texture\wood.png" />
+    <Image Include="..\Common\Texture\wood2.png" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
     <Import Project="..\packages\directxtk_desktop_win10.2021.1.10.1\build\native\directxtk_desktop_win10.targets" Condition="Exists('..\packages\directxtk_desktop_win10.2021.1.10.1\build\native\directxtk_desktop_win10.targets')" />

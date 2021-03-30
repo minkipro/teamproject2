@@ -16,6 +16,7 @@ void Engine::Init(HINSTANCE hInstance)
 	for (auto& it : m_Devices)
 	{
 		it->Init();
+		m_Window->RegisterProc(it.get());
 	}
 }
 

@@ -54,7 +54,7 @@ void HCWindow::RegisterProc(HCDevice* device)
 
 LRESULT HCWindow::WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
-	DirectX::Keyboard::ProcessMessage(uMsg, wParam, lParam);
+	
 	DirectX::Mouse::ProcessMessage(uMsg, wParam, lParam);
 
 	for (auto it : s_Proces)

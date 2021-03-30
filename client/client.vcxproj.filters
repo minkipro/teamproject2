@@ -145,48 +145,4 @@
     <FxCompile Include="..\Common\Shader\pixelshader.hlsl" />
     <FxCompile Include="..\Common\Shader\vertexshader.hlsl" />
   </ItemGroup>
-  <ItemGroup>
-    <Image Include="..\Common\Texture\apple.png">
-      <Filter>리소스 파일</Filter>
-    </Image>
-    <Image Include="..\Common\Texture\banana.png">
-      <Filter>리소스 파일</Filter>
-    </Image>
-    <Image Include="..\Common\Texture\brick.png">
-      <Filter>리소스 파일</Filter>
-    </Image>
-    <Image Include="..\Common\Texture\copper.png">
-      <Filter>리소스 파일</Filter>
-    </Image>
-    <Image Include="..\Common\Texture\glod.png">
-      <Filter>리소스 파일</Filter>
-    </Image>
-    <Image Include="..\Common\Texture\Iron.png">
-      <Filter>리소스 파일</Filter>
-    </Image>
-    <Image Include="..\Common\Texture\leaf.png">
-      <Filter>리소스 파일</Filter>
-    </Image>
-    <Image Include="..\Common\Texture\meat.png">
-      <Filter>리소스 파일</Filter>
-    </Image>
-    <Image Include="..\Common\Texture\money.png">
-      <Filter>리소스 파일</Filter>
-    </Image>
-    <Image Include="..\Common\Texture\silver.png">
-      <Filter>리소스 파일</Filter>
-    </Image>
-    <Image Include="..\Common\Texture\stone.png">
-      <Filter>리소스 파일</Filter>
-    </Image>
-    <Image Include="..\Common\Texture\water.png">
-      <Filter>리소스 파일</Filter>
-    </Image>
-    <Image Include="..\Common\Texture\wood.png">
-      <Filter>리소스 파일</Filter>
-    </Image>
-    <Image Include="..\Common\Texture\wood2.png">
-      <Filter>리소스 파일</Filter>
-    </Image>
-  </ItemGroup>
 </Project>

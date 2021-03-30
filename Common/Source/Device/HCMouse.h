@@ -2,7 +2,7 @@
 #include <Mouse.h>
 #include "HCDevice.h"
 
-class HCMouse : public HCDevice, DirectX::Mouse::ButtonStateTracker
+class HCMouse : public IHCDevice, DirectX::Mouse::ButtonStateTracker
 {
 public:
 	HCMouse() = default;

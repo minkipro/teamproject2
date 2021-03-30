@@ -4,7 +4,7 @@
 ID3D11Device* Texture::_device = nullptr;
 ID3D11DeviceContext* Texture::_dc = nullptr;
 std::map<std::wstring, Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>> Texture::textures;
-bool Texture::Initialize(std::wstring filePath)
+bool Texture::Initialize(std::wstring filePath)					
 {
 	//Load Texture
 	auto currentTexture = textures.find(filePath);

@@ -2,11 +2,11 @@
 #include <string>
 #include <typeinfo>
 
-class HCDevice
+class IHCDevice
 {
 public:
-	HCDevice() {}
-	virtual ~HCDevice() = default;
+	IHCDevice() {}
+	virtual ~IHCDevice() = default;
 
 public:
 	virtual void		Init() = 0;

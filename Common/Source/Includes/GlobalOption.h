@@ -10,6 +10,11 @@ namespace HC
 			int WindowsizeY = 900;
 		}WIN;
 
-		
+		struct GraphicOption
+		{
+			unsigned int NumSwapchainBuffer = 2;
+
+		}GRAPHIC;
+
 	}GO;
 }

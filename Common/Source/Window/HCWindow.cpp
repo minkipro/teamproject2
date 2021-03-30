@@ -5,7 +5,7 @@
 #include <Mouse.h>
 #include <Keyboard.h>
 
-std::vector<HCDevice*> HCWindow::s_Proces;
+std::vector<IHCDevice*> HCWindow::s_Proces;
 DirectX::Mouse mouse;
 DirectX::Keyboard keyboard;
 
@@ -47,7 +47,7 @@ void HCWindow::Init(HINSTANCE hInstance)
 	DirectX::Mouse::Get().SetWindow(m_hMainWnd);
 }
 
-void HCWindow::RegisterProc(HCDevice* device)
+void HCWindow::RegisterProc(IHCDevice* device)
 {
 	s_Proces.push_back(device);
 }

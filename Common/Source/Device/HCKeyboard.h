@@ -3,20 +3,7 @@
 #include "HCDevice.h"
 #include <queue>
 
-struct KeyboardEvent
-{
-	enum EventType
-	{
-		Invalid,
-		Press,
-		Release
-	};
-
-	KeyboardEvent(EventType type_, unsigned char key_) : type(type_), key(key_){}
-	EventType type;
-	unsigned char key;
-};
-class HCKeyboard : public HCDevice, DirectX::Keyboard::KeyboardStateTracker
+class HCKeyboard : public IHCDevice, DirectX::Keyboard::KeyboardStateTracker
 {
 public:
 	HCKeyboard() = default;

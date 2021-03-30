@@ -15,13 +15,13 @@ public:
 	virtual ~HCWindow();
 
 	void	Init(HINSTANCE hInstance);
-	void	RegisterProc(HCDevice* device);
+	void	RegisterProc(IHCDevice* device);
 
 private:
 	static LRESULT WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 private:
-	static std::vector<HCDevice*>			s_Proces;
+	static std::vector<IHCDevice*>			s_Proces;
 	HINSTANCE								m_hAppInst;
 	HWND									m_hMainWnd;
 };

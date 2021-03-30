@@ -14,7 +14,7 @@ public:
 	int		Run();
 
 private:
-	std::vector<std::unique_ptr<HCDevice>>	m_Devices;
+	std::vector<std::unique_ptr<IHCDevice>>	m_Devices;
 	std::unique_ptr<HCWindow>				m_Window;
 };
 

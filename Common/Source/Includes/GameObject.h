@@ -2,12 +2,12 @@
 #include <vector>
 #include "HCDevice.h"
 
-class HCDevice;
+class IHCDevice;
 
 class GameObject
 {
 public:
-	virtual void Init(std::vector<HCDevice*> devices) = 0;
+	virtual void Init(std::vector<IHCDevice*> devices) = 0;
 	virtual void Update() = 0;
 
 protected:

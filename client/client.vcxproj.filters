@@ -142,7 +142,11 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="..\Common\Shader\pixelshader.hlsl" />
-    <FxCompile Include="..\Common\Shader\vertexshader.hlsl" />
+    <FxCompile Include="..\Common\Shader\vertexshader.hlsl">
+      <Filter>리소스 파일</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Common\Shader\pixelshader.hlsl">
+      <Filter>리소스 파일</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>

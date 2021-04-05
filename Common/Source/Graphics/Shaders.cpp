@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "Shaders.h"
 #include "COMException.h"
 

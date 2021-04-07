@@ -20,7 +20,7 @@ void abort_(const char* s, ...)
 
 int x, y;
 
-int width, height;
+png_uint_32 width, height;
 png_byte color_type;
 png_byte bit_depth;
 
@@ -74,8 +74,12 @@ void read_png_file(const char* file_name)
 		abort_("[read_png_file] Error during read_image");
 
 	row_pointers = (png_bytep*)malloc(sizeof(png_bytep) * height);
-	for (y = 0; y < height; y++)
-		row_pointers[y] = (png_byte*)malloc(png_get_rowbytes(png_ptr, info_ptr));
+	if (row_pointers != NULL)
+	{
+		for (y = 0; y < height; y++)
+			row_pointers[y] = (png_byte*)malloc(png_get_rowbytes(png_ptr, info_ptr));
+	}
+	
 
 	png_read_image(png_ptr, row_pointers);
 

@@ -34,9 +34,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
     <ClCompile Include="..\Common\Source\Util\StringHelper.cpp">
       <Filter>Common\Util</Filter>
     </ClCompile>
@@ -148,5 +145,8 @@
     <FxCompile Include="..\Common\Shader\pixelshader.hlsl">
       <Filter>리소스 파일</Filter>
     </FxCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
 </Project>

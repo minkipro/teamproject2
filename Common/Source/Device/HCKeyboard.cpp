@@ -62,4 +62,6 @@ LRESULT HCKeyboard::WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPara
 		return 0;
 	}
 	}
+
+	return 0;
 }

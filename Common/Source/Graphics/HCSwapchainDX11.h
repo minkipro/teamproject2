@@ -8,7 +8,6 @@ class HCSwapchainDX11
 	struct RenderTargetResource
 	{
 		Microsoft::WRL::ComPtr<ID3D11RenderTargetView>	RenderTargetView;
-		
 	};
 
 public:
@@ -34,6 +33,7 @@ private:
 
 	Microsoft::WRL::ComPtr<ID3D11Texture2D>			m_DepthStencilBuffer;
 	Microsoft::WRL::ComPtr<ID3D11DepthStencilView>	m_DepthStencilView;
+	Microsoft::WRL::ComPtr<ID3D11RenderTargetView>	m_RenderTargetView;
 
 	const DXGI_FORMAT								m_PresentBufferFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
 	const DXGI_FORMAT								m_ColorBufferFormat = DXGI_FORMAT_R8G8B8A8_UNORM;

@@ -16,6 +16,7 @@ public:
 
 	void	Init(HINSTANCE hInstance);
 	void	RegisterProc(IHCDevice* device);
+	HWND	GetHandle() { return m_hMainWnd; }
 
 private:
 	static LRESULT WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);

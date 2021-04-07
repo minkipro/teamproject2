@@ -62,19 +62,16 @@
     <ClCompile Include="..\Common\Source\stdafx.cpp">
       <Filter>PCH</Filter>
     </ClCompile>
-    <ClCompile Include="HCGraphicDX11.cpp">
-      <Filter>Common\Devices\Graphics_Dx11</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Common\Source\Graphics\Shaders.cpp">
-      <Filter>Common\Devices\Graphics_Dx11</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Common\Source\Graphics\Texture.cpp">
-      <Filter>Common\Devices\Graphics_Dx11</Filter>
-    </ClCompile>
-    <ClCompile Include="HCGraphic.cpp">
+    <ClCompile Include="..\Common\Source\Graphics\HCGraphic.cpp">
       <Filter>Common\Devices\Graphics_Base</Filter>
     </ClCompile>
-    <ClCompile Include="HCSwapchainDX11.cpp">
+    <ClCompile Include="..\Common\Source\Graphics\HCGraphicDX11.cpp">
+      <Filter>Common\Devices\Graphics_Dx11</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Common\Source\Graphics\HCGraphicDX11Resources.cpp">
+      <Filter>Common\Devices\Graphics_Dx11</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Common\Source\Graphics\HCSwapchainDX11.cpp">
       <Filter>Common\Devices\Graphics_Dx11</Filter>
     </ClCompile>
   </ItemGroup>
@@ -110,39 +107,23 @@
     <ClInclude Include="..\Common\Source\stdafx.h">
       <Filter>PCH</Filter>
     </ClInclude>
-    <ClInclude Include="..\Common\Source\Graphics\ConstantBuffer.h">
-      <Filter>Common\Devices\Graphics_Dx11</Filter>
+    <ClInclude Include="HCSharedPointerMG.h">
+      <Filter>Common\Util</Filter>
     </ClInclude>
-    <ClInclude Include="..\Common\Source\Graphics\ConstantBufferTypes.h">
-      <Filter>Common\Devices\Graphics_Dx11</Filter>
-    </ClInclude>
-    <ClInclude Include="HCGraphicDX11.h">
-      <Filter>Common\Devices\Graphics_Dx11</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Common\Source\Graphics\IndexBuffer.h">
-      <Filter>Common\Devices\Graphics_Dx11</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Common\Source\Graphics\Shaders.h">
-      <Filter>Common\Devices\Graphics_Dx11</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Common\Source\Graphics\Texture.h">
-      <Filter>Common\Devices\Graphics_Dx11</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Common\Source\Graphics\Vertex.h">
-      <Filter>Common\Devices\Graphics_Dx11</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Common\Source\Graphics\VertexBuffer.h">
-      <Filter>Common\Devices\Graphics_Dx11</Filter>
-    </ClInclude>
-    <ClInclude Include="HCGraphic.h">
+    <ClInclude Include="..\Common\Source\Graphics\HCGraphic.h">
       <Filter>Common\Devices\Graphics_Base</Filter>
     </ClInclude>
-    <ClInclude Include="HCSwapchainDX11.h">
+    <ClInclude Include="..\Common\Source\Graphics\HCGraphicDX11.h">
       <Filter>Common\Devices\Graphics_Dx11</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <FxCompile Include="..\Common\Shader\pixelshader.hlsl" />
-    <FxCompile Include="..\Common\Shader\vertexshader.hlsl" />
+    <ClInclude Include="..\Common\Source\Graphics\HCGraphicDX11Resources.h">
+      <Filter>Common\Devices\Graphics_Dx11</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\Source\Graphics\HCSharedPointerMG.h">
+      <Filter>Common\Devices\Graphics_Dx11</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\Source\Graphics\HCSwapchainDX11.h">
+      <Filter>Common\Devices\Graphics_Dx11</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

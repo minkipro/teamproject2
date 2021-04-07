@@ -27,19 +27,17 @@ namespace HC
 class IHCShader
 {
 public:
-	IHCShader(HC::SHADERTYPE type)
-		:m_Type(type)
+	IHCShader()
 	{
 	}
 	
 	virtual ~IHCShader() = default;
 
 	virtual void*	GetShaderData() = 0;
-	HC::SHADERTYPE	GetShaderType() const { return m_Type; }
 
 protected:
-	const HC::SHADERTYPE m_Type;
 };
+
 
 class IHCTexture
 {
@@ -79,33 +77,46 @@ protected:
 	std::vector<IHCTexture*> m_TextureSlots;
 };
 
+class IHCRasterizer
+{
+public:
+	IHCRasterizer() {}
+	virtual ~IHCRasterizer() = default;
+
+protected:
+};
+
+class IHCBlendState
+{
+public:
+	IHCBlendState() {}
+	virtual ~IHCBlendState() = default;
+
+protected:
+};
+
 class HCGraphicPipeLine
 {
 public:
 	HCGraphicPipeLine(const std::string& name)
 		:m_PipeLineName(name)
 	{
-		for (unsigned int i = 0; i < static_cast<unsigned int>(HC::SHADERTYPE::COUNT); i++)
-		{
-			m_Shaders[i] = nullptr;
-		}
-
 	}
 	virtual ~HCGraphicPipeLine() = default;
 
-	void				SetRenderTarget(size_t slot, IHCTexture* texture);
-	void				SetShaderResource(size_t slot, IHCTexture* texture);
-	void				SetCBBuffer(size_t slot, IHCCBuffer* cbBuffer);
-	void				SetShader(HC::SHADERTYPE type, IHCShader* shader);
 
 	const std::string&	GetPipeLineName() { return m_PipeLineName; }
 	const auto&			GetReservedObjects() { return m_RenderReservedObjectsByTexture; }
 	void				RenderReserveObject(const std::string& textureBufferName, const GameObject* object) { m_RenderReservedObjectsByTexture[textureBufferName].push_back(object); }
 	void				ClearReservedObjects() { m_RenderReservedObjectsByTexture.clear(); }
 
-protected:
+public:
+	IHCShader*														m_Shaders[static_cast<unsigned int>(HC::SHADERTYPE::COUNT)] = {};
+	IHCRasterizer*													m_Rasterizer=nullptr;
+	IHCBlendState*													m_BlendState=nullptr;
+
+private:
 	std::string														m_PipeLineName;
-	IHCShader*														m_Shaders[static_cast<unsigned int>(HC::SHADERTYPE::COUNT)];
 	std::unordered_map<std::string, std::vector<const GameObject*>>	m_RenderReservedObjectsByTexture;
 };
 
@@ -125,19 +136,24 @@ public: //pure virtual method
 
 	virtual HRESULT		CreateGraphicPipeLine(const std::string& pipeLineName, HCGraphicPipeLine** out) = 0;
 	virtual HRESULT		CreateTextureBuffer(const std::string& bufferName, IHCTextureBuffer** out) = 0;
-	virtual HRESULT		CreateTexture(const std::wstring& filePath, IHCTexture** out) = 0;
-	virtual HRESULT		CreateShaderResource(size_t stride, const POINT& size, IHCTexture** out) = 0;
-	virtual HRESULT		CreateCB(size_t stride, size_t num, IHCCBuffer** out) = 0;
-	virtual HRESULT		CreateShader(HC::SHADERTYPE type, const std::wstring& filePath, const std::string& entryPoint, IHCShader** out) = 0;
+	virtual HRESULT		CreateTexture(const std::string& textureName, const std::wstring& filePath, IHCTexture** out) = 0;
+	virtual HRESULT		CreateShaderResource(const std::string& resourceName, size_t stride, const POINT& size, IHCTexture** out) = 0;
+	virtual HRESULT		CreateCB(const std::string& bufferName, size_t stride, size_t num, IHCCBuffer** out) = 0;
+	virtual HRESULT		CreateShader(const std::string& shaderName, HC::SHADERTYPE type, const std::wstring& filePath, const std::string& entryPoint, IHCShader** out) = 0;
 
+	virtual void		GetGraphicPipeLine(const std::string& pipeLineName, HCGraphicPipeLine** out) = 0;
+	virtual void		GetTextureBuffer(const std::string& bufferName, IHCTextureBuffer** out) = 0;
+	virtual void		GetTexture(const std::string& textureName, IHCTexture** out) = 0;
+	virtual void		GetShaderResource(const std::string& resourceName, IHCTexture** out) = 0;
+	virtual void		GetCB(const std::string& bufferName, IHCCBuffer** out) = 0;
+	virtual void		GetShader(const std::string& shaderName, IHCShader** out) = 0;
 
 protected: //pure virtual method
 	virtual void		RenderBegin() = 0;
 	virtual void		RenderEnd() = 0;
 	virtual void		ApplyBaseCB() = 0;
-	virtual void		SetPipeLineObject(HCGraphicPipeLine* pipeLine) = 0;
+	virtual void		SetPipeLineObject(const HCGraphicPipeLine* pipeLine) = 0;
 	virtual void		RenderObjects(const std::string& textureBufferName, const std::vector<const GameObject*> objects) = 0;
-
 
 public: //Optional virtual function
 	virtual LRESULT		WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) { return LRESULT(0); }

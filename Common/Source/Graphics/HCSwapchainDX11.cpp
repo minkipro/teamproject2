@@ -12,7 +12,7 @@ void HCSwapchainDX11::Init(UINT numSwapBuffer, HWND wnd, ID3D11Device** deviceOu
 	scd.BufferDesc.RefreshRate.Numerator = 60;
 	scd.BufferDesc.RefreshRate.Denominator = 1;
 	scd.BufferDesc.Format = m_PresentBufferFormat;
-	scd.BufferDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
+	scd.BufferDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UPPER_FIELD_FIRST;
 	scd.BufferDesc.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
 
 	scd.SampleDesc.Count = 1;
@@ -22,14 +22,13 @@ void HCSwapchainDX11::Init(UINT numSwapBuffer, HWND wnd, ID3D11Device** deviceOu
 	scd.BufferCount = numSwapBuffer;
 	scd.OutputWindow = wnd;
 	scd.Windowed = TRUE;
-	scd.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
+	scd.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
 	scd.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
 
-	HRESULT hr;
 	COM_HRESULT_IF_FAILED(D3D11CreateDeviceAndSwapChain(nullptr,
-		D3D_DRIVER_TYPE_UNKNOWN,
+		D3D_DRIVER_TYPE_HARDWARE,
 		NULL,
-		NULL,
+		D3D11_CREATE_DEVICE_DEBUG,
 		NULL,
 		0,
 		D3D11_SDK_VERSION,
@@ -50,17 +49,19 @@ void HCSwapchainDX11::Resize(UINT windowX, UINT windowY)
 	Microsoft::WRL::ComPtr<ID3D11Device> device;
 	COM_HRESULT_IF_FAILED(m_Swapchain->GetDevice(IID_PPV_ARGS(device.GetAddressOf())), "didn't get d3d11 device");;
 
-	for (UINT i = 0; i < m_NumSwapBuffer; i++)
-	{
-		Microsoft::WRL::ComPtr<ID3D11Texture2D> backBuffer;
-		COM_HRESULT_IF_FAILED(
-			m_Swapchain->GetBuffer(i, IID_PPV_ARGS(backBuffer.GetAddressOf())),
-			"GetBuffer Failed.");
-		COM_HRESULT_IF_FAILED(
-			device->CreateRenderTargetView(backBuffer.Get(), NULL,
-				m_SwapResources[i].RenderTargetView.GetAddressOf()),
-			"Failed to create render target view.");
-	}
+	D3D11_RENDER_TARGET_VIEW_DESC viewDesc;
+	viewDesc.Format = m_PresentBufferFormat;
+	viewDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
+	viewDesc.Texture2D.MipSlice = 0;
+
+	Microsoft::WRL::ComPtr<ID3D11Texture2D> backBuffer;
+	COM_HRESULT_IF_FAILED(
+		m_Swapchain->GetBuffer(0, IID_PPV_ARGS(backBuffer.GetAddressOf())),
+		"GetBuffer Failed.");
+	COM_HRESULT_IF_FAILED(
+		device->CreateRenderTargetView(backBuffer.Get(), &viewDesc,
+			m_RenderTargetView.GetAddressOf()),
+		"Failed to create render target view.");
 
 	//Describe our Depth/Stencil Buffer
 	CD3D11_TEXTURE2D_DESC depthStencilTextureDesc(DXGI_FORMAT_D24_UNORM_S8_UINT, windowX, windowY);
@@ -78,7 +79,7 @@ void HCSwapchainDX11::Resize(UINT windowX, UINT windowY)
 
 void HCSwapchainDX11::PresentRenderTargetSetting(ID3D11DeviceContext* deviceContext, const float clearColor[4])
 {
-	auto present = m_SwapResources[m_CurrBackBuffer].RenderTargetView.Get();
+	auto present = m_RenderTargetView.Get();
 
 	deviceContext->OMSetRenderTargets(1, &present, m_DepthStencilView.Get());
 	deviceContext->ClearRenderTargetView(present, clearColor);

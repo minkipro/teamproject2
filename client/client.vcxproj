@@ -158,17 +158,16 @@
   <ItemGroup>
     <ClCompile Include="..\Common\Source\Device\HCKeyboard.cpp" />
     <ClCompile Include="..\Common\Source\Device\HCMouse.cpp" />
-    <ClCompile Include="..\Common\Source\Graphics\Shaders.cpp" />
-    <ClCompile Include="..\Common\Source\Graphics\Texture.cpp" />
+    <ClCompile Include="..\Common\Source\Graphics\HCGraphic.cpp" />
+    <ClCompile Include="..\Common\Source\Graphics\HCGraphicDX11.cpp" />
+    <ClCompile Include="..\Common\Source\Graphics\HCGraphicDX11Resources.cpp" />
+    <ClCompile Include="..\Common\Source\Graphics\HCSwapchainDX11.cpp" />
     <ClCompile Include="..\Common\Source\HCScene.cpp" />
     <ClCompile Include="..\Common\Source\stdafx.cpp" />
     <ClCompile Include="..\Common\Source\Util\StringHelper.cpp" />
     <ClCompile Include="..\Common\Source\Window\HCWindow.cpp" />
     <ClCompile Include="DevScene.cpp" />
     <ClCompile Include="Engine.cpp" />
-    <ClCompile Include="HCGraphic.cpp" />
-    <ClCompile Include="HCGraphicDX11.cpp" />
-    <ClCompile Include="HCSwapchainDX11.cpp" />
     <ClCompile Include="Main.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -177,13 +176,11 @@
   <ItemGroup>
     <ClInclude Include="..\Common\Source\Device\HCKeyboard.h" />
     <ClInclude Include="..\Common\Source\Device\HCMouse.h" />
-    <ClInclude Include="..\Common\Source\Graphics\ConstantBuffer.h" />
-    <ClInclude Include="..\Common\Source\Graphics\ConstantBufferTypes.h" />
-    <ClInclude Include="..\Common\Source\Graphics\IndexBuffer.h" />
-    <ClInclude Include="..\Common\Source\Graphics\Shaders.h" />
-    <ClInclude Include="..\Common\Source\Graphics\Texture.h" />
-    <ClInclude Include="..\Common\Source\Graphics\Vertex.h" />
-    <ClInclude Include="..\Common\Source\Graphics\VertexBuffer.h" />
+    <ClInclude Include="..\Common\Source\Graphics\HCGraphic.h" />
+    <ClInclude Include="..\Common\Source\Graphics\HCGraphicDX11.h" />
+    <ClInclude Include="..\Common\Source\Graphics\HCGraphicDX11Resources.h" />
+    <ClInclude Include="..\Common\Source\Graphics\HCSharedPointerMG.h" />
+    <ClInclude Include="..\Common\Source\Graphics\HCSwapchainDX11.h" />
     <ClInclude Include="..\Common\Source\HCScene.h" />
     <ClInclude Include="..\Common\Source\Includes\GameObject.h" />
     <ClInclude Include="..\Common\Source\Includes\GlobalOption.h" />
@@ -193,13 +190,7 @@
     <ClInclude Include="..\Common\Source\Window\HCWindow.h" />
     <ClInclude Include="DevScene.h" />
     <ClInclude Include="Engine.h" />
-    <ClInclude Include="HCGraphic.h" />
-    <ClInclude Include="HCGraphicDX11.h" />
-    <ClInclude Include="HCSwapchainDX11.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <FxCompile Include="..\Common\Shader\pixelshader.hlsl" />
-    <FxCompile Include="..\Common\Shader\vertexshader.hlsl" />
+    <ClInclude Include="HCSharedPointerMG.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

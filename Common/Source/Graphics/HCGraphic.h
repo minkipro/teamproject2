@@ -48,6 +48,7 @@ public:
 
 	virtual void*	GetTextureData() = 0;
 	virtual POINT	GetTextureSize() = 0;
+	virtual void	SetName(const std::string& name_) = 0;
 protected:
 
 };

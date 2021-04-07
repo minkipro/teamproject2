@@ -2,6 +2,7 @@
 #include "HCGraphicDX11.h"
 #include "GlobalOption.h"
 #include <DirectXColors.h>
+#include <WICTextureLoader.h>
 
 using Microsoft::WRL::ComPtr;
 
@@ -14,6 +15,12 @@ void HCGraphicDX11::Init()
 	m_Swapchain->Resize(HC::GO.WIN.WindowsizeX, HC::GO.WIN.WindowsizeY);
 
 	CreateBaseSamplers();
+	//test
+	HCTexture testTexture;
+	IHCTexture* pTestTexture = &testTexture;
+	CreateTexture("../Common/Texture/knight.png", L"../Common/Texture/knight.png", &pTestTexture);//이거 텍스쳐 이름이 필요할까.. 그냥 파일패스로 하는게?
+	POINT tSize = pTestTexture->GetTextureSize();
+	//~test
 }
 
 void HCGraphicDX11::Update()
@@ -32,7 +39,14 @@ HRESULT HCGraphicDX11::CreateTextureBuffer(const std::string& bufferName, IHCTex
 
 HRESULT HCGraphicDX11::CreateTexture(const std::string& textureName, const std::wstring& filePath, IHCTexture** out)
 {
-	return E_NOTIMPL;
+	
+	ID3D11ShaderResourceView** textureView = static_cast<ID3D11ShaderResourceView**>((*out)->GetTextureData());
+	HRESULT hr = DirectX::CreateWICTextureFromFile(m_Device.Get(), filePath.c_str(), nullptr, textureView);
+	if (hr == S_OK)
+	{
+		(*out)->SetName(textureName);//텍스쳐 로드에 실패했으면 어떻게해야할지 생각..
+	}
+	return hr;
 }
 
 HRESULT HCGraphicDX11::CreateShaderResource(const std::string& resourceName, size_t stride, const POINT& size, IHCTexture** out)

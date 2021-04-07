@@ -179,7 +179,6 @@
     <ClInclude Include="..\Common\Source\Graphics\HCGraphic.h" />
     <ClInclude Include="..\Common\Source\Graphics\HCGraphicDX11.h" />
     <ClInclude Include="..\Common\Source\Graphics\HCGraphicDX11Resources.h" />
-    <ClInclude Include="..\Common\Source\Graphics\HCSharedPointerMG.h" />
     <ClInclude Include="..\Common\Source\Graphics\HCSwapchainDX11.h" />
     <ClInclude Include="..\Common\Source\HCScene.h" />
     <ClInclude Include="..\Common\Source\Includes\GameObject.h" />

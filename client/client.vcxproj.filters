@@ -119,9 +119,6 @@
     <ClInclude Include="..\Common\Source\Graphics\HCGraphicDX11Resources.h">
       <Filter>Common\Devices\Graphics_Dx11</Filter>
     </ClInclude>
-    <ClInclude Include="..\Common\Source\Graphics\HCSharedPointerMG.h">
-      <Filter>Common\Devices\Graphics_Dx11</Filter>
-    </ClInclude>
     <ClInclude Include="..\Common\Source\Graphics\HCSwapchainDX11.h">
       <Filter>Common\Devices\Graphics_Dx11</Filter>
     </ClInclude>

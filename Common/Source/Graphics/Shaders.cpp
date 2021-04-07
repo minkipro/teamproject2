@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "Shaders.h"
 #include "COMException.h"
 
@@ -56,6 +57,29 @@ ID3D11PixelShader* PixelShader::GetShader()
 }
 
 ID3D10Blob* PixelShader::GetBuffer()
+{
+	return this->shader_buffer.Get();
+}
+
+bool GeometryShader::Initialize(Microsoft::WRL::ComPtr<ID3D11Device>& device, std::wstring shaderpath)
+{
+	HRESULT hr = D3DReadFileToBlob(shaderpath.c_str(), this->shader_buffer.GetAddressOf());
+
+	COM_HRESULT_IF_FAILED(hr, L"Failed to load shaer: " + shaderpath);
+
+	hr = device->CreateGeometryShader(this->shader_buffer.Get()->GetBufferPointer(), this->shader_buffer.Get()->GetBufferSize(), NULL, this->shader.GetAddressOf());
+
+	COM_HRESULT_IF_FAILED(hr, L"Failed to create geometry shader: " + shaderpath);
+
+	return true;
+}
+
+ID3D11GeometryShader* GeometryShader::GetShader()
+{
+	return this->shader.Get();
+}
+
+ID3D10Blob* GeometryShader::GetBuffer()
 {
 	return this->shader_buffer.Get();
 }

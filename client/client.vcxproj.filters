@@ -32,6 +32,9 @@
     <Filter Include="Common\Devices\Graphics_Dx11">
       <UniqueIdentifier>{a1864d5f-1f18-4bc2-af0b-19aa90ccd2b0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Temp">
+      <UniqueIdentifier>{5dfb3461-dae5-46b6-8be2-28cfa3f56dc7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Common\Source\Util\StringHelper.cpp">

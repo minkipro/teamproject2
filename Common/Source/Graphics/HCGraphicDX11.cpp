@@ -233,10 +233,10 @@ void HCGraphicDX11::SetPipeLineObject(const HCGraphicPipeLine* pipeLine)
 	}
 	m_DeviceContext->PSSetSamplers(0, static_cast<UINT>(samplers.size()), &samplers.front());
 
-	m_DeviceContext->IASetPrimitiveTopology();
-	m_DeviceContext->IASetInputLayout();
+	//m_DeviceContext->IASetPrimitiveTopology();
+	//m_DeviceContext->IASetInputLayout();
 
-	m_Device->CreateInputLayout()
+	//m_Device->CreateInputLayout()
 }
 
 void HCGraphicDX11::RenderObjects(const std::string& textureBufferName, const std::vector<const GameObject*> objects)

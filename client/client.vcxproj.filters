@@ -74,6 +74,7 @@
     <ClCompile Include="..\Common\Source\Graphics\HCSwapchainDX11.cpp">
       <Filter>Common\Devices\Graphics_Dx11</Filter>
     </ClCompile>
+    <ClCompile Include="HCKoreanInput.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Common\Source\Util\StringHelper.h">
@@ -121,6 +122,9 @@
     </ClInclude>
     <ClInclude Include="..\Common\Source\Graphics\HCSwapchainDX11.h">
       <Filter>Common\Devices\Graphics_Dx11</Filter>
+    </ClInclude>
+    <ClInclude Include="HCKoreanInput.h">
+      <Filter>Common\Devices</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

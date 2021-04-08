@@ -85,6 +85,9 @@ void HCSwapchainDX11::PresentRenderTargetSetting(ID3D11DeviceContext* deviceCont
 	deviceContext->ClearRenderTargetView(present, clearColor);
 	deviceContext->ClearDepthStencilView(m_DepthStencilView.Get(), 
 		D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+
+	CD3D11_VIEWPORT viewport(0.0f, 0.0f, HC::GO.WIN.WindowsizeX, HC::GO.WIN.WindowsizeY);;
+	deviceContext->RSSetViewports(1, &viewport);
 }
 
 void HCSwapchainDX11::Present()

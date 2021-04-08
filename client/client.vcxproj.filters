@@ -8,29 +8,29 @@
     <Filter Include="Scene">
       <UniqueIdentifier>{73d67545-25d7-403d-b2ba-fdf464bbde5e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Common">
-      <UniqueIdentifier>{2de855df-e7e4-4664-830c-eb5d57337f80}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Common\Window">
-      <UniqueIdentifier>{8ed4c8e5-a862-4e01-b5cd-7824e5509ed2}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Client">
       <UniqueIdentifier>{135caab1-4a8c-4b59-8bad-f69e20fe8fdc}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Common\Devices">
-      <UniqueIdentifier>{43623ced-2c56-4931-8bf0-c11cb97923a0}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Common\Util">
-      <UniqueIdentifier>{ecb4c82c-4732-4f35-9594-936f040f679f}</UniqueIdentifier>
     </Filter>
     <Filter Include="PCH">
       <UniqueIdentifier>{94060252-c7ab-4a79-bdef-f296c5d13c6d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Common\Devices\Graphics_Base">
+    <Filter Include="Client\Common">
+      <UniqueIdentifier>{2de855df-e7e4-4664-830c-eb5d57337f80}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Client\Common\Window">
+      <UniqueIdentifier>{8ed4c8e5-a862-4e01-b5cd-7824e5509ed2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Client\Common\Devices">
+      <UniqueIdentifier>{43623ced-2c56-4931-8bf0-c11cb97923a0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Client\Common\Devices\Graphics_Base">
       <UniqueIdentifier>{c5a16727-f26f-4033-9860-cb9eaff4a160}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Common\Devices\Graphics_Dx11">
+    <Filter Include="Client\Common\Devices\Graphics_Dx11">
       <UniqueIdentifier>{a1864d5f-1f18-4bc2-af0b-19aa90ccd2b0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Client\Common\Util">
+      <UniqueIdentifier>{ecb4c82c-4732-4f35-9594-936f040f679f}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -38,7 +38,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Common\Source\Util\StringHelper.cpp">
-      <Filter>Common\Util</Filter>
+      <Filter>Client\Common\Util</Filter>
     </ClCompile>
     <ClCompile Include="Main.cpp">
       <Filter>Client</Filter>
@@ -51,36 +51,36 @@
     </ClCompile>
     <ClCompile Include="DevScene.cpp" />
     <ClCompile Include="..\Common\Source\Window\HCWindow.cpp">
-      <Filter>Common\Window</Filter>
+      <Filter>Client\Common\Window</Filter>
     </ClCompile>
     <ClCompile Include="..\Common\Source\Device\HCKeyboard.cpp">
-      <Filter>Common\Devices</Filter>
+      <Filter>Client\Common\Devices</Filter>
     </ClCompile>
     <ClCompile Include="..\Common\Source\Device\HCMouse.cpp">
-      <Filter>Common\Devices</Filter>
+      <Filter>Client\Common\Devices</Filter>
     </ClCompile>
     <ClCompile Include="..\Common\Source\stdafx.cpp">
       <Filter>PCH</Filter>
     </ClCompile>
     <ClCompile Include="..\Common\Source\Graphics\HCGraphic.cpp">
-      <Filter>Common\Devices\Graphics_Base</Filter>
+      <Filter>Client\Common\Devices\Graphics_Base</Filter>
     </ClCompile>
     <ClCompile Include="..\Common\Source\Graphics\HCGraphicDX11.cpp">
-      <Filter>Common\Devices\Graphics_Dx11</Filter>
+      <Filter>Client\Common\Devices\Graphics_Dx11</Filter>
     </ClCompile>
     <ClCompile Include="..\Common\Source\Graphics\HCGraphicDX11Resources.cpp">
-      <Filter>Common\Devices\Graphics_Dx11</Filter>
+      <Filter>Client\Common\Devices\Graphics_Dx11</Filter>
     </ClCompile>
     <ClCompile Include="..\Common\Source\Graphics\HCSwapchainDX11.cpp">
-      <Filter>Common\Devices\Graphics_Dx11</Filter>
+      <Filter>Client\Common\Devices\Graphics_Dx11</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Common\Source\Util\StringHelper.h">
-      <Filter>Common\Util</Filter>
+      <Filter>Client\Common\Util</Filter>
     </ClInclude>
     <ClInclude Include="..\Common\Source\Includes\GameObject.h">
-      <Filter>Common</Filter>
+      <Filter>Client\Common</Filter>
     </ClInclude>
     <ClInclude Include="Engine.h">
       <Filter>Client</Filter>
@@ -89,38 +89,52 @@
       <Filter>Scene</Filter>
     </ClInclude>
     <ClInclude Include="..\Common\Source\Includes\HCDevice.h">
-      <Filter>Common\Devices</Filter>
+      <Filter>Client\Common\Devices</Filter>
     </ClInclude>
     <ClInclude Include="DevScene.h" />
     <ClInclude Include="..\Common\Source\Includes\GlobalOption.h">
-      <Filter>Common\Util</Filter>
+      <Filter>Client\Common\Util</Filter>
     </ClInclude>
     <ClInclude Include="..\Common\Source\Window\HCWindow.h">
-      <Filter>Common\Window</Filter>
+      <Filter>Client\Common\Window</Filter>
     </ClInclude>
     <ClInclude Include="..\Common\Source\Device\HCKeyboard.h">
-      <Filter>Common\Devices</Filter>
+      <Filter>Client\Common\Devices</Filter>
     </ClInclude>
     <ClInclude Include="..\Common\Source\Device\HCMouse.h">
-      <Filter>Common\Devices</Filter>
+      <Filter>Client\Common\Devices</Filter>
     </ClInclude>
     <ClInclude Include="..\Common\Source\stdafx.h">
       <Filter>PCH</Filter>
     </ClInclude>
     <ClInclude Include="HCSharedPointerMG.h">
-      <Filter>Common\Util</Filter>
+      <Filter>Client\Common\Util</Filter>
     </ClInclude>
     <ClInclude Include="..\Common\Source\Graphics\HCGraphic.h">
-      <Filter>Common\Devices\Graphics_Base</Filter>
+      <Filter>Client\Common\Devices\Graphics_Base</Filter>
     </ClInclude>
     <ClInclude Include="..\Common\Source\Graphics\HCGraphicDX11.h">
-      <Filter>Common\Devices\Graphics_Dx11</Filter>
+      <Filter>Client\Common\Devices\Graphics_Dx11</Filter>
     </ClInclude>
     <ClInclude Include="..\Common\Source\Graphics\HCGraphicDX11Resources.h">
-      <Filter>Common\Devices\Graphics_Dx11</Filter>
+      <Filter>Client\Common\Devices\Graphics_Dx11</Filter>
     </ClInclude>
     <ClInclude Include="..\Common\Source\Graphics\HCSwapchainDX11.h">
-      <Filter>Common\Devices\Graphics_Dx11</Filter>
+      <Filter>Client\Common\Devices\Graphics_Dx11</Filter>
     </ClInclude>
+    <ClInclude Include="..\Common\Source\Graphics\ConstantBuffer.h">
+      <Filter>Client\Common\Devices\Graphics_Dx11</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\Source\Graphics\ConstantBufferTypes.h">
+      <Filter>Client\Common\Devices\Graphics_Dx11</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="..\Common\Shader\PointToPlaneSahder.hlsl">
+      <Filter>리소스 파일</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Common\Shader\BaseRoot.hlsli">
+      <Filter>리소스 파일</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>

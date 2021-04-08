@@ -3,6 +3,7 @@
 #include "GlobalOption.h"
 #include <DirectXColors.h>
 #include <D3Dcompiler.h>
+#include <WICTextureLoader.h>
 
 using Microsoft::WRL::ComPtr;
 
@@ -61,7 +62,14 @@ HRESULT HCGraphicDX11::CreateTextureBuffer(const std::string& bufferName, IHCTex
 
 HRESULT HCGraphicDX11::CreateTexture(const std::string& textureName, const std::wstring& filePath, IHCTexture** out)
 {
-	return E_NOTIMPL;
+	
+	ID3D11ShaderResourceView** textureView = static_cast<ID3D11ShaderResourceView**>((*out)->GetTextureData());
+	HRESULT hr = DirectX::CreateWICTextureFromFile(m_Device.Get(), filePath.c_str(), nullptr, textureView);
+	if (hr == S_OK)
+	{
+		(*out)->SetName(textureName);//텍스쳐 로드에 실패했으면 어떻게해야할지 생각..
+	}
+	return hr;
 }
 
 HRESULT HCGraphicDX11::CreateShaderResource(const std::string& resourceName, size_t stride, const POINT& size, IHCTexture** out)

@@ -43,6 +43,14 @@ void HCGraphicDX11::Init()
 
 	COM_HRESULT_IF_FAILED(m_Device->CreateBlendState(&blendDesc, m_BaseBlendState.GetAddressOf()), 
 		"Failed to create blend state.");
+
+	//test
+	IHCTexture* testTexture = nullptr;
+	
+	CreateTexture("../Common/Texture/knight.png", L"../Common/Texture/knight.png", &testTexture);//이거 텍스쳐 이름이 필요할까.. 그냥 파일패스로 하는게?
+	POINT tSize = testTexture->GetTextureSize();
+	delete testTexture;
+	//~test
 }
 
 void HCGraphicDX11::Update()
@@ -62,12 +70,11 @@ HRESULT HCGraphicDX11::CreateTextureBuffer(const std::string& bufferName, IHCTex
 
 HRESULT HCGraphicDX11::CreateTexture(const std::string& textureName, const std::wstring& filePath, IHCTexture** out)
 {
-	ID3D11ShaderResourceView** textureView = static_cast<ID3D11ShaderResourceView**>((*out)->GetTextureData());
+	m_Textures[textureName] = std::make_unique<HCDX11Texture>();
+	ID3D11ShaderResourceView** textureView = static_cast<ID3D11ShaderResourceView**>(m_Textures[textureName]->GetTextureData());
 	HRESULT hr = DirectX::CreateWICTextureFromFile(m_Device.Get(), filePath.c_str(), nullptr, textureView);
-	if (hr == S_OK)
-	{
-		(*out)->SetName(textureName);//텍스쳐 로드에 실패했으면 어떻게해야할지 생각..
-	}
+	COM_HRESULT_IF_FAILED(hr,"Texture load Fail");
+	*out = m_Textures[textureName].get();
 	return hr;
 }
 

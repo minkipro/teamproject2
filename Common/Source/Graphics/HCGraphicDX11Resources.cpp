@@ -34,16 +34,16 @@ std::vector<ID3D11ShaderResourceView*> HCDX11TextureBuffer::GetTextureViews()
 	return std::vector<ID3D11ShaderResourceView*>();
 }
 
-HCTexture::~HCTexture()
+HCDX11Texture::~HCDX11Texture()
 {
 }
 
-void* HCTexture::GetTextureData()
+void* HCDX11Texture::GetTextureData()
 {
 	return static_cast<void*>(m_textureView.GetAddressOf());
 }
 
-POINT HCTexture::GetTextureSize()
+POINT HCDX11Texture::GetTextureSize()
 {
 	ID3D11Resource* res = 0;
 	m_textureView->GetResource(&res);
@@ -51,9 +51,4 @@ POINT HCTexture::GetTextureSize()
 	D3D11_TEXTURE2D_DESC desc;
 	tex2d->GetDesc(&desc);
 	return { static_cast<LONG>(desc.Width), static_cast<LONG>(desc.Height) };
-}
-
-void HCTexture::SetName(const std::string& name_)
-{
-	m_name = name_;
 }

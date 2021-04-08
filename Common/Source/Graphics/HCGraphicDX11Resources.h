@@ -22,16 +22,15 @@ private:
 	ComPtr<ID3D11DeviceChild> m_ShaderData;
 };
 
-class HCTexture : public IHCTexture
+class HCDX11Texture : public IHCTexture
 {
 public:
-	HCTexture() {}
+	HCDX11Texture() {}
 
-	virtual ~HCTexture();
+	virtual ~HCDX11Texture();
 
 	virtual void* GetTextureData() override;
 	virtual POINT	GetTextureSize() override;
-	virtual void	SetName(const std::string& name_) override;
 
 private:
 	std::string m_name;

@@ -2,6 +2,7 @@
 #include "HCGraphicDX11.h"
 #include "GlobalOption.h"
 #include <DirectXColors.h>
+#include <D3Dcompiler.h>
 #include <WICTextureLoader.h>
 
 using Microsoft::WRL::ComPtr;
@@ -15,16 +16,38 @@ void HCGraphicDX11::Init()
 	m_Swapchain->Resize(HC::GO.WIN.WindowsizeX, HC::GO.WIN.WindowsizeY);
 
 	CreateBaseSamplers();
-	//test
-	HCTexture testTexture;
-	IHCTexture* pTestTexture = &testTexture;
-	CreateTexture("../Common/Texture/knight.png", L"../Common/Texture/knight.png", &pTestTexture);//이거 텍스쳐 이름이 필요할까.. 그냥 파일패스로 하는게?
-	POINT tSize = pTestTexture->GetTextureSize();
-	//~test
+
+	CD3D11_DEPTH_STENCIL_DESC depthstencildesc(D3D11_DEFAULT);
+	depthstencildesc.DepthFunc = D3D11_COMPARISON_FUNC::D3D11_COMPARISON_LESS_EQUAL;
+
+	COM_HRESULT_IF_FAILED(
+		m_Device->CreateDepthStencilState(&depthstencildesc, m_BaseDepthStencilState.GetAddressOf()), 
+		"Failed to create depth stencil state.");
+
+	CD3D11_RASTERIZER_DESC rasterizerDesc(D3D11_DEFAULT);
+	COM_HRESULT_IF_FAILED(m_Device->CreateRasterizerState(&rasterizerDesc, m_BaseRasterizer.GetAddressOf()),
+		"Failed to create rasterizer state.");
+
+	D3D11_RENDER_TARGET_BLEND_DESC rtbd = { 0 };
+	rtbd.BlendEnable = true;
+	rtbd.SrcBlend = D3D11_BLEND::D3D11_BLEND_SRC_ALPHA;
+	rtbd.DestBlend = D3D11_BLEND::D3D11_BLEND_INV_SRC_ALPHA;
+	rtbd.BlendOp = D3D11_BLEND_OP::D3D11_BLEND_OP_ADD;
+	rtbd.SrcBlendAlpha = D3D11_BLEND::D3D11_BLEND_ONE;
+	rtbd.DestBlendAlpha = D3D11_BLEND::D3D11_BLEND_ZERO;
+	rtbd.BlendOpAlpha = D3D11_BLEND_OP::D3D11_BLEND_OP_ADD;
+	rtbd.RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE::D3D11_COLOR_WRITE_ENABLE_ALL;
+
+	D3D11_BLEND_DESC blendDesc = { 0 };
+	blendDesc.RenderTarget[0] = rtbd;
+
+	COM_HRESULT_IF_FAILED(m_Device->CreateBlendState(&blendDesc, m_BaseBlendState.GetAddressOf()), 
+		"Failed to create blend state.");
 }
 
 void HCGraphicDX11::Update()
 {
+
 }
 
 HRESULT HCGraphicDX11::CreateGraphicPipeLine(const std::string& pipeLineName, HCGraphicPipeLine** out)
@@ -39,7 +62,6 @@ HRESULT HCGraphicDX11::CreateTextureBuffer(const std::string& bufferName, IHCTex
 
 HRESULT HCGraphicDX11::CreateTexture(const std::string& textureName, const std::wstring& filePath, IHCTexture** out)
 {
-	
 	ID3D11ShaderResourceView** textureView = static_cast<ID3D11ShaderResourceView**>((*out)->GetTextureData());
 	HRESULT hr = DirectX::CreateWICTextureFromFile(m_Device.Get(), filePath.c_str(), nullptr, textureView);
 	if (hr == S_OK)
@@ -61,7 +83,124 @@ HRESULT HCGraphicDX11::CreateCB(const std::string& bufferName, size_t stride, si
 
 HRESULT HCGraphicDX11::CreateShader(const std::string& shaderName, HC::SHADERTYPE type, const std::wstring& filePath, const std::string& entryPoint, IHCShader** out)
 {
-	return E_NOTIMPL;
+	std::string target;
+	auto iter = m_Shaders.find(shaderName);
+	COM_THROW_IF_FAILED(iter == m_Shaders.end(), "This shader name already has created");
+
+	switch (type)
+	{
+	case HC::SHADERTYPE::VS:
+	{
+		target = "vs";
+	}
+		break;
+	case HC::SHADERTYPE::GS:
+	{
+		target = "ps";
+	}
+		break;
+	case HC::SHADERTYPE::HS:
+	{
+		target = "hs";
+	}
+		break;
+	case HC::SHADERTYPE::DS:
+	{
+		target = "ds";
+	}
+		break;
+	case HC::SHADERTYPE::PS:
+	{
+		target = "ps";
+	}
+		break;
+	case HC::SHADERTYPE::COUNT:
+	default:
+		COM_THROW_IF_FAILED(false, "This shader type is invalid");
+		break;
+	}
+
+	target += "_5_0";
+
+	UINT compileFlags = 0;
+#if defined(DEBUG) || defined(_DEBUG)  
+	compileFlags = D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION;
+#endif
+
+	HRESULT hr = S_OK;
+
+	ComPtr<ID3DBlob> byteCode = nullptr;
+	ComPtr<ID3DBlob> errors;
+	hr = D3DCompileFromFile(filePath.c_str(), nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE,
+		entryPoint.c_str(), target.c_str(), compileFlags, 0, &byteCode, &errors);
+
+	if (errors != nullptr)
+	{
+		OutputDebugStringA((char*)errors->GetBufferPointer());
+	}
+
+	COM_HRESULT_IF_FAILED(hr, "shader compile error");
+
+	switch (type)
+	{
+	case HC::SHADERTYPE::VS:
+	{
+		ID3D11VertexShader* temp = nullptr;
+		m_Device->CreateVertexShader(byteCode->GetBufferPointer(), byteCode->GetBufferSize(), nullptr, &temp);
+		m_Shaders[shaderName] = std::make_unique<HCDX11Shader>(temp);
+	}
+	break;
+	case HC::SHADERTYPE::GS:
+	{
+		ID3D11GeometryShader* temp = nullptr;
+		m_Device->CreateGeometryShader(byteCode->GetBufferPointer(), byteCode->GetBufferSize(), nullptr, &temp);
+		m_Shaders[shaderName] = std::make_unique<HCDX11Shader>(temp);
+	}
+	break;
+	case HC::SHADERTYPE::HS:
+	{
+		ID3D11HullShader* temp = nullptr;
+		m_Device->CreateHullShader(byteCode->GetBufferPointer(), byteCode->GetBufferSize(), nullptr, &temp);
+		m_Shaders[shaderName] = std::make_unique<HCDX11Shader>(temp);
+	}
+	break;
+	case HC::SHADERTYPE::DS:
+	{
+		ID3D11DomainShader* temp = nullptr;
+		m_Device->CreateDomainShader(byteCode->GetBufferPointer(), byteCode->GetBufferSize(), nullptr, &temp);
+		m_Shaders[shaderName] = std::make_unique<HCDX11Shader>(temp);
+	}
+	break;
+	case HC::SHADERTYPE::PS:
+	{
+		ID3D11PixelShader* temp = nullptr;
+		m_Device->CreatePixelShader(byteCode->GetBufferPointer(), byteCode->GetBufferSize(), nullptr, &temp);
+		m_Shaders[shaderName] = std::make_unique<HCDX11Shader>(temp);
+	}
+	break;
+	}
+
+}
+
+HRESULT HCGraphicDX11::CreateInputLayout(const std::string& layoutName, unsigned int numElement, const HCVertexInputLayoutElement* elements, IHCInputLayout** out)
+{
+	std::vector<D3D11_INPUT_ELEMENT_DESC> dx11Elements;
+	
+	for (unsigned int i = 0; i < numElement; i++)
+	{
+		D3D11_INPUT_ELEMENT_DESC temp = {};
+
+		temp.SemanticName = elements[i].SemanticName;
+		temp.SemanticIndex = elements[i].SemanticIndex;
+		temp.Format = elements[i].Format;
+		temp.AlignedByteOffset = elements[i].AlignedByteOffset;
+		temp.InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+
+		dx11Elements.push_back(temp);
+	}
+
+	ComPtr<ID3D11InputLayout> layout;
+	m_Device->CreateInputLayout(&dx11Elements.front(), numElement, nullptr, 0, layout.GetAddressOf());
 }
 
 void HCGraphicDX11::GetGraphicPipeLine(const std::string& pipeLineName, HCGraphicPipeLine** out)
@@ -85,6 +224,10 @@ void HCGraphicDX11::GetCB(const std::string& bufferName, IHCCBuffer** out)
 }
 
 void HCGraphicDX11::GetShader(const std::string& shaderName, IHCShader** out)
+{
+}
+
+void HCGraphicDX11::GetInputLayout(const std::string& layoutName, IHCInputLayout** out)
 {
 }
 
@@ -173,6 +316,7 @@ void HCGraphicDX11::RenderEnd()
 
 void HCGraphicDX11::ApplyBaseCB()
 {
+
 }
 
 void HCGraphicDX11::SetPipeLineObject(const HCGraphicPipeLine* pipeLine)
@@ -220,6 +364,43 @@ void HCGraphicDX11::SetPipeLineObject(const HCGraphicPipeLine* pipeLine)
 		}
 	}
 
+	switch (pipeLine->m_Primitive)
+	{
+	case HC::PRIMITIVE_TOPOLOGY::POINT:
+	{
+		m_DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D10_PRIMITIVE_TOPOLOGY_POINTLIST);
+	}
+		break;
+	case HC::PRIMITIVE_TOPOLOGY::LINELIST:
+	{
+		m_DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D10_PRIMITIVE_TOPOLOGY_LINELIST);
+	}
+		break;
+	case HC::PRIMITIVE_TOPOLOGY::LINESTRIP:
+	{
+		m_DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D10_PRIMITIVE_TOPOLOGY_LINESTRIP);
+	}
+		break;
+	case HC::PRIMITIVE_TOPOLOGY::TRIANGLELIST:
+	{
+		m_DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	}
+		break;
+	case HC::PRIMITIVE_TOPOLOGY::TRIANGLESTRIP:
+	{
+		m_DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D10_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
+	}
+		break;
+	default:
+		break;
+	}
+
+	COM_THROW_IF_FAILED(pipeLine->m_InputLayout != nullptr, "inputLayout is not attached to pipeline : " + pipeLine->GetPipeLineName());
+	m_DeviceContext->IASetInputLayout(static_cast<ID3D11InputLayout*>(pipeLine->m_InputLayout->GetInputLayoutData()));
+
+	ID3D11Buffer* vertexBuffers[] = { static_cast<ID3D11Buffer*>(pipeLine->GetVertexBuffer()->GetBuffer()) };
+	m_DeviceContext->IASetVertexBuffers(0, 1, vertexBuffers, pipeLine->GetVertexBuffer()->GetStrides(), pipeLine->GetVertexBuffer()->GetOffsets());
+
 	if (pipeLine->m_Rasterizer)
 	{
 
@@ -227,7 +408,15 @@ void HCGraphicDX11::SetPipeLineObject(const HCGraphicPipeLine* pipeLine)
 	else
 	{
 		m_DeviceContext->RSSetState(m_BaseRasterizer.Get());
+	}
+	
+	if (pipeLine->m_DepthStencilState)
+	{
 
+	}
+	else
+	{
+		m_DeviceContext->OMSetDepthStencilState(m_BaseDepthStencilState.Get(), 0);
 	}
 
 	if (pipeLine->m_BlendState)
@@ -236,26 +425,16 @@ void HCGraphicDX11::SetPipeLineObject(const HCGraphicPipeLine* pipeLine)
 	}
 	else
 	{
-		m_DeviceContext->OMSetBlendState(m_BaseBlend.Get(), NULL, 0xFFFFFFFF);
+		m_DeviceContext->OMSetBlendState(m_BaseBlendState.Get(), NULL, 0xFFFFFFFF);
 	}
-
-	std::vector<ID3D11SamplerState*> samplers;
-
-	for (auto& it : m_Samplers)
-	{
-		samplers.push_back(it.Get());
-	}
-	m_DeviceContext->PSSetSamplers(0, static_cast<UINT>(samplers.size()), &samplers.front());
-
-	//m_DeviceContext->IASetPrimitiveTopology();
-	//m_DeviceContext->IASetInputLayout();
-
-	//m_Device->CreateInputLayout()
 }
 
 void HCGraphicDX11::RenderObjects(const std::string& textureBufferName, const std::vector<const GameObject*> objects)
 {
+	auto iter = m_TextureBuffers.find(textureBufferName);
+	auto textureViews = iter->second->GetTextureViews();
 
+	m_DeviceContext->PSSetShaderResources(10, textureViews.size(), &textureViews.front());
 
 }
 
@@ -263,7 +442,7 @@ void HCGraphicDX11::CreateBaseSamplers()
 {
 	D3D11_SAMPLER_DESC samplerDesc = {};
 	ComPtr<ID3D11SamplerState> pointSampler;
-
+	
 	samplerDesc.MipLODBias = 0;
 	samplerDesc.MaxAnisotropy = 16;
 	samplerDesc.ComparisonFunc = D3D11_COMPARISON_LESS_EQUAL;
@@ -281,7 +460,8 @@ void HCGraphicDX11::CreateBaseSamplers()
 	samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
 
 	pointSampler = nullptr;
-	m_Device->CreateSamplerState(&samplerDesc, pointSampler.GetAddressOf());
+	COM_HRESULT_IF_FAILED(m_Device->CreateSamplerState(&samplerDesc, pointSampler.GetAddressOf()),
+		"fail to create samplerstate");
 	m_Samplers.push_back(pointSampler);
 
 	//SamplerState gsamPointClamp : register(s1);
@@ -291,7 +471,8 @@ void HCGraphicDX11::CreateBaseSamplers()
 	samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
 
 	pointSampler = nullptr;
-	m_Device->CreateSamplerState(&samplerDesc, pointSampler.GetAddressOf());
+	COM_HRESULT_IF_FAILED(m_Device->CreateSamplerState(&samplerDesc, pointSampler.GetAddressOf()),
+		"fail to create samplerstate");
 	m_Samplers.push_back(pointSampler);
 
 	//SamplerState gsamLinearWrap : register(s2);
@@ -301,7 +482,8 @@ void HCGraphicDX11::CreateBaseSamplers()
 	samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
 
 	pointSampler = nullptr;
-	m_Device->CreateSamplerState(&samplerDesc, pointSampler.GetAddressOf());
+	COM_HRESULT_IF_FAILED(m_Device->CreateSamplerState(&samplerDesc, pointSampler.GetAddressOf()),
+		"fail to create samplerstate");
 	m_Samplers.push_back(pointSampler);
 
 	//SamplerState gsamLinearClamp : register(s3);
@@ -311,7 +493,8 @@ void HCGraphicDX11::CreateBaseSamplers()
 	samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
 
 	pointSampler = nullptr;
-	m_Device->CreateSamplerState(&samplerDesc, pointSampler.GetAddressOf());
+	COM_HRESULT_IF_FAILED(m_Device->CreateSamplerState(&samplerDesc, pointSampler.GetAddressOf()),
+		"fail to create samplerstate");
 	m_Samplers.push_back(pointSampler);
 
 	//SamplerState gsamAnisotropicWrap : register(s4);
@@ -323,7 +506,8 @@ void HCGraphicDX11::CreateBaseSamplers()
 	samplerDesc.MaxAnisotropy = 8;
 
 	pointSampler = nullptr;
-	m_Device->CreateSamplerState(&samplerDesc, pointSampler.GetAddressOf());
+	COM_HRESULT_IF_FAILED(m_Device->CreateSamplerState(&samplerDesc, pointSampler.GetAddressOf()),
+		"fail to create samplerstate");
 	m_Samplers.push_back(pointSampler);
 
 	//SamplerState gsamAnisotropicClamp : register(s5);
@@ -335,7 +519,8 @@ void HCGraphicDX11::CreateBaseSamplers()
 	samplerDesc.MaxAnisotropy = 8;
 
 	pointSampler = nullptr;
-	m_Device->CreateSamplerState(&samplerDesc, pointSampler.GetAddressOf());
+	COM_HRESULT_IF_FAILED(m_Device->CreateSamplerState(&samplerDesc, pointSampler.GetAddressOf()),
+		"fail to create samplerstate");
 	m_Samplers.push_back(pointSampler);
 
 	//SamplerComparisonState gsamShadow : register(s6);
@@ -352,7 +537,8 @@ void HCGraphicDX11::CreateBaseSamplers()
 	samplerDesc.BorderColor[3] = 1.0f;
 
 	pointSampler = nullptr;
-	m_Device->CreateSamplerState(&samplerDesc, pointSampler.GetAddressOf());
+	COM_HRESULT_IF_FAILED(m_Device->CreateSamplerState(&samplerDesc, pointSampler.GetAddressOf()),
+		"fail to create samplerstate");
 	m_Samplers.push_back(pointSampler);
 
 

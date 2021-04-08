@@ -172,11 +172,18 @@
     <ClCompile Include="Main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <FxCompile Include="..\Common\Shader\BaseRoot.hlsli">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <FileType>Document</FileType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+    </FxCompile>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Common\Source\Device\HCKeyboard.h" />
     <ClInclude Include="..\Common\Source\Device\HCMouse.h" />
+    <ClInclude Include="..\Common\Source\Graphics\ConstantBuffer.h" />
+    <ClInclude Include="..\Common\Source\Graphics\ConstantBufferTypes.h" />
     <ClInclude Include="..\Common\Source\Graphics\HCGraphic.h" />
     <ClInclude Include="..\Common\Source\Graphics\HCGraphicDX11.h" />
     <ClInclude Include="..\Common\Source\Graphics\HCGraphicDX11Resources.h" />
@@ -192,6 +199,11 @@
     <ClInclude Include="Engine.h" />
     <ClInclude Include="HCKoreanInput.h" />
     <ClInclude Include="HCSharedPointerMG.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="..\Common\Shader\PointToPlaneSahder.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </FxCompile>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

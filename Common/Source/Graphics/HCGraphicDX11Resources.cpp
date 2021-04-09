@@ -40,7 +40,7 @@ HCDX11Texture::~HCDX11Texture()
 
 void* HCDX11Texture::GetTextureData()
 {
-	return static_cast<void*>(m_textureView.GetAddressOf());
+	return static_cast<void*>(m_textureView.Get());
 }
 
 POINT HCDX11Texture::GetTextureSize()

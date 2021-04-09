@@ -59,7 +59,7 @@ private:
 	ComPtr<ID3D11BlendState>												m_BaseBlendState;
 	std::vector<ComPtr<ID3D11SamplerState>>									m_Samplers;
 
-	std::unordered_map<std::string, std::unique_ptr<IHCInputLayout>>		m_Shaders;
+	std::unordered_map<std::string, std::unique_ptr<IHCInputLayout>>		m_InputLayout;
 	std::unordered_map<std::string, std::unique_ptr<IHCShader>>				m_Shaders;
 	std::unordered_map<std::string, std::unique_ptr<HCDX11Texture>>			m_Textures;
 	std::unordered_map<std::string, std::unique_ptr<HCDX11TextureBuffer>>	m_TextureBuffers;

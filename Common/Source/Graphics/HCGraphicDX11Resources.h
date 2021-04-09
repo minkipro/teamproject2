@@ -25,7 +25,7 @@ private:
 class HCDX11Texture : public IHCTexture
 {
 public:
-	HCDX11Texture() {}
+	HCDX11Texture(ID3D11ShaderResourceView* view) : m_textureView(view){}
 
 	virtual ~HCDX11Texture();
 

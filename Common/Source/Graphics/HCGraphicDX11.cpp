@@ -49,7 +49,6 @@ void HCGraphicDX11::Init()
 	
 	CreateTexture("../Common/Texture/knight.png", L"../Common/Texture/knight.png", &testTexture);//이거 텍스쳐 이름이 필요할까.. 그냥 파일패스로 하는게?
 	POINT tSize = testTexture->GetTextureSize();
-	delete testTexture;
 	//~test
 }
 
@@ -70,9 +69,10 @@ HRESULT HCGraphicDX11::CreateTextureBuffer(const std::string& bufferName, IHCTex
 
 HRESULT HCGraphicDX11::CreateTexture(const std::string& textureName, const std::wstring& filePath, IHCTexture** out)
 {
-	m_Textures[textureName] = std::make_unique<HCDX11Texture>();
-	ID3D11ShaderResourceView** textureView = static_cast<ID3D11ShaderResourceView**>(m_Textures[textureName]->GetTextureData());
-	HRESULT hr = DirectX::CreateWICTextureFromFile(m_Device.Get(), filePath.c_str(), nullptr, textureView);
+	
+	ID3D11ShaderResourceView* textureView = nullptr;
+	HRESULT hr = DirectX::CreateWICTextureFromFile(m_Device.Get(), filePath.c_str(), nullptr, &textureView);
+	m_Textures[textureName] = std::make_unique<HCDX11Texture>(textureView);
 	COM_HRESULT_IF_FAILED(hr,"Texture load Fail");
 	*out = m_Textures[textureName].get();
 	return hr;
@@ -208,6 +208,8 @@ HRESULT HCGraphicDX11::CreateInputLayout(const std::string& layoutName, unsigned
 
 	ComPtr<ID3D11InputLayout> layout;
 	m_Device->CreateInputLayout(&dx11Elements.front(), numElement, nullptr, 0, layout.GetAddressOf());
+	HRESULT hr;
+	return hr;
 }
 
 void HCGraphicDX11::GetGraphicPipeLine(const std::string& pipeLineName, HCGraphicPipeLine** out)

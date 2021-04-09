@@ -89,6 +89,9 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>
+     ./../Common/Source;./../Common/Source/Includes;       $(MSBuildThisFileDirectory)\include;%(AdditionalIncludeDirectories)
+        </AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -104,6 +107,9 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>
+     ./../Common/Source;./../Common/Source/Includes;       $(MSBuildThisFileDirectory)\include;%(AdditionalIncludeDirectories)
+        </AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -119,6 +125,9 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>
+     ./../Common/Source;./../Common/Source/Includes;       $(MSBuildThisFileDirectory)\include;%(AdditionalIncludeDirectories)
+        </AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -134,6 +143,9 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>
+     ./../Common/Source;./../Common/Source/Includes;       $(MSBuildThisFileDirectory)\include;%(AdditionalIncludeDirectories)
+        </AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -147,7 +159,38 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\client\Engine.cpp" />
+    <ClCompile Include="..\client\Main.cpp" />
+    <ClCompile Include="..\Common\Source\Device\HCKeyboard.cpp" />
+    <ClCompile Include="..\Common\Source\Device\HCMouse.cpp" />
+    <ClCompile Include="..\Common\Source\Graphics\HCGraphic.cpp" />
+    <ClCompile Include="..\Common\Source\Graphics\HCGraphicDX11.cpp" />
+    <ClCompile Include="..\Common\Source\Graphics\HCGraphicDX11Resources.cpp" />
+    <ClCompile Include="..\Common\Source\Graphics\HCSwapchainDX11.cpp" />
+    <ClCompile Include="..\Common\Source\HCScene.cpp" />
+    <ClCompile Include="..\Common\Source\stdafx.cpp" />
+    <ClCompile Include="..\Common\Source\Util\StringHelper.cpp" />
+    <ClCompile Include="..\Common\Source\Window\HCWindow.cpp" />
     <ClCompile Include="Main.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\client\Engine.h" />
+    <ClInclude Include="..\client\HCSharedPointerMG.h" />
+    <ClInclude Include="..\Common\Source\Device\HCKeyboard.h" />
+    <ClInclude Include="..\Common\Source\Device\HCMouse.h" />
+    <ClInclude Include="..\Common\Source\Graphics\ConstantBuffer.h" />
+    <ClInclude Include="..\Common\Source\Graphics\ConstantBufferTypes.h" />
+    <ClInclude Include="..\Common\Source\Graphics\HCGraphic.h" />
+    <ClInclude Include="..\Common\Source\Graphics\HCGraphicDX11.h" />
+    <ClInclude Include="..\Common\Source\Graphics\HCGraphicDX11Resources.h" />
+    <ClInclude Include="..\Common\Source\Graphics\HCSwapchainDX11.h" />
+    <ClInclude Include="..\Common\Source\HCScene.h" />
+    <ClInclude Include="..\Common\Source\Includes\GameObject.h" />
+    <ClInclude Include="..\Common\Source\Includes\GlobalOption.h" />
+    <ClInclude Include="..\Common\Source\Includes\HCDevice.h" />
+    <ClInclude Include="..\Common\Source\stdafx.h" />
+    <ClInclude Include="..\Common\Source\Util\StringHelper.h" />
+    <ClInclude Include="..\Common\Source\Window\HCWindow.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

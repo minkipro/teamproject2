@@ -54,13 +54,16 @@ void HCWindow::RegisterProc(IHCDevice* device)
 
 LRESULT HCWindow::WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
-	
+	if (uMsg == WM_IME_STARTCOMPOSITION)
+	{
+		uMsg = 0;//박스 윈도우 생성 막기
+	}
 	DirectX::Mouse::ProcessMessage(uMsg, wParam, lParam);
 
-	//for (auto it : s_Proces)
-	//{
-	//	it->WindowProc(hwnd, uMsg, wParam, lParam);
-	//}
+	for (auto it : s_Proces)
+	{
+		it->WindowProc(hwnd, uMsg, wParam, lParam);
+	}
 
 	switch (uMsg)
 	{

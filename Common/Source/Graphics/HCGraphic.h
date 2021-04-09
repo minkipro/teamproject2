@@ -3,8 +3,25 @@
 #include <unordered_map>
 #include <vector>
 #include <memory>
-#include "GameObject.h"
 #include <dxgiformat.h>
+#include <functional>
+#include "GameObject.h"
+
+struct HCInputLayoutElement
+{
+	HCInputLayoutElement(LPCSTR semanticName, UINT semanticIndex, DXGI_FORMAT format, UINT alignedByteOffset)
+	{
+		SemanticName = semanticName;
+		SemanticIndex = semanticIndex;
+		Format = format;
+		AlignedByteOffset = alignedByteOffset;
+	}
+
+	LPCSTR SemanticName;
+	UINT SemanticIndex;
+	DXGI_FORMAT Format;
+	UINT AlignedByteOffset;
+};
 
 namespace HC
 {
@@ -33,8 +50,23 @@ namespace HC
 		TRIANGLESTRIP
 	};
 
-	struct PointVertex
+	struct InputDataSample
 	{
+		virtual std::vector<HCInputLayoutElement>	GetInputData() const = 0;
+		virtual const char*							GetInputName() const = 0;
+		virtual unsigned int						GetDataSize() const = 0;
+	};
+
+	struct PointVertex :public InputDataSample
+	{
+		virtual std::vector<HCInputLayoutElement>	GetInputData() const override
+		{
+
+		}
+
+		virtual const char*							GetInputName() const override {	return typeid(PointVertex).name(); }
+		virtual unsigned int						GetDataSize() const override { return sizeof(PointVertex); }
+
 		DirectX::XMFLOAT3 Position;
 		DirectX::XMFLOAT2 Size;
 		union
@@ -45,23 +77,18 @@ namespace HC
 
 		int TextureIndex = -1;
 	};
+
+	struct MainPass
+	{
+		DirectX::XMFLOAT4X4 gView;
+		DirectX::XMFLOAT4X4 gProj;
+		DirectX::XMFLOAT4X4 gViewProj;
+		DirectX::XMFLOAT4X4 gOrthoMatrix;
+		DirectX::XMFLOAT2	gMousePos;
+		DirectX::XMUINT2	gRenderTargetSize;
+	};
 }
 
-struct HCVertexInputLayoutElement
-{
-	HCVertexInputLayoutElement(LPCSTR semanticName, UINT semanticIndex, DXGI_FORMAT format, UINT alignedByteOffset)
-	{
-		SemanticName = semanticName;
-		SemanticIndex = semanticIndex;
-		Format = format;
-		AlignedByteOffset = alignedByteOffset;
-	}
-
-	LPCSTR SemanticName;
-	UINT SemanticIndex;
-	DXGI_FORMAT Format;
-	UINT AlignedByteOffset;
-};
 
 class IHCInputLayout
 {
@@ -96,7 +123,7 @@ public:
 
 	virtual ~IHCTexture() = default;
 
-	virtual void* GetTextureData() = 0;
+	virtual void*	GetTextureData() = 0;
 	virtual POINT	GetTextureSize() = 0;
 protected:
 
@@ -108,10 +135,8 @@ public:
 	IHCCBuffer() {}
 	virtual ~IHCCBuffer() = default;
 
-	virtual void		CopyData(size_t stride, size_t num, const void* data) = 0;
+	virtual void		CopyData(const void* data) = 0;
 	virtual void*		GetBuffer() = 0;
-	virtual const UINT*	GetStrides() = 0;
-	virtual const UINT* GetOffsets() = 0;
 
 protected:
 
@@ -160,30 +185,42 @@ protected:
 class HCGraphicPipeLine
 {
 public:
-	HCGraphicPipeLine(const std::string& name)
-		:m_PipeLineName(name)
+	HCGraphicPipeLine() = delete;
+	HCGraphicPipeLine(const HCGraphicPipeLine& rhs) = delete;
+	HCGraphicPipeLine(const std::string& name, void* vertexBuffer, std::function<void(void*)> vertexBufferReleaseFunc)
+		: m_PipeLineName(name)
+		, m_VertexBuffer(vertexBuffer)
+		, m_VertexBufferRelease(vertexBufferReleaseFunc)
 	{
 	}
-	virtual ~HCGraphicPipeLine() = default;
+	virtual ~HCGraphicPipeLine()
+	{
+		m_VertexBufferRelease(m_VertexBuffer);
+	}
 
 	const std::string&	GetPipeLineName() const { return m_PipeLineName; }
 	const auto&			GetReservedObjects() { return m_RenderReservedObjectsByTexture; }
-	IHCCBuffer*			GetVertexBuffer() const { return m_VertexBuffer; }
-	void				RenderReserveObject(const std::string& textureBufferName, const GameObject* object) { m_RenderReservedObjectsByTexture[textureBufferName].push_back(object); }
+	void*				GetVertexBuffer() const { return m_VertexBuffer; }
+
+	void				RenderReserveObject(const std::string& textureBufferName, const HC::InputDataSample* object) { m_RenderReservedObjectsByTexture[textureBufferName].push_back(object); }
 	void				ClearReservedObjects() { m_RenderReservedObjectsByTexture.clear(); }
 
 public:
-	IHCShader*														m_Shaders[static_cast<unsigned int>(HC::SHADERTYPE::COUNT)] = {};
-	IHCInputLayout*													m_InputLayout = nullptr;
-	IHCRasterizer*													m_Rasterizer = nullptr;
-	IHCDepthStencilState*											m_DepthStencilState=nullptr;							
-	IHCBlendState*													m_BlendState = nullptr;
-	HC::PRIMITIVE_TOPOLOGY											m_Primitive = HC::PRIMITIVE_TOPOLOGY::POINT;
+	IHCShader*																	m_Shaders[static_cast<unsigned int>(HC::SHADERTYPE::COUNT)] = {};
+	std::vector<IHCCBuffer*>													m_CBuffers;
+	
+	HC::PRIMITIVE_TOPOLOGY														m_Primitive = HC::PRIMITIVE_TOPOLOGY::POINT;
+	std::unique_ptr<HC::InputDataSample>										m_InputSample = nullptr;
+	
+	IHCRasterizer*																m_Rasterizer = nullptr;
+	IHCDepthStencilState*														m_DepthStencilState = nullptr;							
+	IHCBlendState*																m_BlendState = nullptr;
 
 private:
-	IHCCBuffer*														m_VertexBuffer = nullptr;
-	std::string														m_PipeLineName;
-	std::unordered_map<std::string, std::vector<const GameObject*>>	m_RenderReservedObjectsByTexture;
+	std::string																	m_PipeLineName;
+	void*																		m_VertexBuffer;
+	std::function<void(void*)>													m_VertexBufferRelease;
+	std::unordered_map<std::string, std::vector<const HC::InputDataSample*>>	m_RenderReservedObjectsByTexture;
 };
 
 class HCGraphic : public IHCDevice
@@ -191,7 +228,6 @@ class HCGraphic : public IHCDevice
 public: //pure virtual method
 	HCGraphic(HWND windowHandle)
 		: m_WindowHandle(windowHandle)
-		, m_BaseCB(nullptr)
 	{
 
 	}
@@ -200,13 +236,12 @@ public: //pure virtual method
 	virtual void		Init() = 0;
 	virtual void		Update() = 0;
 
-	virtual HRESULT		CreateGraphicPipeLine(const std::string& pipeLineName, HCGraphicPipeLine** out) = 0;
-	virtual HRESULT		CreateTextureBuffer(const std::string& bufferName, IHCTextureBuffer** out) = 0;
-	virtual HRESULT		CreateTexture(const std::string& textureName, const std::wstring& filePath, IHCTexture** out) = 0;
-	virtual HRESULT		CreateShaderResource(const std::string& resourceName, size_t stride, const POINT& size, IHCTexture** out) = 0;
-	virtual HRESULT		CreateCB(const std::string& bufferName, size_t stride, size_t num, IHCCBuffer** out) = 0;
-	virtual HRESULT		CreateShader(const std::string& shaderName, HC::SHADERTYPE type, const std::wstring& filePath, const std::string& entryPoint, IHCShader** out) = 0;
-	virtual HRESULT		CreateInputLayout(const std::string& layoutName, unsigned int numElement, const HCVertexInputLayoutElement* elements, IHCInputLayout** out) = 0;
+	virtual void		CreateGraphicPipeLine(const std::string& pipeLineName, HCGraphicPipeLine** out) = 0;
+	virtual void		CreateTextureBuffer(const std::string& bufferName, IHCTextureBuffer** out) = 0;
+	virtual void		CreateTexture(const std::string& textureName, const std::wstring& filePath, IHCTexture** out) = 0;
+	virtual void		CreateShaderResource(const std::string& resourceName, size_t stride, const POINT& size, IHCTexture** out) = 0;
+	virtual void		CreateCB(const std::string& bufferName, size_t stride, size_t num, IHCCBuffer** out) = 0;
+	virtual void		CreateShader(const std::string& shaderName, HC::SHADERTYPE type, const std::wstring& filePath, const std::string& entryPoint, IHCShader** out) = 0;
 
 	virtual void		GetGraphicPipeLine(const std::string& pipeLineName, HCGraphicPipeLine** out) = 0;
 	virtual void		GetTextureBuffer(const std::string& bufferName, IHCTextureBuffer** out) = 0;
@@ -214,7 +249,6 @@ public: //pure virtual method
 	virtual void		GetShaderResource(const std::string& resourceName, IHCTexture** out) = 0;
 	virtual void		GetCB(const std::string& bufferName, IHCCBuffer** out) = 0;
 	virtual void		GetShader(const std::string& shaderName, IHCShader** out) = 0;
-	virtual void		GetInputLayout(const std::string& layoutName, IHCInputLayout** out) = 0;
 
 public: //Optional virtual function
 	virtual LRESULT		WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) { return LRESULT(0); }
@@ -222,7 +256,6 @@ public: //Optional virtual function
 	virtual void		NumberingGraphicPipeLineSlot(size_t slot, const std::string& pipelineName);
 
 public:
-	void				SetBaseCB(const IHCCBuffer* baseCB) { m_BaseCB = baseCB; }
 	void				ReserveRender(const std::string& pipeLineName, const std::string& textureBufferName, const GameObject* object);
 	void				ReserveRender(size_t pipeLineSlot, const std::string& textureBufferName, const GameObject* object);
 	void				Render();
@@ -230,9 +263,8 @@ public:
 protected: //pure virtual method
 	virtual void		RenderBegin() = 0;
 	virtual void		RenderEnd() = 0;
-	virtual void		ApplyBaseCB() = 0;
 	virtual void		SetPipeLineObject(const HCGraphicPipeLine* pipeLine) = 0;
-	virtual void		RenderObjects(const std::string& textureBufferName, const std::vector<const GameObject*> objects) = 0;
+	virtual void		RenderObjects(const std::string& textureBufferName, const std::vector<const HC::InputDataSample*> objects) = 0;
 
 private:
 	virtual std::string GetDeviceName() const override { return typeid(HCGraphic).name(); }
@@ -242,6 +274,5 @@ protected:
 	std::unordered_map<std::string, std::unique_ptr<HCGraphicPipeLine>>	m_PipeLines;
 
 	std::vector<HCGraphicPipeLine*>										m_PipeLineSlots;
-	const IHCCBuffer* m_BaseCB;
 };
 

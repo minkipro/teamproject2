@@ -28,8 +28,6 @@ void HCGraphic::Render()
 {
 	RenderBegin();
 
-	ApplyBaseCB();
-
 	for (auto& it : m_PipeLineSlots)
 	{
 		SetPipeLineObject(it);

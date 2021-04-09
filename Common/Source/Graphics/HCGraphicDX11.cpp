@@ -44,12 +44,14 @@ void HCGraphicDX11::Init()
 	COM_HRESULT_IF_FAILED(m_Device->CreateBlendState(&blendDesc, m_BaseBlendState.GetAddressOf()), 
 		"Failed to create blend state.");
 
-	//test
-	IHCTexture* testTexture = nullptr;
-	
-	CreateTexture("../Common/Texture/knight.png", L"../Common/Texture/knight.png", &testTexture);//이거 텍스쳐 이름이 필요할까.. 그냥 파일패스로 하는게?
-	POINT tSize = testTexture->GetTextureSize();
-	//~test
+	m_MainPassCB = std::make_unique<IHCDX11ConstBuffer<HC::MainPass>>(m_Device.Get(), m_DeviceContext.Get());
+	ID3D11Buffer* baseCBs[] = { static_cast<ID3D11Buffer*>(m_MainPassCB->GetBuffer()) };
+
+	m_DeviceContext->VSSetConstantBuffers(0, 1, baseCBs);
+	m_DeviceContext->HSSetConstantBuffers(0, 1, baseCBs);
+	m_DeviceContext->DSSetConstantBuffers(0, 1, baseCBs);
+	m_DeviceContext->GSSetConstantBuffers(0, 1, baseCBs);
+	m_DeviceContext->PSSetConstantBuffers(0, 1, baseCBs);
 }
 
 void HCGraphicDX11::Update()
@@ -57,38 +59,34 @@ void HCGraphicDX11::Update()
 
 }
 
-HRESULT HCGraphicDX11::CreateGraphicPipeLine(const std::string& pipeLineName, HCGraphicPipeLine** out)
+void HCGraphicDX11::CreateGraphicPipeLine(const std::string& pipeLineName, HCGraphicPipeLine** out)
 {
-	return E_NOTIMPL;
+	
 }
 
-HRESULT HCGraphicDX11::CreateTextureBuffer(const std::string& bufferName, IHCTextureBuffer** out)
+void HCGraphicDX11::CreateTextureBuffer(const std::string& bufferName, IHCTextureBuffer** out)
 {
-	return E_NOTIMPL;
 }
 
-HRESULT HCGraphicDX11::CreateTexture(const std::string& textureName, const std::wstring& filePath, IHCTexture** out)
+void HCGraphicDX11::CreateTexture(const std::string& textureName, const std::wstring& filePath, IHCTexture** out)
 {
 	
 	ID3D11ShaderResourceView* textureView = nullptr;
-	HRESULT hr = DirectX::CreateWICTextureFromFile(m_Device.Get(), filePath.c_str(), nullptr, &textureView);
+	COM_HRESULT_IF_FAILED(DirectX::CreateWICTextureFromFile(m_Device.Get(), filePath.c_str(), nullptr, &textureView),
+		"Texture load Fail");
 	m_Textures[textureName] = std::make_unique<HCDX11Texture>(textureView);
-	COM_HRESULT_IF_FAILED(hr,"Texture load Fail");
 	*out = m_Textures[textureName].get();
-	return hr;
 }
 
-HRESULT HCGraphicDX11::CreateShaderResource(const std::string& resourceName, size_t stride, const POINT& size, IHCTexture** out)
+void HCGraphicDX11::CreateShaderResource(const std::string& resourceName, size_t stride, const POINT& size, IHCTexture** out)
 {
-	return E_NOTIMPL;
 }
 
-HRESULT HCGraphicDX11::CreateCB(const std::string& bufferName, size_t stride, size_t num, IHCCBuffer** out)
+void HCGraphicDX11::CreateCB(const std::string& bufferName, size_t stride, size_t num, IHCCBuffer** out)
 {
-	return E_NOTIMPL;
 }
 
-HRESULT HCGraphicDX11::CreateShader(const std::string& shaderName, HC::SHADERTYPE type, const std::wstring& filePath, const std::string& entryPoint, IHCShader** out)
+void HCGraphicDX11::CreateShader(const std::string& shaderName, HC::SHADERTYPE type, const std::wstring& filePath, const std::string& entryPoint, IHCShader** out)
 {
 	std::string target;
 	auto iter = m_Shaders.find(shaderName);
@@ -187,29 +185,7 @@ HRESULT HCGraphicDX11::CreateShader(const std::string& shaderName, HC::SHADERTYP
 	break;
 	}
 
-}
-
-HRESULT HCGraphicDX11::CreateInputLayout(const std::string& layoutName, unsigned int numElement, const HCVertexInputLayoutElement* elements, IHCInputLayout** out)
-{
-	std::vector<D3D11_INPUT_ELEMENT_DESC> dx11Elements;
-	
-	for (unsigned int i = 0; i < numElement; i++)
-	{
-		D3D11_INPUT_ELEMENT_DESC temp = {};
-
-		temp.SemanticName = elements[i].SemanticName;
-		temp.SemanticIndex = elements[i].SemanticIndex;
-		temp.Format = elements[i].Format;
-		temp.AlignedByteOffset = elements[i].AlignedByteOffset;
-		temp.InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
-
-		dx11Elements.push_back(temp);
-	}
-
-	ComPtr<ID3D11InputLayout> layout;
-	m_Device->CreateInputLayout(&dx11Elements.front(), numElement, nullptr, 0, layout.GetAddressOf());
-	HRESULT hr;
-	return hr;
+	*out = m_Shaders[shaderName].get();
 }
 
 void HCGraphicDX11::GetGraphicPipeLine(const std::string& pipeLineName, HCGraphicPipeLine** out)
@@ -233,10 +209,6 @@ void HCGraphicDX11::GetCB(const std::string& bufferName, IHCCBuffer** out)
 }
 
 void HCGraphicDX11::GetShader(const std::string& shaderName, IHCShader** out)
-{
-}
-
-void HCGraphicDX11::GetInputLayout(const std::string& layoutName, IHCInputLayout** out)
 {
 }
 
@@ -323,11 +295,6 @@ void HCGraphicDX11::RenderEnd()
 	m_Swapchain->Present();
 }
 
-void HCGraphicDX11::ApplyBaseCB()
-{
-
-}
-
 void HCGraphicDX11::SetPipeLineObject(const HCGraphicPipeLine* pipeLine)
 {
 	for (unsigned int i = 0; i < static_cast<unsigned int>(HC::SHADERTYPE::COUNT); i++)
@@ -404,8 +371,17 @@ void HCGraphicDX11::SetPipeLineObject(const HCGraphicPipeLine* pipeLine)
 		break;
 	}
 
-	COM_THROW_IF_FAILED(pipeLine->m_InputLayout != nullptr, "inputLayout is not attached to pipeline : " + pipeLine->GetPipeLineName());
-	m_DeviceContext->IASetInputLayout(static_cast<ID3D11InputLayout*>(pipeLine->m_InputLayout->GetInputLayoutData()));
+	COM_THROW_IF_FAILED(pipeLine->m_InputSample != nullptr, "inputSample is not attached to pipeline : " + pipeLine->GetPipeLineName());
+	
+	auto iter = m_InputLayout.find(pipeLine->m_InputSample->GetInputName());
+	if (iter == m_InputLayout.end())
+	{
+		CreateInputLayout(pipeLine->m_InputSample.get());
+
+		iter= m_InputLayout.find(pipeLine->m_InputSample->GetInputName());
+	}
+
+	m_DeviceContext->IASetInputLayout(iter->second.Get());
 
 	ID3D11Buffer* vertexBuffers[] = { static_cast<ID3D11Buffer*>(pipeLine->GetVertexBuffer()->GetBuffer()) };
 	m_DeviceContext->IASetVertexBuffers(0, 1, vertexBuffers, pipeLine->GetVertexBuffer()->GetStrides(), pipeLine->GetVertexBuffer()->GetOffsets());
@@ -436,15 +412,20 @@ void HCGraphicDX11::SetPipeLineObject(const HCGraphicPipeLine* pipeLine)
 	{
 		m_DeviceContext->OMSetBlendState(m_BaseBlendState.Get(), NULL, 0xFFFFFFFF);
 	}
+
+	if(pipeLine->m_CBuffers.size())
+	{
+
+	}
 }
 
-void HCGraphicDX11::RenderObjects(const std::string& textureBufferName, const std::vector<const GameObject*> objects)
+void HCGraphicDX11::RenderObjects(const std::string& textureBufferName, const std::vector<const HC::InputDataSample*> objects)
 {
 	auto iter = m_TextureBuffers.find(textureBufferName);
 	auto textureViews = iter->second->GetTextureViews();
 
 	m_DeviceContext->PSSetShaderResources(10, textureViews.size(), &textureViews.front());
-
+	m_DeviceContext->DrawInstanced(objects.size(), 1, 0, 0);
 }
 
 void HCGraphicDX11::CreateBaseSamplers()
@@ -564,4 +545,31 @@ void HCGraphicDX11::CreateBaseSamplers()
 	m_DeviceContext->DSSetSamplers(0, numSamplers, &samplers.front());
 	m_DeviceContext->GSSetSamplers(0, numSamplers, &samplers.front());
 	m_DeviceContext->PSSetSamplers(0, numSamplers, &samplers.front());
+}
+
+void HCGraphicDX11::CreateInputLayout(const HC::InputDataSample* sample)
+{
+	std::string name = sample->GetInputName();
+	ComPtr<ID3D11InputLayout> layout = nullptr;
+	std::vector<HCInputLayoutElement> InputData = sample->GetInputData();;
+	std::vector<D3D11_INPUT_ELEMENT_DESC> dx11Elements(InputData.size());
+
+	for (size_t i = 0; i < InputData.size(); i++)
+	{
+		D3D11_INPUT_ELEMENT_DESC temp = {};
+
+		temp.SemanticName = InputData[i].SemanticName;
+		temp.SemanticIndex = InputData[i].SemanticIndex;
+		temp.Format = InputData[i].Format;
+		temp.AlignedByteOffset = InputData[i].AlignedByteOffset;
+		temp.InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+
+		dx11Elements.push_back(temp);
+	}
+
+	COM_HRESULT_IF_FAILED(m_Device->CreateInputLayout(
+		&dx11Elements.front(), dx11Elements.size(), nullptr, 0, layout.GetAddressOf()),
+		"fail to create inputlayout");
+
+	m_InputLayout[name] = layout;
 }

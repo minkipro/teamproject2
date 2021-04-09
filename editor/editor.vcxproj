@@ -159,8 +159,6 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\client\Engine.cpp" />
-    <ClCompile Include="..\client\Main.cpp" />
     <ClCompile Include="..\Common\Source\Device\HCKeyboard.cpp" />
     <ClCompile Include="..\Common\Source\Device\HCMouse.cpp" />
     <ClCompile Include="..\Common\Source\Graphics\HCGraphic.cpp" />
@@ -174,7 +172,6 @@
     <ClCompile Include="Main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\client\Engine.h" />
     <ClInclude Include="..\client\HCSharedPointerMG.h" />
     <ClInclude Include="..\Common\Source\Device\HCKeyboard.h" />
     <ClInclude Include="..\Common\Source\Device\HCMouse.h" />

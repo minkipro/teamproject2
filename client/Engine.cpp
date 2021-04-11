@@ -6,23 +6,26 @@
 #include "Window/HCWindow.h"
 #include "Graphics/HCGraphicDX11.h"
 
+Engine* Engine::m_Engine = nullptr;
+
 void Engine::Init(HINSTANCE hInstance)
 {
+	m_Engine = this;
 	m_Window = std::make_unique<HCWindow>();
 
 	m_Window->Init(hInstance);
 
-	m_Devices.emplace_back(std::make_unique<HCMouse>());
-	m_Devices.emplace_back(std::make_unique<HCKeyboard>());
-	m_Devices.emplace_back(std::make_unique<HCKoreanInput>());
-	m_Devices.emplace_back(std::make_unique<HCGraphicDX11>(m_Window->GetHandle()));
-	m_Graphic = static_cast<HCGraphic*>(m_Devices.back().get());
-
+	CreateDevice<HCMouse>(typeid(HCMouse).name());
+	CreateDevice<HCKeyboard>(typeid(HCKeyboard).name());
+	CreateDevice<HCKoreanInput>(typeid(HCKoreanInput).name());
+	m_Graphic = CreateDevice<HCGraphicDX11>(typeid(HCGraphic).name(),m_Window->GetHandle());
 	for (auto& it : m_Devices)
 	{
 		it->Init();
 		m_Window->RegisterProc(it.get());
 	}
+	
+	m_Scene.Init();
 }
 
 int Engine::Run()
@@ -38,6 +41,8 @@ int Engine::Run()
 		}
 		else
 		{
+			m_Scene.Update();
+
 			for (auto& it : m_Devices)
 			{
 				it->Update();

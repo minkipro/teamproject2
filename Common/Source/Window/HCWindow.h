@@ -14,9 +14,10 @@ public:
 
 	virtual ~HCWindow();
 
-	void	Init(HINSTANCE hInstance);
-	void	RegisterProc(IHCDevice* device);
-	HWND	GetHandle() { return m_hMainWnd; }
+	void		Init(HINSTANCE hInstance);
+	void		RegisterProc(IHCDevice* device);
+	HWND		GetHandle() { return m_hMainWnd; }
+	static void	ClearProc() { s_Proces.clear(); }
 
 private:
 	static LRESULT WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);

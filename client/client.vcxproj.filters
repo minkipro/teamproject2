@@ -49,7 +49,6 @@
     <ClCompile Include="..\Common\Source\HCScene.cpp">
       <Filter>Client\Scene</Filter>
     </ClCompile>
-    <ClCompile Include="DevScene.cpp" />
     <ClCompile Include="..\Common\Source\Window\HCWindow.cpp">
       <Filter>Common\Window</Filter>
     </ClCompile>
@@ -58,9 +57,6 @@
     </ClCompile>
     <ClCompile Include="..\Common\Source\Device\HCMouse.cpp">
       <Filter>Common\Devices</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Common\Source\stdafx.cpp">
-      <Filter>Common\PCH</Filter>
     </ClCompile>
     <ClCompile Include="..\Common\Source\Graphics\HCGraphic.cpp">
       <Filter>Common\Devices\Graphics_Base</Filter>
@@ -76,6 +72,12 @@
     </ClCompile>
     <ClCompile Include="..\Common\Source\Device\HCKoreanInput.cpp">
       <Filter>Common\Devices</Filter>
+    </ClCompile>
+    <ClCompile Include="DevScene.cpp">
+      <Filter>Client\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="stdafx.cpp">
+      <Filter>Common\PCH</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -94,7 +96,6 @@
     <ClInclude Include="..\Common\Source\Includes\HCDevice.h">
       <Filter>Common\Devices</Filter>
     </ClInclude>
-    <ClInclude Include="DevScene.h" />
     <ClInclude Include="..\Common\Source\Includes\GlobalOption.h">
       <Filter>Common\Util</Filter>
     </ClInclude>
@@ -106,9 +107,6 @@
     </ClInclude>
     <ClInclude Include="..\Common\Source\Device\HCMouse.h">
       <Filter>Common\Devices</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Common\Source\stdafx.h">
-      <Filter>Common\PCH</Filter>
     </ClInclude>
     <ClInclude Include="HCSharedPointerMG.h">
       <Filter>Common\Util</Filter>
@@ -127,6 +125,12 @@
     </ClInclude>
     <ClInclude Include="..\Common\Source\Device\HCKoreanInput.h">
       <Filter>Common\Devices</Filter>
+    </ClInclude>
+    <ClInclude Include="DevScene.h">
+      <Filter>Client\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="stdafx.h">
+      <Filter>Common\PCH</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

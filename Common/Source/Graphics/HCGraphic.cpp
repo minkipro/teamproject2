@@ -2,7 +2,7 @@
 #include "HCGraphic.h"
 
 
-void HCGraphic::ReserveRender(const std::string& pipeLineName, const std::string& textureBufferName,const GameObject* object)
+void HCGraphic::ReserveRender(const std::string& pipeLineName, const std::string& textureBufferName,const HC::InputDataSample* object)
 {
 	size_t index = 0;
 	for (auto& it : m_PipeLineSlots)
@@ -19,7 +19,7 @@ void HCGraphic::ReserveRender(const std::string& pipeLineName, const std::string
 	}
 }
 
-void HCGraphic::ReserveRender(size_t pipeLineSlot, const std::string& textureBufferName,const GameObject* object)
+void HCGraphic::ReserveRender(size_t pipeLineSlot, const std::string& textureBufferName,const HC::InputDataSample* object)
 {
 	m_PipeLineSlots[pipeLineSlot]->RenderReserveObject(textureBufferName, object);
 }
@@ -30,11 +30,16 @@ void HCGraphic::Render()
 
 	for (auto& it : m_PipeLineSlots)
 	{
-		SetPipeLineObject(it);
-
-		for (auto& it2 : it->GetReservedObjects())
+		if (it)
 		{
-			RenderObjects(it2.first, it2.second);
+			SetPipeLineObject(it);
+
+			size_t offsetAccumulate = 0;
+			for (auto& it2 : it->GetReservedObjects())
+			{
+				RenderObjects(it2.first, it2.second, offsetAccumulate);
+				offsetAccumulate += it2.second.size();
+			}
 		}
 	}
 
@@ -45,7 +50,7 @@ void HCGraphic::NumberingGraphicPipeLineSlot(size_t slot, HCGraphicPipeLine* pip
 {
 	if (m_PipeLineSlots.size() <= slot)
 	{
-		m_PipeLineSlots.resize(slot);
+		m_PipeLineSlots.resize(slot + 1);
 	}
 
 	m_PipeLineSlots[slot] = pipeLine;
@@ -59,7 +64,7 @@ void HCGraphic::NumberingGraphicPipeLineSlot(size_t slot, const std::string& pip
 
 	if (m_PipeLineSlots.size() <= slot)
 	{
-		m_PipeLineSlots.resize(slot);
+		m_PipeLineSlots.resize(slot + 1);
 	}
 
 	m_PipeLineSlots[slot] = iter->second.get();

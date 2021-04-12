@@ -22,6 +22,7 @@ Texture2DArray gMainTextures : register(t10);
 
 struct PointVertexIn
 {
+    uint2 Vtable : VTABLE;
     float3 PosL : POSITION;
     float2 Size : RENDERSIZE;
     float4 Color : TEXCOORD;

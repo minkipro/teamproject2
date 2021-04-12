@@ -1,5 +1,6 @@
 #pragma once
 #include "HCScene.h"
+#include "Graphics/HCGraphic.h"
 
 class DevScene final : public HCScene
 {
@@ -9,8 +10,7 @@ public:
 
 	virtual void Init() override;
 	virtual void Update() override;
-	virtual void Render() override;
 
 private:
-
+	RenderPoint m_Test;
 };

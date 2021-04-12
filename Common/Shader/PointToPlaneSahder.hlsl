@@ -18,11 +18,22 @@ void CreatePanel(PointVertexIn vin, inout TriangleStream<VertexOut> output)
     |    |
     0 คั 2
     */
-    vertices[0].PosH.xy -= vin.Size / 2;
-    vertices[1].PosH.xy += float2(-vin.Size.x, vin.Size.y) / 2;
-    vertices[2].PosH.xy += float2(vin.Size.x, -vin.Size.y) / 2;
-    vertices[3].PosH.xy += vin.Size / 2;
+    vertices[0].PosH.xy += float2(0, vin.Size.y);
+    vertices[1].PosH.xy += float2(0, 0);
+    vertices[2].PosH.xy += float2(vin.Size.x, vin.Size.y);
+    vertices[3].PosH.xy += float2(vin.Size.x, 0);
 
+    vertices[0].Color.xy = float2(0, 1.0f);
+    vertices[1].Color.xy = float2(0, 0);
+    vertices[2].Color.xy = float2(1.0f, 1.0f);
+    vertices[3].Color.xy = float2(1.0f, 0);
+    
+    [unroll(4)]
+    for (int i = 0; i < 4; i++)
+    {
+        vertices[i].PosH = mul(vertices[i].PosH, gOrthoMatrix);
+    }
+    
     /////////////////////////////////////////////////////////////
 
     output.Append(vertices[0]);
@@ -46,14 +57,14 @@ float4 PS(VertexOut input) : SV_TARGET
 {
 	float4 result = {0,0,0,1};
     
-    if(!input.TexIndex < 0)
+    if (input.TexIndex >= 0)
     {
-        result = gMainTextures.Sample(gsamPointWrap, float3(input.TexIndex, input.Color.xy));
+        result = gMainTextures.Sample(gsamPointWrap, float3(input.Color.xy, 1));
     }
     else
     {
         result = input.Color;
     }
-	
+    
     return result;
 }

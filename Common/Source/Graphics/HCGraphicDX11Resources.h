@@ -6,6 +6,12 @@
 
 using Microsoft::WRL::ComPtr;
 
+struct HCDX11VertexBuffer
+{
+	ComPtr<ID3D11Buffer>	Buffer;
+	size_t					BufferSize = 0;
+};
+
 class HCDX11Shader final : public IHCShader
 {
 public:
@@ -13,13 +19,20 @@ public:
 		:m_ShaderData(data)
 	{
 	}
+	HCDX11Shader(ID3D11DeviceChild* data, ID3DBlob* cpuData)
+		:m_ShaderData(data)
+		,m_CpuData(cpuData)
+	{
+	}
 
 	virtual ~HCDX11Shader() = default;
 
-	virtual void* GetShaderData() override;
+	virtual void*	GetShaderData() override;
+	ID3DBlob*		GetCPUData() { return m_CpuData.Get(); }
 
 private:
-	ComPtr<ID3D11DeviceChild> m_ShaderData;
+	ComPtr<ID3D11DeviceChild>	m_ShaderData;
+	ComPtr<ID3DBlob>			m_CpuData;
 };
 
 class HCDX11Texture final : public IHCTexture
@@ -36,7 +49,7 @@ private:
 	ComPtr<ID3D11ShaderResourceView> m_textureView;
 };
 
-class HCDX11TextureBuffer final : public IHCTextureBuffer
+class HCDX11TextureBuffer final : public HCTextureBuffer
 {
 public:
 	HCDX11TextureBuffer()

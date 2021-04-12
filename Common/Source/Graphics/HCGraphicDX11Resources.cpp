@@ -31,8 +31,8 @@ void HCDX11TextureBuffer::SetTexture(size_t slot, IHCTexture* texture)
 {
 	if (m_TextureSlots.size() <= slot)
 	{
-		m_TextureSlots.insert(m_TextureSlots.end(), m_TextureSlots.size() - (slot + 1), nullptr);
-		m_TextureViews.insert(m_TextureViews.end(), m_TextureViews.size() - (slot + 1), nullptr);
+		m_TextureSlots.insert(m_TextureSlots.end(), (m_TextureSlots.size() - slot) + 1, nullptr);
+		m_TextureViews.insert(m_TextureViews.end(), (m_TextureViews.size() - slot) + 1, nullptr);
 	}
 
 	m_TextureSlots[slot] = texture;

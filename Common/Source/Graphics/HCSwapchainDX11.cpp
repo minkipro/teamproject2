@@ -42,8 +42,10 @@ void HCSwapchainDX11::Init(UINT numSwapBuffer, HWND wnd, ID3D11Device** deviceOu
 
 void HCSwapchainDX11::Resize(UINT windowX, UINT windowY)
 {
-	m_SwapResources.clear();
-	m_SwapResources.resize(m_NumSwapBuffer);
+	m_DepthStencilBuffer = nullptr;
+	m_DepthStencilView = nullptr;
+	m_RenderTargetView = nullptr;
+
 	m_Swapchain->ResizeBuffers(m_NumSwapBuffer, windowX, windowY, m_PresentBufferFormat, DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH);
 
 	Microsoft::WRL::ComPtr<ID3D11Device> device;
@@ -86,8 +88,10 @@ void HCSwapchainDX11::PresentRenderTargetSetting(ID3D11DeviceContext* deviceCont
 	deviceContext->ClearDepthStencilView(m_DepthStencilView.Get(), 
 		D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
-	CD3D11_VIEWPORT viewport(0.0f, 0.0f, HC::GO.WIN.WindowsizeX, HC::GO.WIN.WindowsizeY);;
+	CD3D11_VIEWPORT viewport(0.0f, 0.0f, HC::GO.WIN.WindowsizeX, HC::GO.WIN.WindowsizeY);
+	D3D11_RECT rect = { 0, 0, HC::GO.WIN.WindowsizeX, HC::GO.WIN.WindowsizeY };
 	deviceContext->RSSetViewports(1, &viewport);
+	deviceContext->RSSetScissorRects(1, &rect);
 }
 
 void HCSwapchainDX11::Present()

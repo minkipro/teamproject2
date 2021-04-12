@@ -9,7 +9,7 @@
 
 struct HCInputLayoutElement
 {
-	HCInputLayoutElement(LPCSTR semanticName, UINT semanticIndex, DXGI_FORMAT format, UINT alignedByteOffset)
+	HCInputLayoutElement(const char* semanticName, UINT semanticIndex, DXGI_FORMAT format, UINT alignedByteOffset)
 	{
 		SemanticName = semanticName;
 		SemanticIndex = semanticIndex;
@@ -17,10 +17,10 @@ struct HCInputLayoutElement
 		AlignedByteOffset = alignedByteOffset;
 	}
 
-	LPCSTR SemanticName;
-	UINT SemanticIndex;
+	std::string SemanticName;
+	UINT		SemanticIndex;
 	DXGI_FORMAT Format;
-	UINT AlignedByteOffset;
+	UINT		AlignedByteOffset;
 };
 
 namespace HC
@@ -53,29 +53,8 @@ namespace HC
 	struct InputDataSample
 	{
 		virtual std::vector<HCInputLayoutElement>	GetInputData() const = 0;
-		virtual const char*							GetInputName() const = 0;
+		virtual const char* GetInputName() const = 0;
 		virtual unsigned int						GetDataSize() const = 0;
-	};
-
-	struct PointVertex :public InputDataSample
-	{
-		virtual std::vector<HCInputLayoutElement>	GetInputData() const override
-		{
-
-		}
-
-		virtual const char*							GetInputName() const override {	return typeid(PointVertex).name(); }
-		virtual unsigned int						GetDataSize() const override { return sizeof(PointVertex); }
-
-		DirectX::XMFLOAT3 Position;
-		DirectX::XMFLOAT2 Size;
-		union
-		{
-			DirectX::XMFLOAT4 Color;
-			DirectX::XMFLOAT2 UV;
-		};
-
-		int TextureIndex = -1;
 	};
 
 	struct MainPass
@@ -89,6 +68,26 @@ namespace HC
 	};
 }
 
+struct RenderPoint :public HC::InputDataSample
+{
+	virtual std::vector<HCInputLayoutElement>	GetInputData() const override
+	{
+		return { {"VTABLE",0,DXGI_FORMAT_R32G32_UINT, 0},
+				 {"POSITION",0,DXGI_FORMAT_R32G32B32_FLOAT, 8},
+				 {"RENDERSIZE",0,DXGI_FORMAT_R32G32_FLOAT, 20},
+				 {"TEXCOORD",0,DXGI_FORMAT_R32G32B32A32_FLOAT, 28},
+				 {"TEXINDEX",0,DXGI_FORMAT_R32_SINT, 44} };
+	}
+
+	virtual const char* GetInputName() const override { return typeid(RenderPoint).name(); }
+	virtual unsigned int						GetDataSize() const override { return sizeof(RenderPoint); }
+
+	DirectX::XMFLOAT3 Position;
+	DirectX::XMFLOAT2 Size;
+	DirectX::XMFLOAT4 Color;
+
+	int TextureIndex = -1;
+};
 
 class IHCInputLayout
 {
@@ -123,7 +122,7 @@ public:
 
 	virtual ~IHCTexture() = default;
 
-	virtual void*	GetTextureData() = 0;
+	virtual void* GetTextureData() = 0;
 	virtual POINT	GetTextureSize() = 0;
 protected:
 
@@ -136,20 +135,20 @@ public:
 	virtual ~IHCCBuffer() = default;
 
 	virtual void		CopyData(const void* data) = 0;
-	virtual void*		GetBuffer() = 0;
+	virtual void* GetBuffer() = 0;
 
 protected:
 
 };
 
-class IHCTextureBuffer
+class HCTextureBuffer
 {
 public:
-	IHCTextureBuffer() {}
-	virtual ~IHCTextureBuffer() = default;
+	HCTextureBuffer() {}
+	virtual ~HCTextureBuffer() = default;
 
 	virtual void	SetTexture(size_t slot, IHCTexture* texture) = 0;
-	IHCTexture*		GetTexture(size_t slot) { return m_TextureSlots[slot]; }
+	IHCTexture* GetTexture(size_t slot) { return m_TextureSlots[slot]; }
 
 protected:
 	std::vector<IHCTexture*> m_TextureSlots;
@@ -198,28 +197,32 @@ public:
 		m_VertexBufferRelease(m_VertexBuffer);
 	}
 
-	const std::string&	GetPipeLineName() const { return m_PipeLineName; }
-	const auto&			GetReservedObjects() { return m_RenderReservedObjectsByTexture; }
-	void*				GetVertexBuffer() const { return m_VertexBuffer; }
+	const HC::InputDataSample* GetCurrInputSample() const { return m_InputSample.get(); }
+	const std::string& GetPipeLineName() const { return m_PipeLineName; }
+	const auto& GetReservedObjects() const { return m_RenderReservedObjectsByTexture; }
+	void* GetVertexBuffer() const { return m_VertexBuffer; }
 
-	void				RenderReserveObject(const std::string& textureBufferName, const HC::InputDataSample* object) { m_RenderReservedObjectsByTexture[textureBufferName].push_back(object); }
-	void				ClearReservedObjects() { m_RenderReservedObjectsByTexture.clear(); }
+	void						SetShader(HC::SHADERTYPE type, IHCShader* shader) { m_Shaders[static_cast<unsigned int>(type)] = shader; }
+	void						RenderReserveObject(const std::string& textureBufferName, const HC::InputDataSample* object) { m_RenderReservedObjectsByTexture[textureBufferName].push_back(object); }
+	void						ClearReservedObjects() { m_RenderReservedObjectsByTexture.clear(); }
+
+	template<typename T> void	SelectInputSample() { m_InputSample = std::make_unique<T>(); }
 
 public:
-	IHCShader*																	m_Shaders[static_cast<unsigned int>(HC::SHADERTYPE::COUNT)] = {};
+	IHCShader* m_Shaders[static_cast<unsigned int>(HC::SHADERTYPE::COUNT)] = {};
 	std::vector<IHCCBuffer*>													m_CBuffers;
-	
+
 	HC::PRIMITIVE_TOPOLOGY														m_Primitive = HC::PRIMITIVE_TOPOLOGY::POINT;
-	std::unique_ptr<HC::InputDataSample>										m_InputSample = nullptr;
-	
-	IHCRasterizer*																m_Rasterizer = nullptr;
-	IHCDepthStencilState*														m_DepthStencilState = nullptr;							
-	IHCBlendState*																m_BlendState = nullptr;
+
+	IHCRasterizer* m_Rasterizer = nullptr;
+	IHCDepthStencilState* m_DepthStencilState = nullptr;
+	IHCBlendState* m_BlendState = nullptr;
 
 private:
 	std::string																	m_PipeLineName;
-	void*																		m_VertexBuffer;
+	void* m_VertexBuffer;
 	std::function<void(void*)>													m_VertexBufferRelease;
+	std::unique_ptr<HC::InputDataSample>										m_InputSample = nullptr;
 	std::unordered_map<std::string, std::vector<const HC::InputDataSample*>>	m_RenderReservedObjectsByTexture;
 };
 
@@ -237,14 +240,14 @@ public: //pure virtual method
 	virtual void		Update() = 0;
 
 	virtual void		CreateGraphicPipeLine(const std::string& pipeLineName, HCGraphicPipeLine** out) = 0;
-	virtual void		CreateTextureBuffer(const std::string& bufferName, IHCTextureBuffer** out) = 0;
+	virtual void		CreateTextureBuffer(const std::string& bufferName, HCTextureBuffer** out) = 0;
 	virtual void		CreateTexture(const std::string& textureName, const std::wstring& filePath, IHCTexture** out) = 0;
 	virtual void		CreateShaderResource(const std::string& resourceName, size_t stride, const POINT& size, IHCTexture** out) = 0;
 	virtual void		CreateCB(const std::string& bufferName, size_t stride, size_t num, IHCCBuffer** out) = 0;
 	virtual void		CreateShader(const std::string& shaderName, HC::SHADERTYPE type, const std::wstring& filePath, const std::string& entryPoint, IHCShader** out) = 0;
 
 	virtual void		GetGraphicPipeLine(const std::string& pipeLineName, HCGraphicPipeLine** out) = 0;
-	virtual void		GetTextureBuffer(const std::string& bufferName, IHCTextureBuffer** out) = 0;
+	virtual void		GetTextureBuffer(const std::string& bufferName, HCTextureBuffer** out) = 0;
 	virtual void		GetTexture(const std::string& textureName, IHCTexture** out) = 0;
 	virtual void		GetShaderResource(const std::string& resourceName, IHCTexture** out) = 0;
 	virtual void		GetCB(const std::string& bufferName, IHCCBuffer** out) = 0;
@@ -256,15 +259,15 @@ public: //Optional virtual function
 	virtual void		NumberingGraphicPipeLineSlot(size_t slot, const std::string& pipelineName);
 
 public:
-	void				ReserveRender(const std::string& pipeLineName, const std::string& textureBufferName, const GameObject* object);
-	void				ReserveRender(size_t pipeLineSlot, const std::string& textureBufferName, const GameObject* object);
+	void				ReserveRender(const std::string& pipeLineName, const std::string& textureBufferName, const HC::InputDataSample* object);
+	void				ReserveRender(size_t pipeLineSlot, const std::string& textureBufferName, const HC::InputDataSample* object);
 	void				Render();
 
 protected: //pure virtual method
 	virtual void		RenderBegin() = 0;
 	virtual void		RenderEnd() = 0;
 	virtual void		SetPipeLineObject(const HCGraphicPipeLine* pipeLine) = 0;
-	virtual void		RenderObjects(const std::string& textureBufferName, const std::vector<const HC::InputDataSample*> objects) = 0;
+	virtual void		RenderObjects(const std::string& textureBufferName, const std::vector<const HC::InputDataSample*> objects, size_t offset) = 0;
 
 private:
 	virtual std::string GetDeviceName() const override { return typeid(HCGraphic).name(); }
@@ -272,7 +275,6 @@ private:
 protected:
 	HWND																m_WindowHandle;
 	std::unordered_map<std::string, std::unique_ptr<HCGraphicPipeLine>>	m_PipeLines;
-
 	std::vector<HCGraphicPipeLine*>										m_PipeLineSlots;
 };
 

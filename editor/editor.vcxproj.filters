@@ -61,6 +61,9 @@
       <Filter>Scene</Filter>
     </ClCompile>
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="..\Common\Source\Graphics\HCFont.cpp">
+      <Filter>Common\Devices\Graphics_Dx11</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Common\Source\Includes\GameObject.h">
@@ -110,6 +113,9 @@
     </ClInclude>
     <ClInclude Include="..\Common\Source\HCScene.h">
       <Filter>Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\Source\Graphics\HCFont.h">
+      <Filter>Common\Devices\Graphics_Dx11</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

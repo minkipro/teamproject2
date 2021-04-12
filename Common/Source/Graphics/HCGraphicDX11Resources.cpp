@@ -3,7 +3,7 @@
 
 void* HCDX11Shader::GetShaderData()
 {
-	return m_ShaderData.Get();
+	return m_shaderData.Get();
 }
 
 HCDX11Texture::~HCDX11Texture()
@@ -32,14 +32,14 @@ void HCDX11TextureBuffer::SetTexture(size_t slot, IHCTexture* texture)
 	if (m_TextureSlots.size() <= slot)
 	{
 		m_TextureSlots.insert(m_TextureSlots.end(), (m_TextureSlots.size() - slot) + 1, nullptr);
-		m_TextureViews.insert(m_TextureViews.end(), (m_TextureViews.size() - slot) + 1, nullptr);
+		m_textureViews.insert(m_textureViews.end(), (m_textureViews.size() - slot) + 1, nullptr);
 	}
 
 	m_TextureSlots[slot] = texture;
-	m_TextureViews[slot] = static_cast<ID3D11ShaderResourceView*>(texture->GetTextureData());
+	m_textureViews[slot] = static_cast<ID3D11ShaderResourceView*>(texture->GetTextureData());
 }
 
 const std::vector<ID3D11ShaderResourceView*>& HCDX11TextureBuffer::GetTextureViews()
 {
-	return m_TextureViews;
+	return m_textureViews;
 }

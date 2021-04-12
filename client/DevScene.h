@@ -12,5 +12,5 @@ public:
 	virtual void Update() override;
 
 private:
-	RenderPoint m_Test;
+	RenderPoint m_test;
 };

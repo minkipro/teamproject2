@@ -159,6 +159,8 @@
     <ClCompile Include="..\Common\Source\Device\HCKeyboard.cpp" />
     <ClCompile Include="..\Common\Source\Device\HCKoreanInput.cpp" />
     <ClCompile Include="..\Common\Source\Device\HCMouse.cpp" />
+    <ClCompile Include="..\Common\Source\Device\HCTimer.cpp" />
+    <ClCompile Include="..\Common\Source\Graphics\HCFont.cpp" />
     <ClCompile Include="..\Common\Source\Graphics\HCGraphic.cpp" />
     <ClCompile Include="..\Common\Source\Graphics\HCGraphicDX11.cpp" />
     <ClCompile Include="..\Common\Source\Graphics\HCGraphicDX11Resources.cpp" />
@@ -183,6 +185,8 @@
     <ClInclude Include="..\Common\Source\Device\HCKeyboard.h" />
     <ClInclude Include="..\Common\Source\Device\HCKoreanInput.h" />
     <ClInclude Include="..\Common\Source\Device\HCMouse.h" />
+    <ClInclude Include="..\Common\Source\Device\HCTimer.h" />
+    <ClInclude Include="..\Common\Source\Graphics\HCFont.h" />
     <ClInclude Include="..\Common\Source\Graphics\HCGraphic.h" />
     <ClInclude Include="..\Common\Source\Graphics\HCGraphicDX11.h" />
     <ClInclude Include="..\Common\Source\Graphics\HCGraphicDX11Resources.h" />

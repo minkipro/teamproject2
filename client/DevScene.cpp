@@ -20,12 +20,12 @@ void DevScene::Init()
 	IHCShader* gs = nullptr;
 	IHCShader* ps = nullptr;
 
-	m_Test.Size = { 100,100 };
-	m_Test.Position = { 100,100, 0.2f };
-	m_Test.TextureIndex = 1;
+	m_test.Size = { 100,100 };
+	m_test.Position = { 100,100, 0.2f };
+	m_test.TextureIndex = 1;
 
-	graphic->CreateTexture("testTexture", L"./../Common/Texture/character.png", &texture);
-	graphic->CreateTexture("testTexture2", L"./../Common/Texture/knight.png", &texture2);
+	graphic->CreateTexture(L"character.png", &texture);
+	graphic->CreateTexture(L"knight.png", &texture2);
 	graphic->CreateTextureBuffer("testTexBuffer", &texBuffer);
 
 	texBuffer->SetTexture(0, texture);
@@ -44,10 +44,11 @@ void DevScene::Init()
 
 	graphic->NumberingGraphicPipeLineSlot(0, testPipeLine);
 
-	testPipeLine->RenderReserveObject("testTexBuffer", &m_Test);
+	testPipeLine->RenderReserveObject("testTexBuffer", &m_test);
 }
 
 void DevScene::Update()
 {
-	m_Test.Position.x += 0.1f;
+	auto timer = HCDEVICE(HCTimer);
+	m_test.Position.x += 0.1f* timer->GetDeltatime();
 }

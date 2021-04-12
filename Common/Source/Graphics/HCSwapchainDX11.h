@@ -12,8 +12,8 @@ class HCSwapchainDX11
 
 public:
 	HCSwapchainDX11()
-		: m_NumSwapBuffer(0)
-		, m_CurrBackBuffer(0)
+		: m_numSwapBuffer(0)
+		, m_currBackBuffer(0)
 	{
 
 	}
@@ -26,19 +26,19 @@ public:
 	void Present();
 
 private:
-	Microsoft::WRL::ComPtr<IDXGISwapChain>			m_Swapchain;
-	std::vector<RenderTargetResource>				m_SwapResources;
-	UINT											m_NumSwapBuffer;
-	UINT											m_CurrBackBuffer;
+	Microsoft::WRL::ComPtr<IDXGISwapChain>			m_swapchain;
+	std::vector<RenderTargetResource>				m_swapResources;
+	UINT											m_numSwapBuffer;
+	UINT											m_currBackBuffer;
 
-	Microsoft::WRL::ComPtr<ID3D11Texture2D>			m_DepthStencilBuffer;
-	Microsoft::WRL::ComPtr<ID3D11DepthStencilView>	m_DepthStencilView;
-	Microsoft::WRL::ComPtr<ID3D11RenderTargetView>	m_RenderTargetView;
+	Microsoft::WRL::ComPtr<ID3D11Texture2D>			m_depthStencilBuffer;
+	Microsoft::WRL::ComPtr<ID3D11DepthStencilView>	m_depthStencilView;
+	Microsoft::WRL::ComPtr<ID3D11RenderTargetView>	m_renderTargetView;
 
-	const DXGI_FORMAT								m_PresentBufferFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
-	const DXGI_FORMAT								m_ColorBufferFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
-	const DXGI_FORMAT								m_NormalBufferFormat = DXGI_FORMAT_R11G11B10_FLOAT;
-	const DXGI_FORMAT								m_SpecPowBufferFormat = DXGI_FORMAT_R32_FLOAT;
-	const DXGI_FORMAT								m_ObjectIDFormat = DXGI_FORMAT_R32_SINT;
+	const DXGI_FORMAT								m_presentBufferFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
+	const DXGI_FORMAT								m_colorBufferFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
+	const DXGI_FORMAT								m_normalBufferFormat = DXGI_FORMAT_R11G11B10_FLOAT;
+	const DXGI_FORMAT								m_specPowBufferFormat = DXGI_FORMAT_R32_FLOAT;
+	const DXGI_FORMAT								m_objectIDFormat = DXGI_FORMAT_R32_SINT;
 };
 

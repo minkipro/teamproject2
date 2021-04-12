@@ -4,14 +4,14 @@
 
 void HCSwapchainDX11::Init(UINT numSwapBuffer, HWND wnd, ID3D11Device** deviceOut, ID3D11DeviceContext** contextOut)
 {
-	m_NumSwapBuffer = numSwapBuffer;
+	m_numSwapBuffer = numSwapBuffer;
 	DXGI_SWAP_CHAIN_DESC scd = { 0 };
 
 	scd.BufferDesc.Width = HC::GO.WIN.WindowsizeX;
 	scd.BufferDesc.Height = HC::GO.WIN.WindowsizeY;
 	scd.BufferDesc.RefreshRate.Numerator = 60;
 	scd.BufferDesc.RefreshRate.Denominator = 1;
-	scd.BufferDesc.Format = m_PresentBufferFormat;
+	scd.BufferDesc.Format = m_presentBufferFormat;
 	scd.BufferDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UPPER_FIELD_FIRST;
 	scd.BufferDesc.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
 
@@ -33,7 +33,7 @@ void HCSwapchainDX11::Init(UINT numSwapBuffer, HWND wnd, ID3D11Device** deviceOu
 		0,
 		D3D11_SDK_VERSION,
 		&scd,
-		m_Swapchain.GetAddressOf(),
+		m_swapchain.GetAddressOf(),
 		deviceOut,
 		NULL,
 		contextOut),
@@ -42,27 +42,27 @@ void HCSwapchainDX11::Init(UINT numSwapBuffer, HWND wnd, ID3D11Device** deviceOu
 
 void HCSwapchainDX11::Resize(UINT windowX, UINT windowY)
 {
-	m_DepthStencilBuffer = nullptr;
-	m_DepthStencilView = nullptr;
-	m_RenderTargetView = nullptr;
+	m_depthStencilBuffer = nullptr;
+	m_depthStencilView = nullptr;
+	m_renderTargetView = nullptr;
 
-	m_Swapchain->ResizeBuffers(m_NumSwapBuffer, windowX, windowY, m_PresentBufferFormat, DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH);
+	m_swapchain->ResizeBuffers(m_numSwapBuffer, windowX, windowY, m_presentBufferFormat, DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH);
 
 	Microsoft::WRL::ComPtr<ID3D11Device> device;
-	COM_HRESULT_IF_FAILED(m_Swapchain->GetDevice(IID_PPV_ARGS(device.GetAddressOf())), "didn't get d3d11 device");;
+	COM_HRESULT_IF_FAILED(m_swapchain->GetDevice(IID_PPV_ARGS(device.GetAddressOf())), "didn't get d3d11 device");;
 
 	D3D11_RENDER_TARGET_VIEW_DESC viewDesc;
-	viewDesc.Format = m_PresentBufferFormat;
+	viewDesc.Format = m_presentBufferFormat;
 	viewDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
 	viewDesc.Texture2D.MipSlice = 0;
 
 	Microsoft::WRL::ComPtr<ID3D11Texture2D> backBuffer;
 	COM_HRESULT_IF_FAILED(
-		m_Swapchain->GetBuffer(0, IID_PPV_ARGS(backBuffer.GetAddressOf())),
+		m_swapchain->GetBuffer(0, IID_PPV_ARGS(backBuffer.GetAddressOf())),
 		"GetBuffer Failed.");
 	COM_HRESULT_IF_FAILED(
 		device->CreateRenderTargetView(backBuffer.Get(), &viewDesc,
-			m_RenderTargetView.GetAddressOf()),
+			m_renderTargetView.GetAddressOf()),
 		"Failed to create render target view.");
 
 	//Describe our Depth/Stencil Buffer
@@ -71,24 +71,24 @@ void HCSwapchainDX11::Resize(UINT windowX, UINT windowY)
 	depthStencilTextureDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
 
 	COM_HRESULT_IF_FAILED(
-		device->CreateTexture2D(&depthStencilTextureDesc, NULL, m_DepthStencilBuffer.GetAddressOf()),
+		device->CreateTexture2D(&depthStencilTextureDesc, NULL, m_depthStencilBuffer.GetAddressOf()),
 		"Failed to create depth stencil buffer.");
 
 	COM_HRESULT_IF_FAILED(
-		device->CreateDepthStencilView(m_DepthStencilBuffer.Get(), NULL, m_DepthStencilView.GetAddressOf()), 
+		device->CreateDepthStencilView(m_depthStencilBuffer.Get(), NULL, m_depthStencilView.GetAddressOf()), 
 		"Failed to create depth stencil view.");
 }
 
 void HCSwapchainDX11::PresentRenderTargetSetting(ID3D11DeviceContext* deviceContext, const float clearColor[4])
 {
-	auto present = m_RenderTargetView.Get();
+	auto present = m_renderTargetView.Get();
 
-	deviceContext->OMSetRenderTargets(1, &present, m_DepthStencilView.Get());
+	deviceContext->OMSetRenderTargets(1, &present, m_depthStencilView.Get());
 	deviceContext->ClearRenderTargetView(present, clearColor);
-	deviceContext->ClearDepthStencilView(m_DepthStencilView.Get(), 
+	deviceContext->ClearDepthStencilView(m_depthStencilView.Get(), 
 		D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
-	CD3D11_VIEWPORT viewport(0.0f, 0.0f, HC::GO.WIN.WindowsizeX, HC::GO.WIN.WindowsizeY);
+	CD3D11_VIEWPORT viewport(0.0f, 0.0f, static_cast<float>(HC::GO.WIN.WindowsizeX), static_cast<float>(HC::GO.WIN.WindowsizeY));
 	D3D11_RECT rect = { 0, 0, HC::GO.WIN.WindowsizeX, HC::GO.WIN.WindowsizeY };
 	deviceContext->RSSetViewports(1, &viewport);
 	deviceContext->RSSetScissorRects(1, &rect);
@@ -96,6 +96,6 @@ void HCSwapchainDX11::PresentRenderTargetSetting(ID3D11DeviceContext* deviceCont
 
 void HCSwapchainDX11::Present()
 {
-	COM_HRESULT_IF_FAILED(m_Swapchain->Present(0, 0), "Rendertarget Present error");
-	m_CurrBackBuffer = (m_CurrBackBuffer + 1) % m_NumSwapBuffer;
+	COM_HRESULT_IF_FAILED(m_swapchain->Present(0, 0), "Rendertarget Present error");
+	m_currBackBuffer = (m_currBackBuffer + 1) % m_numSwapBuffer;
 }

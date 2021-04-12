@@ -79,6 +79,12 @@
     <ClCompile Include="stdafx.cpp">
       <Filter>Common\PCH</Filter>
     </ClCompile>
+    <ClCompile Include="..\Common\Source\Device\HCTimer.cpp">
+      <Filter>Common\Devices</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Common\Source\Graphics\HCFont.cpp">
+      <Filter>Common\Devices\Graphics_Dx11</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Common\Source\Util\StringHelper.h">
@@ -131,6 +137,12 @@
     </ClInclude>
     <ClInclude Include="stdafx.h">
       <Filter>Common\PCH</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\Source\Device\HCTimer.h">
+      <Filter>Common\Devices</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\Source\Graphics\HCFont.h">
+      <Filter>Common\Devices\Graphics_Dx11</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

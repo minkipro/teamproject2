@@ -14,7 +14,6 @@ void HCGraphic::ReserveRender(const std::string& pipeLineName, const std::string
 				ReserveRender(index, textureBufferName, object);
 			}
 		}
-
 		index++;
 	}
 }

@@ -5,7 +5,13 @@
 #include "HCDevice.h"
 #include "DevScene.h"
 #include "Window/HCWindow.h"
+
 #include "Graphics/HCGraphic.h"
+
+#include "Device/HCKeyboard.h"
+#include "Device/HCMouse.h"
+#include "Device/HCKoreanInput.h"
+#include "Device/HCTimer.h"
 
 #define HCDEVICE(Type) Engine::Get()->GetDevice<Type>()
 
@@ -15,35 +21,35 @@ public:
 	Engine() = default;
 	~Engine() = default;
 
-	static Engine*	Get() { return m_Engine; }
+	static Engine*	Get() { return m_engine; }
 	void			Init(HINSTANCE hInstance);
 	int				Run();
 
-	void			ClearProc() { m_Window->ClearProc(); }
+	void			ClearProc() { m_window->ClearProc(); }
 	template<typename T, typename ...Types> T* CreateDevice(const char* name, Types ...args);
 	template<typename T> T* GetDevice();
 
 private:
-	static Engine*								m_Engine;
+	static Engine*								m_engine;
 
-	DevScene									m_Scene;
-	std::vector<std::unique_ptr<IHCDevice>>		m_Devices;
-	std::unordered_map<std::string, IHCDevice*>	m_DeviceMap;
-	std::unique_ptr<HCWindow>					m_Window;
-	HCGraphic*									m_Graphic;
+	DevScene									m_scene;
+	std::vector<std::unique_ptr<IHCDevice>>		m_devices;
+	std::unordered_map<std::string, IHCDevice*>	m_deviceMap;
+	std::unique_ptr<HCWindow>					m_window;
+	HCGraphic*									m_graphic;
 };
 
 template<typename T, typename ...Types>
 inline T* Engine::CreateDevice(const char* name,Types ...args)
 {
 	T* result = nullptr;
-	auto iter = m_DeviceMap.find(name);
+	auto iter = m_deviceMap.find(name);
 	
-	if (iter == m_DeviceMap.end())
+	if (iter == m_deviceMap.end())
 	{
-		m_Devices.emplace_back(std::make_unique<T>(args...));
-		result = static_cast<T*>(m_Devices.back().get());
-		m_DeviceMap[name] = m_Devices.back().get();
+		m_devices.emplace_back(std::make_unique<T>(args...));
+		result = static_cast<T*>(m_devices.back().get());
+		m_deviceMap[name] = m_devices.back().get();
 	}
 	else
 	{
@@ -57,9 +63,9 @@ template<typename T>
 inline T* Engine::GetDevice()
 {
 	T* result = nullptr;
-	auto iter = m_DeviceMap.find(typeid(T).name());
+	auto iter = m_deviceMap.find(typeid(T).name());
 
-	if (iter == m_DeviceMap.end())
+	if (iter == m_deviceMap.end())
 	{
 		COM_THROW_IF_FAILED(false, "");
 	}

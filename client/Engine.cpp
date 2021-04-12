@@ -1,31 +1,29 @@
 #include "stdafx.h"
 #include "Engine.h"
-#include "Device/HCKeyboard.h"
-#include "Device/HCMouse.h"
-#include "Device/HCKoreanInput.h"
 #include "Window/HCWindow.h"
 #include "Graphics/HCGraphicDX11.h"
 
-Engine* Engine::m_Engine = nullptr;
+Engine* Engine::m_engine = nullptr;
 
 void Engine::Init(HINSTANCE hInstance)
 {
-	m_Engine = this;
-	m_Window = std::make_unique<HCWindow>();
+	m_engine = this;
+	m_window = std::make_unique<HCWindow>();
 
-	m_Window->Init(hInstance);
+	m_window->Init(hInstance);
 
 	CreateDevice<HCMouse>(typeid(HCMouse).name());
 	CreateDevice<HCKeyboard>(typeid(HCKeyboard).name());
 	CreateDevice<HCKoreanInput>(typeid(HCKoreanInput).name());
-	m_Graphic = CreateDevice<HCGraphicDX11>(typeid(HCGraphic).name(),m_Window->GetHandle());
-	for (auto& it : m_Devices)
+	CreateDevice<HCTimer>(typeid(HCTimer).name());
+	m_graphic = CreateDevice<HCGraphicDX11>(typeid(HCGraphic).name(),m_window->GetHandle());
+	for (auto& it : m_devices)
 	{
 		it->Init();
-		m_Window->RegisterProc(it.get());
+		m_window->RegisterProc(it.get());
 	}
 	
-	m_Scene.Init();
+	m_scene.Init();
 }
 
 int Engine::Run()
@@ -41,14 +39,14 @@ int Engine::Run()
 		}
 		else
 		{
-			m_Scene.Update();
+			m_scene.Update();
 
-			for (auto& it : m_Devices)
+			for (auto& it : m_devices)
 			{
 				it->Update();
 			}
 
-			m_Graphic->Render();
+			m_graphic->Render();
 		}
 	}
 

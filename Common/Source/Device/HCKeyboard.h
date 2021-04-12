@@ -26,9 +26,9 @@ public:
 	virtual std::string GetDeviceName() const { return typeid(HCKeyboard).name(); }
 	virtual LRESULT		WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 private:
-	bool autoRepeat = false;
-	bool keyStates[256];
-	std::queue<KeyboardEvent> keyBuffer;
-	std::queue<unsigned char> charBuffer;
+	bool m_autoRepeat = false;
+	bool m_keyStates[256];
+	std::queue<KeyboardEvent> m_keyBuffer;
+	std::queue<unsigned char> m_charBuffer;
 };
 

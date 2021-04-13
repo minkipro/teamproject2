@@ -85,6 +85,9 @@
     <ClCompile Include="..\Common\Source\Graphics\HCFont.cpp">
       <Filter>Common\Devices\Graphics_Dx11</Filter>
     </ClCompile>
+    <ClCompile Include="Character.cpp">
+      <Filter>Client\Scene</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Common\Source\Util\StringHelper.h">
@@ -143,6 +146,9 @@
     </ClInclude>
     <ClInclude Include="..\Common\Source\Graphics\HCFont.h">
       <Filter>Common\Devices\Graphics_Dx11</Filter>
+    </ClInclude>
+    <ClInclude Include="Character.h">
+      <Filter>Client\Scene</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

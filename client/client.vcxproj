@@ -168,6 +168,7 @@
     <ClCompile Include="..\Common\Source\HCScene.cpp" />
     <ClCompile Include="..\Common\Source\Util\StringHelper.cpp" />
     <ClCompile Include="..\Common\Source\Window\HCWindow.cpp" />
+    <ClCompile Include="Character.cpp" />
     <ClCompile Include="DevScene.cpp" />
     <ClCompile Include="Engine.cpp" />
     <ClCompile Include="Main.cpp" />
@@ -197,6 +198,7 @@
     <ClInclude Include="..\Common\Source\Includes\HCDevice.h" />
     <ClInclude Include="..\Common\Source\Util\StringHelper.h" />
     <ClInclude Include="..\Common\Source\Window\HCWindow.h" />
+    <ClInclude Include="Character.h" />
     <ClInclude Include="DevScene.h" />
     <ClInclude Include="Engine.h" />
     <ClInclude Include="HCSharedPointerMG.h" />

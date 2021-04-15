@@ -9,18 +9,16 @@
 
 struct HCInputLayoutElement
 {
-	HCInputLayoutElement(const char* semanticName, UINT semanticIndex, DXGI_FORMAT format, UINT alignedByteOffset)
+	HCInputLayoutElement(const char* semanticName, UINT semanticIndex, DXGI_FORMAT format)
 	{
 		SemanticName = semanticName;
 		SemanticIndex = semanticIndex;
 		Format = format;
-		AlignedByteOffset = alignedByteOffset;
 	}
 
 	std::string SemanticName;
 	UINT		SemanticIndex;
 	DXGI_FORMAT Format;
-	UINT		AlignedByteOffset;
 };
 
 namespace HC
@@ -72,11 +70,11 @@ struct RenderPoint :public HC::InputDataSample
 {
 	virtual std::vector<HCInputLayoutElement>	GetInputData() const override
 	{
-		return { {"VTABLE",0,DXGI_FORMAT_R32G32_UINT, 0},
-				 {"POSITION",0,DXGI_FORMAT_R32G32B32_FLOAT, 8},
-				 {"RENDERSIZE",0,DXGI_FORMAT_R32G32_FLOAT, 20},
-				 {"TEXCOORD",0,DXGI_FORMAT_R32G32B32A32_FLOAT, 28},
-				 {"TEXINDEX",0,DXGI_FORMAT_R32_SINT, 44} };
+		return { {"VTABLE",0,DXGI_FORMAT_R32G32_UINT},
+				 {"POSITION",0,DXGI_FORMAT_R32G32B32_FLOAT},
+				 {"RENDERSIZE",0,DXGI_FORMAT_R32G32_FLOAT},
+				 {"TEXCOORD",0,DXGI_FORMAT_R32G32B32A32_FLOAT},
+				 {"TEXINDEX",0,DXGI_FORMAT_R32_SINT} };
 	}
 
 	virtual const char* GetInputName() const override { return typeid(RenderPoint).name(); }
@@ -85,6 +83,35 @@ struct RenderPoint :public HC::InputDataSample
 	DirectX::XMFLOAT3 Position;
 	DirectX::XMFLOAT2 Size;
 	DirectX::XMFLOAT4 Color;
+
+	int TextureIndex = -1;
+};
+
+//차후에 에디터, 클라 struct 정의 분리해야할듯
+struct RenderVertexSkeleton : public HC::InputDataSample
+{
+	virtual std::vector<HCInputLayoutElement>	GetInputData() const override
+	{
+		return { {"VTABLE",0,DXGI_FORMAT_R32G32_UINT},
+				 {"POSITION",0,DXGI_FORMAT_R32G32B32_FLOAT},
+				 {"TEXCOORD",0,DXGI_FORMAT_R32G32_FLOAT},
+				 {"NORMAL",0,DXGI_FORMAT_R32G32B32_FLOAT},
+				 {"BONEIDA",0,DXGI_FORMAT_R32G32B32A32_FLOAT},
+				 {"BONEIDB",0,DXGI_FORMAT_R32G32B32A32_FLOAT },
+				 {"BONEWEIGHTA",0,DXGI_FORMAT_R32G32B32A32_FLOAT},
+				 {"BONEWEIGHTB",0,DXGI_FORMAT_R32G32B32A32_FLOAT } };
+	}
+
+	virtual const char* GetInputName() const override { return typeid(RenderVertexSkeleton).name(); }
+	virtual unsigned int						GetDataSize() const override { return sizeof(RenderPoint); }
+
+	DirectX::XMFLOAT3 Position;
+	DirectX::XMFLOAT2 uv;
+	DirectX::XMFLOAT3 normal;
+	DirectX::XMFLOAT4 BoneIdA;
+	DirectX::XMFLOAT4 BoneIdB;
+	DirectX::XMFLOAT4 BoneWeightA;
+	DirectX::XMFLOAT4 BoneWeightB;
 
 	int TextureIndex = -1;
 };

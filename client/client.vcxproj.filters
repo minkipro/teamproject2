@@ -43,9 +43,6 @@
     <ClCompile Include="Main.cpp">
       <Filter>Client</Filter>
     </ClCompile>
-    <ClCompile Include="Engine.cpp">
-      <Filter>Client</Filter>
-    </ClCompile>
     <ClCompile Include="..\Common\Source\HCScene.cpp">
       <Filter>Client\Scene</Filter>
     </ClCompile>
@@ -76,9 +73,6 @@
     <ClCompile Include="DevScene.cpp">
       <Filter>Client\Scene</Filter>
     </ClCompile>
-    <ClCompile Include="stdafx.cpp">
-      <Filter>Common\PCH</Filter>
-    </ClCompile>
     <ClCompile Include="..\Common\Source\Device\HCTimer.cpp">
       <Filter>Common\Devices</Filter>
     </ClCompile>
@@ -88,6 +82,9 @@
     <ClCompile Include="Character.cpp">
       <Filter>Client\Scene</Filter>
     </ClCompile>
+    <ClCompile Include="Engine.cpp">
+      <Filter>Client</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Common\Source\Util\StringHelper.h">
@@ -95,9 +92,6 @@
     </ClInclude>
     <ClInclude Include="..\Common\Source\Includes\GameObject.h">
       <Filter>Common</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine.h">
-      <Filter>Client</Filter>
     </ClInclude>
     <ClInclude Include="..\Common\Source\HCScene.h">
       <Filter>Client\Scene</Filter>
@@ -138,9 +132,6 @@
     <ClInclude Include="DevScene.h">
       <Filter>Client\Scene</Filter>
     </ClInclude>
-    <ClInclude Include="stdafx.h">
-      <Filter>Common\PCH</Filter>
-    </ClInclude>
     <ClInclude Include="..\Common\Source\Device\HCTimer.h">
       <Filter>Common\Devices</Filter>
     </ClInclude>
@@ -149,6 +140,12 @@
     </ClInclude>
     <ClInclude Include="Character.h">
       <Filter>Client\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine.h">
+      <Filter>Client</Filter>
+    </ClInclude>
+    <ClInclude Include="stdafx.h">
+      <Filter>Common\PCH</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

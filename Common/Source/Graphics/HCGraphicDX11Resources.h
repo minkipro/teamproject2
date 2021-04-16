@@ -35,36 +35,6 @@ private:
 	ComPtr<ID3DBlob>			m_cpuData;
 };
 
-class HCDX11Texture final : public IHCTexture
-{
-public:
-	HCDX11Texture(ID3D11ShaderResourceView* view) : m_textureView(view){}
-
-	virtual ~HCDX11Texture();
-
-	virtual void*	GetTextureData() override;
-	virtual POINT	GetTextureSize() override;
-
-private:
-	ComPtr<ID3D11ShaderResourceView> m_textureView;
-};
-
-class HCDX11TextureBuffer final : public HCTextureBuffer
-{
-public:
-	HCDX11TextureBuffer()
-	{
-	}
-	virtual ~HCDX11TextureBuffer() = default;
-
-	virtual void									SetTexture(size_t slot, IHCTexture* texture);
-	const std::vector<ID3D11ShaderResourceView*>&	GetTextureViews();
-
-private:
-	std::vector<ID3D11ShaderResourceView*>			m_textureViews;
-};
-
-
 template<class T>
 class IHCDX11ConstBuffer final : public IHCCBuffer
 {

@@ -2,7 +2,7 @@
 #include "HCGraphic.h"
 
 
-void HCGraphic::ReserveRender(const std::string& pipeLineName, const std::string& textureBufferName,const HC::InputDataSample* object)
+void HCGraphic::ReserveRender(const std::string& pipeLineName, const HC::InputDataSample* object)
 {
 	size_t index = 0;
 	for (auto& it : m_PipeLineSlots)
@@ -11,16 +11,16 @@ void HCGraphic::ReserveRender(const std::string& pipeLineName, const std::string
 		{
 			if (pipeLineName == it->GetPipeLineName())
 			{
-				ReserveRender(index, textureBufferName, object);
+				ReserveRender(index, object);
 			}
 		}
 		index++;
 	}
 }
 
-void HCGraphic::ReserveRender(size_t pipeLineSlot, const std::string& textureBufferName,const HC::InputDataSample* object)
+void HCGraphic::ReserveRender(size_t pipeLineSlot, const HC::InputDataSample* object)
 {
-	m_PipeLineSlots[pipeLineSlot]->RenderReserveObject(textureBufferName, object);
+	m_PipeLineSlots[pipeLineSlot]->RenderReserveObject(object);
 }
 
 void HCGraphic::Render()
@@ -32,13 +32,7 @@ void HCGraphic::Render()
 		if (it)
 		{
 			SetPipeLineObject(it);
-
-			size_t offsetAccumulate = 0;
-			for (auto& it2 : it->GetReservedObjects())
-			{
-				RenderObjects(it2.first, it2.second, offsetAccumulate);
-				offsetAccumulate += it2.second.size();
-			}
+			RenderObjects(it);
 		}
 	}
 
@@ -67,4 +61,26 @@ void HCGraphic::NumberingGraphicPipeLineSlot(size_t slot, const std::string& pip
 	}
 
 	m_PipeLineSlots[slot] = iter->second.get();
+}
+
+void HCGraphicPipeLine::RenderReserveObject(const HC::InputDataSample* object)
+{
+	int textureIndex = object->GetTextureIndex();
+	size_t textureBufferIndex = (textureIndex > -1) ? (textureIndex>>16) : 0;
+
+	if (textureBufferIndex >= m_RenderReservedObjectsByTexture.size())
+	{
+		m_RenderReservedObjectsByTexture.insert(m_RenderReservedObjectsByTexture.end(), 
+												(textureBufferIndex + 1)- m_RenderReservedObjectsByTexture.size(), {});
+	}
+
+	m_RenderReservedObjectsByTexture[textureBufferIndex].push_back(object);
+}
+
+void HCGraphicPipeLine::ClearReservedObjects()
+{
+	for (auto& it : m_RenderReservedObjectsByTexture)
+	{
+		it.clear();
+	}
 }

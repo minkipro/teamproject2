@@ -10,6 +10,24 @@ using Microsoft::WRL::ComPtr;
 
 class HCGraphicDX11 final : public HCGraphic
 {
+	struct TextureInTextureData
+	{
+		DirectX::XMFLOAT2 StartUV = {};
+		DirectX::XMFLOAT2 EndUV = {};
+		UINT Index = 0;
+		UINT Pad0 = 0;
+		UINT Pad1 = 0;
+		UINT Pad2 = 0;
+	};
+
+	struct Texture2DArrayData
+	{
+		ComPtr<ID3D11ShaderResourceView>						TextureView;
+		ComPtr<ID3D11ShaderResourceView>						TextureInfoView;
+		std::vector<TextureInTextureData>						TextureDatas;
+		std::unordered_map<std::wstring, UINT>					TextureIndex;
+	};
+
 public:
 	HCGraphicDX11(HWND windowHandle)
 		:HCGraphic(windowHandle)
@@ -21,28 +39,28 @@ public:
 	virtual void		Update();
 
 	virtual void		CreateGraphicPipeLine(const std::string& pipeLineName, HCGraphicPipeLine** out) override;
-	virtual void		CreateTextureBuffer(const std::string& bufferName, HCTextureBuffer** out) override;
-	virtual void		CreateTexture(const std::wstring& filePath, IHCTexture** out) override;
 	virtual void		CreateShaderResource(const std::string& resourceName, size_t stride, const POINT& size, IHCTexture** out) override;
 	virtual void		CreateCB(const std::string& bufferName, size_t stride, size_t num, IHCCBuffer** out) override;
 	virtual void		CreateShader(const std::string& shaderName, HC::SHADERTYPE type, const std::wstring& filePath, const std::string& entryPoint, IHCShader** out) override;
 
 	virtual void		GetGraphicPipeLine(const std::string& pipeLineName, HCGraphicPipeLine** out) override;
-	virtual void		GetTextureBuffer(const std::string& bufferName, HCTextureBuffer** out) override;
-	virtual void		GetTexture(const std::string& textureName, IHCTexture** out) override;
 	virtual void		GetShaderResource(const std::string& resourceName, IHCTexture** out) override;
 	virtual void		GetCB(const std::string& bufferName, IHCCBuffer** out) override;
 	virtual void		GetShader(const std::string& shaderName, IHCShader** out) override;
+
+	virtual int			GetTextureIndex(const std::wstring& textureName) const override;
 
 	virtual LRESULT		WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) override;
 private:
 	virtual void		RenderBegin() override;
 	virtual void		RenderEnd() override;
 	virtual void		SetPipeLineObject(const HCGraphicPipeLine* pipeLine) override;
-	virtual void		RenderObjects(const std::string & textureBufferName, const std::vector<const HC::InputDataSample*> objects, size_t offset) override;
+	virtual void		RenderObjects(HCGraphicPipeLine* pipeLine) override;
 
 private:
 	void				CreateBaseSamplers();
+	void				CreateTextures();
+	void				CreateGraphicPipeLineBaseSettings();
 	void				CreateInputLayout(const HC::InputDataSample* sample, HCDX11Shader* vs);
 
 private:
@@ -58,14 +76,14 @@ private:
 
 	std::unordered_map<std::string, ComPtr<ID3D11InputLayout>>				m_inputLayout;
 	std::unordered_map<std::string, std::unique_ptr<IHCShader>>				m_shaders;
-	std::unordered_map<std::wstring, std::unique_ptr<HCDX11Texture>>		m_textures;
-	std::unordered_map<std::string, std::unique_ptr<HCDX11TextureBuffer>>	m_textureBuffers;
+	std::vector<Texture2DArrayData>											m_textures;
+	std::unordered_map<std::wstring, UINT>									m_textureBufferIndex;
+
 
 	bool																	m_resizing = false;
 	bool																	m_minimized = false;
 	bool																	m_maximized = false;
 
-	const std::wstring														m_textureFolderPath = L"./../Common/Texture/";
 	std::unique_ptr<IHCFont>												m_font;
 };
 

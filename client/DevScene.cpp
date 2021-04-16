@@ -13,7 +13,6 @@ void DevScene::Init()
 
 	IHCTexture* texture = nullptr;
 	IHCTexture* texture2 = nullptr;
-	HCTextureBuffer* texBuffer = nullptr;
 
 	HCGraphicPipeLine* testPipeLine = nullptr;
 	IHCShader* vs = nullptr;
@@ -22,14 +21,7 @@ void DevScene::Init()
 
 	m_test.Size = { 100,100 };
 	m_test.Position = { 100,100, 0.2f };
-	m_test.TextureIndex = 1;
-
-	graphic->CreateTexture(L"character.png", &texture);
-	graphic->CreateTexture(L"knight.png", &texture2);
-	graphic->CreateTextureBuffer("testTexBuffer", &texBuffer);
-
-	texBuffer->SetTexture(0, texture);
-	texBuffer->SetTexture(1, texture2);
+	m_test.TextureIndex = graphic->GetTextureIndex(L"knight.png");
 
 	graphic->CreateGraphicPipeLine("testPipe", &testPipeLine);
 	graphic->CreateShader("testVS", HC::SHADERTYPE::VS, L"./../Common/Shader/PointToPlaneSahder.hlsl", "VS", &vs);
@@ -44,7 +36,7 @@ void DevScene::Init()
 
 	graphic->NumberingGraphicPipeLineSlot(0, testPipeLine);
 
-	testPipeLine->RenderReserveObject("testTexBuffer", &m_test);
+	testPipeLine->RenderReserveObject(&m_test);
 }
 
 void DevScene::Update()

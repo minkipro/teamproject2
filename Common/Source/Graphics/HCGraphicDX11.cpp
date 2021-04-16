@@ -4,6 +4,7 @@
 #include <DirectXColors.h>
 #include <D3Dcompiler.h>
 #include <WICTextureLoader.h>
+#include "Util\StringHelper.h"
 #include "HCFont.h"
 
 using Microsoft::WRL::ComPtr;
@@ -23,52 +24,9 @@ void HCGraphicDX11::Init()
 	m_swapchain->Resize(HC::GO.WIN.WindowsizeX, HC::GO.WIN.WindowsizeY);
 
 	CreateBaseSamplers();
+	CreateTextures();
+	CreateGraphicPipeLineBaseSettings();
 
-	CD3D11_DEPTH_STENCIL_DESC depthstencildesc(D3D11_DEFAULT);
-	depthstencildesc.DepthFunc = D3D11_COMPARISON_FUNC::D3D11_COMPARISON_LESS_EQUAL;
-
-	COM_HRESULT_IF_FAILED(
-		m_device->CreateDepthStencilState(&depthstencildesc, m_baseDepthStencilState.GetAddressOf()),
-		"Failed to create depth stencil state.");
-
-	CD3D11_RASTERIZER_DESC rasterizerDesc(D3D11_DEFAULT);
-	COM_HRESULT_IF_FAILED(m_device->CreateRasterizerState(&rasterizerDesc, m_baseRasterizer.GetAddressOf()),
-		"Failed to create rasterizer state.");
-
-	D3D11_RENDER_TARGET_BLEND_DESC rtbd = { 0 };
-	rtbd.BlendEnable = true;
-	rtbd.SrcBlend = D3D11_BLEND::D3D11_BLEND_SRC_ALPHA;
-	rtbd.DestBlend = D3D11_BLEND::D3D11_BLEND_INV_SRC_ALPHA;
-	rtbd.BlendOp = D3D11_BLEND_OP::D3D11_BLEND_OP_ADD;
-	rtbd.SrcBlendAlpha = D3D11_BLEND::D3D11_BLEND_ONE;
-	rtbd.DestBlendAlpha = D3D11_BLEND::D3D11_BLEND_ZERO;
-	rtbd.BlendOpAlpha = D3D11_BLEND_OP::D3D11_BLEND_OP_ADD;
-	rtbd.RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE::D3D11_COLOR_WRITE_ENABLE_ALL;
-
-	D3D11_BLEND_DESC blendDesc = { 0 };
-	blendDesc.RenderTarget[0] = rtbd;
-
-	COM_HRESULT_IF_FAILED(m_device->CreateBlendState(&blendDesc, m_baseBlendState.GetAddressOf()),
-		"Failed to create blend state.");
-
-	m_mainPassCB = std::make_unique<IHCDX11ConstBuffer<HC::MainPass>>(m_device.Get(), m_deviceContext.Get());
-	ID3D11Buffer* baseCBs[] = { static_cast<ID3D11Buffer*>(m_mainPassCB->GetBuffer()) };
-
-	m_deviceContext->VSSetConstantBuffers(0, 1, baseCBs);
-	m_deviceContext->HSSetConstantBuffers(0, 1, baseCBs);
-	m_deviceContext->DSSetConstantBuffers(0, 1, baseCBs);
-	m_deviceContext->GSSetConstantBuffers(0, 1, baseCBs);
-	m_deviceContext->PSSetConstantBuffers(0, 1, baseCBs);
-
-	HC::MainPass mainPass;
-	DirectX::XMMATRIX orthoP = DirectX::XMMatrixOrthographicOffCenterLH(
-		0.0f, static_cast<float>(HC::GO.WIN.WindowsizeX),
-		static_cast<float>(HC::GO.WIN.WindowsizeY), 0,
-		D3D11_MIN_DEPTH, D3D11_MAX_DEPTH);
-
-	DirectX::XMStoreFloat4x4(&mainPass.gOrthoMatrix, orthoP);
-
-	m_mainPassCB->CopyData(&mainPass);
 	m_font = std::make_unique<HCFont>();
 	m_font.get()->Init((void*)m_device.Get(), (void*)m_deviceContext.Get());
 	IHCFont::TextData tempData = { L"test", DirectX::XMFLOAT2(0.0f, 0.0f), DirectX::XMFLOAT3(0.5f, 0.5f, 0.5f), DirectX::XMFLOAT2(1.0f, 1.0f) };
@@ -77,39 +35,15 @@ void HCGraphicDX11::Init()
 
 void HCGraphicDX11::Update()
 {
-	for (auto& it : m_PipeLines)
-	{
-		HCDX11VertexBuffer* currBuffer = static_cast<HCDX11VertexBuffer*>(it.second->GetVertexBuffer());
-		auto reservedOBs = it.second->GetReservedObjects();
-		UINT dataSize = it.second->GetCurrInputSample()->GetDataSize();
+	HC::MainPass mainPass;
+	DirectX::XMMATRIX orthoP = DirectX::XMMatrixOrthographicOffCenterLH(
+		0.0f, static_cast<float>(HC::GO.WIN.WindowsizeX),
+		static_cast<float>(HC::GO.WIN.WindowsizeY), 0,
+		D3D11_MIN_DEPTH, D3D11_MAX_DEPTH);
 
-		size_t numObjects = 0;
-		for (auto& it2 : reservedOBs)
-		{
-			numObjects += it2.second.size();
-		}
+	DirectX::XMStoreFloat4x4(&mainPass.OrthoMatrix, orthoP);
 
-		if (numObjects * dataSize > currBuffer->BufferSize)
-		{
-			//TODO: resize vertex buffer
-		}
-
-		size_t accumulatedByte = 0;
-		D3D11_MAPPED_SUBRESOURCE mappedResource = {};
-
-		COM_HRESULT_IF_FAILED(m_deviceContext->Map(currBuffer->Buffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource)
-			, "Failed to map constant buffer.");
-
-		for (auto& it2 : reservedOBs)
-		{
-			for (auto& it3 : it2.second)
-			{
-				CopyMemory(static_cast<BYTE*>(mappedResource.pData)+ accumulatedByte, it3, dataSize);
-				accumulatedByte += dataSize;
-			}
-		}
-		m_deviceContext->Unmap(currBuffer->Buffer.Get(), 0);
-	}
+	m_mainPassCB->CopyData(&mainPass);
 }
 
 void HCGraphicDX11::CreateGraphicPipeLine(const std::string& pipeLineName, HCGraphicPipeLine** out)
@@ -146,27 +80,27 @@ void HCGraphicDX11::CreateGraphicPipeLine(const std::string& pipeLineName, HCGra
 	*out = m_PipeLines[pipeLineName].get();
 }
 
-void HCGraphicDX11::CreateTextureBuffer(const std::string& bufferName, HCTextureBuffer** out)
-{
-	auto iter = m_textureBuffers.find(bufferName);
-	COM_THROW_IF_FAILED(iter == m_textureBuffers.end(), "This textureBuffer name already has created");
-	
-	m_textureBuffers[bufferName] = std::make_unique<HCDX11TextureBuffer>();
-	*out = m_textureBuffers[bufferName].get();
-}
+//void HCGraphicDX11::CreateTextureBuffer(const std::string& bufferName, HCTextureBuffer** out)
+//{
+//	auto iter = m_textureBuffers.find(bufferName);
+//	COM_THROW_IF_FAILED(iter == m_textureBuffers.end(), "This textureBuffer name already has created");
+//	
+//	m_textureBuffers[bufferName] = std::make_unique<HCDX11TextureBuffer>();
+//	*out = m_textureBuffers[bufferName].get();
+//}
 
-void HCGraphicDX11::CreateTexture(const std::wstring& filePath, IHCTexture** out)
-{
-	auto iter = m_textures.find(filePath);
-	COM_THROW_IF_FAILED(iter == m_textures.end(), "This texture name already has created");
-
-	ComPtr<ID3D11ShaderResourceView> textureView = nullptr;
-	std::wstring realPath = m_textureFolderPath + filePath;
-	COM_HRESULT_IF_FAILED(DirectX::CreateWICTextureFromFile(m_device.Get(), realPath.c_str(), nullptr, &textureView),
-		"Texture load Fail");
-	m_textures[filePath] = std::make_unique<HCDX11Texture>(textureView.Get());
-	*out = m_textures[filePath].get();
-}
+//void HCGraphicDX11::CreateTexture(const std::wstring& filePath, IHCTexture** out)
+//{
+//	auto iter = m_textures.find(filePath);
+//	COM_THROW_IF_FAILED(iter == m_textures.end(), "This texture name already has created");
+//
+//	ComPtr<ID3D11ShaderResourceView> textureView = nullptr;
+//	std::wstring realPath = HC::GO.GRAPHIC.TextureFolderPath + filePath;
+//	COM_HRESULT_IF_FAILED(DirectX::CreateWICTextureFromFile(m_device.Get(), realPath.c_str(), nullptr, &textureView),
+//		"Texture load Fail");
+//	m_textures[filePath] = std::make_unique<HCDX11Texture>(textureView.Get());
+//	*out = m_textures[filePath].get();
+//}
 
 void HCGraphicDX11::CreateShaderResource(const std::string& resourceName, size_t stride, const POINT& size, IHCTexture** out)
 {
@@ -226,11 +160,8 @@ void HCGraphicDX11::CreateShader(const std::string& shaderName, HC::SHADERTYPE t
 
 	ComPtr<ID3DBlob> byteCode = nullptr;
 	ComPtr<ID3DBlob> errors;
-	D3D_SHADER_MACRO macro[] = { {NULL,NULL },{} };
-#ifndef _WIN64
-	macro[1].Name = "MACRO"
-#endif
-	hr = D3DCompileFromFile(filePath.c_str(), macro, D3D_COMPILE_STANDARD_FILE_INCLUDE,
+
+	hr = D3DCompileFromFile(filePath.c_str(), nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE,
 		entryPoint.c_str(), target.c_str(), compileFlags, 0, byteCode.GetAddressOf(), errors.GetAddressOf());
 
 	if (errors != nullptr)
@@ -286,14 +217,6 @@ void HCGraphicDX11::GetGraphicPipeLine(const std::string& pipeLineName, HCGraphi
 {
 }
 
-void HCGraphicDX11::GetTextureBuffer(const std::string& bufferName, HCTextureBuffer** out)
-{
-}
-
-void HCGraphicDX11::GetTexture(const std::string& textureName, IHCTexture** out)
-{
-}
-
 void HCGraphicDX11::GetShaderResource(const std::string& resourceName, IHCTexture** out)
 {
 }
@@ -304,6 +227,33 @@ void HCGraphicDX11::GetCB(const std::string& bufferName, IHCCBuffer** out)
 
 void HCGraphicDX11::GetShader(const std::string& shaderName, IHCShader** out)
 {
+}
+
+int HCGraphicDX11::GetTextureIndex(const std::wstring& textureName) const
+{
+	int result = -1;
+	int bufferIndex = 0;
+	int TextureIndex = 0;
+	std::wstring directory = StringHelper::GetDirectoryFromPath(textureName);
+	std::wstring texture = StringHelper::GetFileNameFromPath(textureName);
+
+	if (directory.length()==0)
+	{
+		directory = StringHelper::GetFileNameFromPath(HC::GO.GRAPHIC.TextureFolderPath);
+		texture = directory + L"/" + textureName;
+	}
+
+	auto bufferIndexIter = m_textureBufferIndex.find(directory);
+	COM_THROW_IF_FAILED(bufferIndexIter != m_textureBufferIndex.end(), "This TextureBuffer is not loaded");
+	bufferIndex = bufferIndexIter->second;
+
+	auto textureIter = m_textures[bufferIndex].TextureIndex.find(texture);
+	COM_THROW_IF_FAILED(textureIter != m_textures[bufferIndex].TextureIndex.end(), "This Texture is not loaded");
+	TextureIndex = textureIter->second;
+
+	result = (bufferIndex << 16) + TextureIndex;
+
+	return result;
 }
 
 LRESULT HCGraphicDX11::WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
@@ -363,7 +313,22 @@ LRESULT HCGraphicDX11::WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lP
 		if (m_device.Get())
 		{
 			m_resizing = false;
+
 			m_swapchain->Resize(HC::GO.WIN.WindowsizeX, HC::GO.WIN.WindowsizeY);
+
+			HC::MainPass mainPass;
+			DirectX::XMMATRIX orthoP = DirectX::XMMatrixOrthographicOffCenterLH(
+				0.0f, static_cast<float>(HC::GO.WIN.WindowsizeX),
+				static_cast<float>(HC::GO.WIN.WindowsizeY), 0,
+				D3D11_MIN_DEPTH, D3D11_MAX_DEPTH);
+
+			DirectX::XMStoreFloat4x4(&mainPass.OrthoMatrix, orthoP);
+
+			m_mainPassCB->CopyData(&mainPass);
+			m_font = std::make_unique<HCFont>();
+			m_font.get()->Init((void*)m_device.Get(), (void*)m_deviceContext.Get());
+			IHCFont::TextData tempData = { L"test", DirectX::XMFLOAT2(0.0f, 0.0f), DirectX::XMFLOAT3(0.5f, 0.5f, 0.5f), DirectX::XMFLOAT2(1.0f, 1.0f) };
+			m_font->SetText(tempData);
 		}
 
 		return 0;
@@ -472,7 +437,7 @@ void HCGraphicDX11::SetPipeLineObject(const HCGraphicPipeLine* pipeLine)
 	auto iter = m_inputLayout.find(pipeLine->GetCurrInputSample()->GetInputName());
 	if (iter == m_inputLayout.end())
 	{
-		CreateInputLayout(pipeLine->GetCurrInputSample(), 
+		CreateInputLayout(pipeLine->GetCurrInputSample(),
 			static_cast<HCDX11Shader*>(pipeLine->m_shaders[static_cast<unsigned int>(HC::SHADERTYPE::VS)]));
 
 		iter = m_inputLayout.find(pipeLine->GetCurrInputSample()->GetInputName());
@@ -519,13 +484,56 @@ void HCGraphicDX11::SetPipeLineObject(const HCGraphicPipeLine* pipeLine)
 	}
 }
 
-void HCGraphicDX11::RenderObjects(const std::string& textureBufferName, const std::vector<const HC::InputDataSample*> objects, size_t offset)
+void HCGraphicDX11::RenderObjects(HCGraphicPipeLine* pipeLine)
 {
-	auto iter = m_textureBuffers.find(textureBufferName);
-	auto textureViews = iter->second->GetTextureViews();
+	HCDX11VertexBuffer* currBuffer = static_cast<HCDX11VertexBuffer*>(pipeLine->GetVertexBuffer());
+	auto reservedOBs = pipeLine->GetReservedObjects();
+	UINT dataSize = pipeLine->GetCurrInputSample()->GetDataSize();
 
-	m_deviceContext->PSSetShaderResources(10, static_cast<UINT>(textureViews.size()), &textureViews.front());
-	m_deviceContext->DrawInstanced(static_cast<UINT>(objects.size()), 1, static_cast<UINT>(offset), 0);
+	size_t numObjects = 0;
+	{
+		for (auto& it : reservedOBs)
+		{
+			numObjects += it.size();
+		}
+
+		if (numObjects * dataSize > currBuffer->BufferSize)
+		{
+			//TODO: resize vertex buffer
+		}
+	}
+
+	D3D11_MAPPED_SUBRESOURCE mappedResource = {};
+	size_t accumulatedByte = 0;
+	{
+		COM_HRESULT_IF_FAILED(m_deviceContext->Map(currBuffer->Buffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource),
+			"Failed to map constant buffer.");
+
+		for (auto& it2 : reservedOBs)
+		{
+			for (auto& it3 : it2)
+			{
+				CopyMemory(static_cast<BYTE*>(mappedResource.pData) + accumulatedByte, it3->GetData(), dataSize);
+				accumulatedByte += dataSize;
+			}
+		}
+		m_deviceContext->Unmap(currBuffer->Buffer.Get(), 0);
+	}
+
+	size_t currOffset = 0;
+	for (size_t i = 0; i < reservedOBs.size(); i++)
+	{
+		if (reservedOBs[i].size())
+		{
+			ID3D11ShaderResourceView* views[] = { m_textures[i].TextureInfoView.Get(),
+												  m_textures[i].TextureView.Get() };
+
+			m_deviceContext->PSSetShaderResources(0, _countof(views), views);
+			m_deviceContext->DrawInstanced(static_cast<UINT>(reservedOBs[i].size()), 1, static_cast<UINT>(currOffset), 0);
+
+			currOffset += reservedOBs[i].size();
+		}
+	}
 }
 
 void HCGraphicDX11::CreateBaseSamplers()
@@ -647,6 +655,180 @@ void HCGraphicDX11::CreateBaseSamplers()
 	m_deviceContext->PSSetSamplers(0, numSamplers, &samplers.front());
 }
 
+void HCGraphicDX11::CreateTextures()
+{
+	std::unordered_map<std::wstring, std::vector<std::wstring>> filePathes;
+	StringHelper::SearchAllFileFromDirectory(HC::GO.GRAPHIC.TextureFolderPath, filePathes);
+
+	m_textures.resize(filePathes.size());
+
+	// COM_THROW_IF_FAILED(bufferIndex < 0x0000ffff, "This TextureBuffer is overflow");
+	// COM_THROW_IF_FAILED(TextureIndex < 0x0000ffff, "This Texture is overflow");
+
+	UINT currIndex = 0;
+	for (auto& it : filePathes)
+	{
+		ComPtr<ID3D11Texture2D>					arrayTexture2D;
+		Texture2DArrayData& texture2DArrayData = m_textures[currIndex];
+		UINT									arraySize = static_cast<UINT>(it.second.size());
+		UINT									maximumX = 0;
+		UINT									maximumY = 0;
+
+		std::vector<ComPtr<ID3D11Texture2D>>	currFolderTextures;
+		std::vector<D3D11_TEXTURE2D_DESC>		textureDesces;
+
+		m_textureBufferIndex[it.first] = currIndex++;
+
+		for (auto& it2 : it.second)
+		{
+			ComPtr<ID3D11Resource> texture = nullptr;
+			ComPtr<ID3D11ShaderResourceView> textureView = nullptr;
+			D3D11_SHADER_RESOURCE_VIEW_DESC viewDesc = {};
+
+			COM_HRESULT_IF_FAILED(DirectX::CreateWICTextureFromFile(m_device.Get(), it2.c_str(), texture.GetAddressOf(), textureView.GetAddressOf()),
+				"Texture load Fail");
+
+			textureView->GetDesc(&viewDesc);
+			
+			switch (viewDesc.ViewDimension)
+			{
+			case D3D11_SRV_DIMENSION_TEXTURE2D:
+			{
+				textureDesces.push_back({});
+				auto texture2D = static_cast<ID3D11Texture2D*>(texture.Get());
+				texture2D->GetDesc(&textureDesces.back());
+
+				maximumX = (maximumX > textureDesces.back().Width) ? maximumX : textureDesces.back().Width;
+				maximumY = (maximumY > textureDesces.back().Height) ? maximumY : textureDesces.back().Height;
+
+				currFolderTextures.push_back(texture2D);
+			}
+			break;
+			default:
+				COM_THROW_IF_FAILED(false, "This type texture is not supported");
+				break;
+			}
+		}
+
+		{
+			D3D11_TEXTURE2D_DESC textureArrayDesc = {};
+			textureArrayDesc.Width = maximumX;
+			textureArrayDesc.Height = maximumY;
+			textureArrayDesc.ArraySize = arraySize;
+			textureArrayDesc.Format = textureDesces.back().Format;
+			textureArrayDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+			textureArrayDesc.Usage = D3D11_USAGE_DEFAULT;
+			textureArrayDesc.SampleDesc.Count = 1;
+			textureArrayDesc.MipLevels = 1;
+
+			m_device->CreateTexture2D(&textureArrayDesc, nullptr, arrayTexture2D.GetAddressOf());
+
+			D3D11_SHADER_RESOURCE_VIEW_DESC texArrayViewDesc = {};
+			texArrayViewDesc.Format = textureArrayDesc.Format;
+			texArrayViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2DARRAY;
+			texArrayViewDesc.Texture2DArray.ArraySize = arraySize;
+			texArrayViewDesc.Texture2DArray.MipLevels = 1;
+			texArrayViewDesc.Texture2DArray.MostDetailedMip = 0;
+
+			m_device->CreateShaderResourceView(arrayTexture2D.Get(), &texArrayViewDesc, texture2DArrayData.TextureView.GetAddressOf());
+		}
+
+		for (size_t i = 0; i < it.second.size(); i++)
+		{
+			//TODO : Fill texture to maxSizeTexture in step by step 
+			UINT currTextureSizeX = textureDesces[i].Width;
+			UINT currTextureSizeY = textureDesces[i].Height;
+			TextureInTextureData locationData;
+
+			locationData.Index = static_cast<UINT>(i);
+			locationData.StartUV = { 0.0f,0.0f };
+			locationData.EndUV = { static_cast<float>(currTextureSizeX) / maximumX, static_cast<float>(currTextureSizeY) / maximumY };
+
+			texture2DArrayData.TextureIndex[it.first + L"/" + StringHelper::GetFileNameFromPath(it.second[i])] = i;
+			texture2DArrayData.TextureDatas.push_back(locationData);
+
+			D3D11_BOX srcBox = {};
+			srcBox.left = 0;
+			srcBox.right = currTextureSizeX;
+			srcBox.top = 0;
+			srcBox.bottom = currTextureSizeY;
+			srcBox.front = 0;
+			srcBox.back = 1;
+
+			m_deviceContext->CopySubresourceRegion(arrayTexture2D.Get(), static_cast<UINT>(i), 0, 0, 0,
+				currFolderTextures[i].Get(), 0, &srcBox);
+		}
+
+		{
+			ComPtr<ID3D11Buffer> textureInfoBuffer;
+
+			D3D11_BUFFER_DESC bufferDesc = {};
+			bufferDesc.ByteWidth = arraySize * sizeof(TextureInTextureData);
+			bufferDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+			bufferDesc.Usage = D3D11_USAGE_DEFAULT;
+			bufferDesc.StructureByteStride = sizeof(TextureInTextureData);
+			bufferDesc.MiscFlags = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
+
+			D3D11_SUBRESOURCE_DATA data;
+			data.pSysMem = texture2DArrayData.TextureDatas.data();
+			data.SysMemPitch = bufferDesc.ByteWidth;
+			data.SysMemSlicePitch = data.SysMemPitch;
+
+			m_device->CreateBuffer(&bufferDesc, &data, textureInfoBuffer.GetAddressOf());
+
+			D3D11_SHADER_RESOURCE_VIEW_DESC bufferViewDesc = {};
+			bufferViewDesc.Format = DXGI_FORMAT_UNKNOWN;
+			bufferViewDesc.ViewDimension = D3D11_SRV_DIMENSION_BUFFER;
+			bufferViewDesc.Buffer.ElementOffset = 0;
+			bufferViewDesc.Buffer.ElementWidth = sizeof(TextureInTextureData);
+			bufferViewDesc.Buffer.NumElements = arraySize;
+
+			m_device->CreateShaderResourceView(textureInfoBuffer.Get(), &bufferViewDesc, texture2DArrayData.TextureInfoView.GetAddressOf());
+		}
+
+		m_deviceContext->Flush();
+	}
+}
+
+void HCGraphicDX11::CreateGraphicPipeLineBaseSettings()
+{
+	CD3D11_DEPTH_STENCIL_DESC depthstencildesc(D3D11_DEFAULT);
+	depthstencildesc.DepthFunc = D3D11_COMPARISON_FUNC::D3D11_COMPARISON_LESS_EQUAL;
+
+	COM_HRESULT_IF_FAILED(
+		m_device->CreateDepthStencilState(&depthstencildesc, m_baseDepthStencilState.GetAddressOf()),
+		"Failed to create depth stencil state.");
+
+	CD3D11_RASTERIZER_DESC rasterizerDesc(D3D11_DEFAULT);
+	COM_HRESULT_IF_FAILED(m_device->CreateRasterizerState(&rasterizerDesc, m_baseRasterizer.GetAddressOf()),
+		"Failed to create rasterizer state.");
+
+	D3D11_RENDER_TARGET_BLEND_DESC rtbd = { 0 };
+	rtbd.BlendEnable = true;
+	rtbd.SrcBlend = D3D11_BLEND::D3D11_BLEND_SRC_ALPHA;
+	rtbd.DestBlend = D3D11_BLEND::D3D11_BLEND_INV_SRC_ALPHA;
+	rtbd.BlendOp = D3D11_BLEND_OP::D3D11_BLEND_OP_ADD;
+	rtbd.SrcBlendAlpha = D3D11_BLEND::D3D11_BLEND_ONE;
+	rtbd.DestBlendAlpha = D3D11_BLEND::D3D11_BLEND_ZERO;
+	rtbd.BlendOpAlpha = D3D11_BLEND_OP::D3D11_BLEND_OP_ADD;
+	rtbd.RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE::D3D11_COLOR_WRITE_ENABLE_ALL;
+
+	D3D11_BLEND_DESC blendDesc = { 0 };
+	blendDesc.RenderTarget[0] = rtbd;
+
+	COM_HRESULT_IF_FAILED(m_device->CreateBlendState(&blendDesc, m_baseBlendState.GetAddressOf()),
+		"Failed to create blend state.");
+
+	m_mainPassCB = std::make_unique<IHCDX11ConstBuffer<HC::MainPass>>(m_device.Get(), m_deviceContext.Get());
+	ID3D11Buffer* baseCBs[] = { static_cast<ID3D11Buffer*>(m_mainPassCB->GetBuffer()) };
+
+	m_deviceContext->VSSetConstantBuffers(0, 1, baseCBs);
+	m_deviceContext->HSSetConstantBuffers(0, 1, baseCBs);
+	m_deviceContext->DSSetConstantBuffers(0, 1, baseCBs);
+	m_deviceContext->GSSetConstantBuffers(0, 1, baseCBs);
+	m_deviceContext->PSSetConstantBuffers(0, 1, baseCBs);
+}
+
 void HCGraphicDX11::CreateInputLayout(const HC::InputDataSample* sample, HCDX11Shader* vs)
 {
 	std::string name = sample->GetInputName();
@@ -657,20 +839,19 @@ void HCGraphicDX11::CreateInputLayout(const HC::InputDataSample* sample, HCDX11S
 	for (size_t i = 0; i < InputData.size(); i++)
 	{
 		D3D11_INPUT_ELEMENT_DESC temp = {};
-
 		temp.SemanticName = InputData[i].SemanticName.c_str();
 		temp.SemanticIndex = InputData[i].SemanticIndex;
 		temp.Format = InputData[i].Format;
-		temp.AlignedByteOffset = InputData[i].AlignedByteOffset;
+		temp.AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
 		temp.InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
 
 		dx11Elements.push_back(temp);
 	}
 
 	COM_HRESULT_IF_FAILED(
-		m_device->CreateInputLayout(&dx11Elements.front(), static_cast<UINT>(dx11Elements.size()), 
-		vs->GetCPUData()->GetBufferPointer(), vs->GetCPUData()->GetBufferSize(),
-		layout.GetAddressOf()),
+		m_device->CreateInputLayout(&dx11Elements.front(), static_cast<UINT>(dx11Elements.size()),
+			vs->GetCPUData()->GetBufferPointer(), vs->GetCPUData()->GetBufferSize(),
+			layout.GetAddressOf()),
 		"fail to create inputlayout");
 
 	m_inputLayout[name] = layout;

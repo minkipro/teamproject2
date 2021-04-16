@@ -12,8 +12,8 @@ namespace HC
 
 		struct GraphicOption
 		{
-			unsigned int NumSwapchainBuffer = 2;
-
+			unsigned int		NumSwapchainBuffer = 2;
+			const std::wstring	TextureFolderPath = L"./../Common/Texture";
 		}GRAPHIC;
 
 	}GO;

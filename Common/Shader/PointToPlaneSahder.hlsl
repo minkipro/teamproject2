@@ -59,7 +59,7 @@ float4 PS(VertexOut input) : SV_TARGET
     
     if (input.TexIndex >= 0)
     {
-        result = gMainTextures.Sample(gsamPointWrap, float3(input.Color.xy, 1));
+        result = GetTextureSample(gsamPointWrap, input.TexIndex, input.Color.xy);
     }
     else
     {

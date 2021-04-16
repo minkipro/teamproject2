@@ -92,6 +92,35 @@ struct RenderPoint :public HC::InputDataSample
 	int TextureIndex = -1;
 };
 
+//차후에 에디터, 클라 struct 정의 분리해야할듯
+struct RenderVertexSkeleton : public HC::InputDataSample
+{
+	virtual std::vector<HCInputLayoutElement>	GetInputData() const override
+	{
+		return { {"VTABLE",0,DXGI_FORMAT_R32G32_UINT},
+				 {"POSITION",0,DXGI_FORMAT_R32G32B32_FLOAT},
+				 {"TEXCOORD",0,DXGI_FORMAT_R32G32_FLOAT},
+				 {"NORMAL",0,DXGI_FORMAT_R32G32B32_FLOAT},
+				 {"BONEIDA",0,DXGI_FORMAT_R32G32B32A32_FLOAT},
+				 {"BONEIDB",0,DXGI_FORMAT_R32G32B32A32_FLOAT },
+				 {"BONEWEIGHTA",0,DXGI_FORMAT_R32G32B32A32_FLOAT},
+				 {"BONEWEIGHTB",0,DXGI_FORMAT_R32G32B32A32_FLOAT } };
+	}
+
+	virtual const char* GetInputName() const override { return typeid(RenderVertexSkeleton).name(); }
+	virtual unsigned int						GetDataSize() const override { return sizeof(RenderPoint); }
+
+	DirectX::XMFLOAT3 Position;
+	DirectX::XMFLOAT2 uv;
+	DirectX::XMFLOAT3 normal;
+	DirectX::XMFLOAT4 BoneIdA;
+	DirectX::XMFLOAT4 BoneIdB;
+	DirectX::XMFLOAT4 BoneWeightA;
+	DirectX::XMFLOAT4 BoneWeightB;
+
+	int TextureIndex = -1;
+};
+
 class IHCInputLayout
 {
 public:

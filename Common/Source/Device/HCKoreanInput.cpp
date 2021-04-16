@@ -30,7 +30,8 @@ LRESULT HCKoreanInput::WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lP
 			{
 				ImmGetCompositionString(m_hIMC, GCS_RESULTSTR, m_cstr, len);
 				m_cstr[len] = 0;
-				wcscpy(m_text + wcslen(m_text), m_cstr);
+				size_t len = wcslen(m_text);
+				wcscpy_s(m_text + len, 255- len, m_cstr);
 				memset(m_cstr, 0, 10);
 			}
 		}

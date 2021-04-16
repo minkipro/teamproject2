@@ -35,7 +35,6 @@ void HCGraphic::Render()
 			RenderObjects(it);
 		}
 	}
-
 	RenderEnd();
 }
 
@@ -45,7 +44,6 @@ void HCGraphic::NumberingGraphicPipeLineSlot(size_t slot, HCGraphicPipeLine* pip
 	{
 		m_PipeLineSlots.resize(slot + 1);
 	}
-
 	m_PipeLineSlots[slot] = pipeLine;
 }
 

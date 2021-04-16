@@ -43,9 +43,6 @@
     <ClCompile Include="Main.cpp">
       <Filter>Client</Filter>
     </ClCompile>
-    <ClCompile Include="Engine.cpp">
-      <Filter>Client</Filter>
-    </ClCompile>
     <ClCompile Include="..\Common\Source\HCScene.cpp">
       <Filter>Client\Scene</Filter>
     </ClCompile>
@@ -76,14 +73,17 @@
     <ClCompile Include="DevScene.cpp">
       <Filter>Client\Scene</Filter>
     </ClCompile>
-    <ClCompile Include="stdafx.cpp">
-      <Filter>Common\PCH</Filter>
-    </ClCompile>
     <ClCompile Include="..\Common\Source\Device\HCTimer.cpp">
       <Filter>Common\Devices</Filter>
     </ClCompile>
     <ClCompile Include="..\Common\Source\Graphics\HCFont.cpp">
       <Filter>Common\Devices\Graphics_Dx11</Filter>
+    </ClCompile>
+    <ClCompile Include="Character.cpp">
+      <Filter>Client\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine.cpp">
+      <Filter>Client</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -92,9 +92,6 @@
     </ClInclude>
     <ClInclude Include="..\Common\Source\Includes\GameObject.h">
       <Filter>Common</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine.h">
-      <Filter>Client</Filter>
     </ClInclude>
     <ClInclude Include="..\Common\Source\HCScene.h">
       <Filter>Client\Scene</Filter>
@@ -135,14 +132,20 @@
     <ClInclude Include="DevScene.h">
       <Filter>Client\Scene</Filter>
     </ClInclude>
-    <ClInclude Include="stdafx.h">
-      <Filter>Common\PCH</Filter>
-    </ClInclude>
     <ClInclude Include="..\Common\Source\Device\HCTimer.h">
       <Filter>Common\Devices</Filter>
     </ClInclude>
     <ClInclude Include="..\Common\Source\Graphics\HCFont.h">
       <Filter>Common\Devices\Graphics_Dx11</Filter>
+    </ClInclude>
+    <ClInclude Include="Character.h">
+      <Filter>Client\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine.h">
+      <Filter>Client</Filter>
+    </ClInclude>
+    <ClInclude Include="stdafx.h">
+      <Filter>Common\PCH</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -69,6 +69,7 @@ inline IHCDX11ConstBuffer<T>::IHCDX11ConstBuffer(ID3D11Device* device, ID3D11Dev
 		"fail to create CBBuffer");
 }
 
+//dc를 들고있는것보다 graphic에 요청하는 형식이 좋을거같다.
 template<class T>
 inline void IHCDX11ConstBuffer<T>::CopyData(const void* data)
 {

@@ -97,8 +97,7 @@ struct RenderVertexSkeleton : public HC::InputDataSample
 {
 	virtual std::vector<HCInputLayoutElement>	GetInputData() const override
 	{
-		return { {"VTABLE",0,DXGI_FORMAT_R32G32_UINT},
-				 {"POSITION",0,DXGI_FORMAT_R32G32B32_FLOAT},
+		return { {"POSITION",0,DXGI_FORMAT_R32G32B32_FLOAT},
 				 {"TEXCOORD",0,DXGI_FORMAT_R32G32_FLOAT},
 				 {"NORMAL",0,DXGI_FORMAT_R32G32B32_FLOAT},
 				 {"BONEIDA",0,DXGI_FORMAT_R32G32B32A32_FLOAT},
@@ -107,8 +106,9 @@ struct RenderVertexSkeleton : public HC::InputDataSample
 				 {"BONEWEIGHTB",0,DXGI_FORMAT_R32G32B32A32_FLOAT } };
 	}
 
-	virtual const char* GetInputName() const override { return typeid(RenderVertexSkeleton).name(); }
+	virtual const char*							GetInputName() const override { return typeid(RenderVertexSkeleton).name(); }
 	virtual unsigned int						GetDataSize() const override { return sizeof(RenderPoint); }
+	virtual int									GetTextureIndex() const override { return TextureIndex; }
 
 	DirectX::XMFLOAT3 Position;
 	DirectX::XMFLOAT2 uv;

@@ -850,7 +850,7 @@ void HCGraphicDX11::CreateInputLayout(const HC::InputDataSample* sample, HCDX11S
 		{
 			temp.AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
 		}
-		//temp.AlignedByteOffset = InputData[i].AlignedByteOffset;
+
 		temp.InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
 
 		dx11Elements.push_back(temp);

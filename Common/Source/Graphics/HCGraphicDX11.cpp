@@ -80,28 +80,6 @@ void HCGraphicDX11::CreateGraphicPipeLine(const std::string& pipeLineName, HCGra
 	*out = m_PipeLines[pipeLineName].get();
 }
 
-//void HCGraphicDX11::CreateTextureBuffer(const std::string& bufferName, HCTextureBuffer** out)
-//{
-//	auto iter = m_textureBuffers.find(bufferName);
-//	COM_THROW_IF_FAILED(iter == m_textureBuffers.end(), "This textureBuffer name already has created");
-//	
-//	m_textureBuffers[bufferName] = std::make_unique<HCDX11TextureBuffer>();
-//	*out = m_textureBuffers[bufferName].get();
-//}
-
-//void HCGraphicDX11::CreateTexture(const std::wstring& filePath, IHCTexture** out)
-//{
-//	auto iter = m_textures.find(filePath);
-//	COM_THROW_IF_FAILED(iter == m_textures.end(), "This texture name already has created");
-//
-//	ComPtr<ID3D11ShaderResourceView> textureView = nullptr;
-//	std::wstring realPath = HC::GO.GRAPHIC.TextureFolderPath + filePath;
-//	COM_HRESULT_IF_FAILED(DirectX::CreateWICTextureFromFile(m_device.Get(), realPath.c_str(), nullptr, &textureView),
-//		"Texture load Fail");
-//	m_textures[filePath] = std::make_unique<HCDX11Texture>(textureView.Get());
-//	*out = m_textures[filePath].get();
-//}
-
 void HCGraphicDX11::CreateShaderResource(const std::string& resourceName, size_t stride, const POINT& size, IHCTexture** out)
 {
 }
@@ -351,8 +329,6 @@ void HCGraphicDX11::RenderBegin()
 
 void HCGraphicDX11::RenderEnd()
 {
-	m_deviceContext->GSSetShader(nullptr, nullptr, 0);
-	m_font.get()->Render();
 	m_swapchain->Present();
 }
 
@@ -534,6 +510,12 @@ void HCGraphicDX11::RenderObjects(HCGraphicPipeLine* pipeLine)
 			currOffset += reservedOBs[i].size();
 		}
 	}
+}
+
+void HCGraphicDX11::RenderFont()
+{
+	m_deviceContext->GSSetShader(nullptr, nullptr, 0);
+	m_font.get()->Render();
 }
 
 void HCGraphicDX11::CreateBaseSamplers()

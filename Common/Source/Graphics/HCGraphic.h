@@ -303,6 +303,7 @@ protected: //pure virtual method
 	virtual void		RenderEnd() = 0;
 	virtual void		SetPipeLineObject(const HCGraphicPipeLine* pipeLine) = 0;
 	virtual void		RenderObjects(HCGraphicPipeLine* pipeLine) = 0;
+	virtual void		RenderFont() = 0;
 
 private:
 	virtual std::string GetDeviceName() const override { return typeid(HCGraphic).name(); }

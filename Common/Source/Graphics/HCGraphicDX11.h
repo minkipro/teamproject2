@@ -56,6 +56,7 @@ private:
 	virtual void		RenderEnd() override;
 	virtual void		SetPipeLineObject(const HCGraphicPipeLine* pipeLine) override;
 	virtual void		RenderObjects(HCGraphicPipeLine* pipeLine) override;
+	virtual void		RenderFont() override;
 
 private:
 	void				CreateBaseSamplers();

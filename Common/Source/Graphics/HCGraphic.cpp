@@ -35,6 +35,8 @@ void HCGraphic::Render()
 			RenderObjects(it);
 		}
 	}
+
+	RenderFont();
 	RenderEnd();
 }
 

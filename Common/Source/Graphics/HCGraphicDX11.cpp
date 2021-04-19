@@ -44,9 +44,6 @@ void HCGraphicDX11::Update()
 	DirectX::XMStoreFloat4x4(&mainPass.OrthoMatrix, orthoP);
 
 	m_mainPassCB->CopyData(&mainPass, 0);
-
-	
-	m_skeletonCB->CopyData(&m_cbSkeleton, 1);
 }
 
 void HCGraphicDX11::CreateGraphicPipeLine(const std::string& pipeLineName, HCGraphicPipeLine** out)
@@ -305,7 +302,7 @@ LRESULT HCGraphicDX11::WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lP
 
 			DirectX::XMStoreFloat4x4(&mainPass.OrthoMatrix, orthoP);
 
-			m_mainPassCB->CopyData(&mainPass);
+			m_mainPassCB->CopyData(&mainPass,0);
 			m_font = std::make_unique<HCFont>();
 			m_font.get()->Init((void*)m_device.Get(), (void*)m_deviceContext.Get());
 			IHCFont::TextData tempData = { L"test", DirectX::XMFLOAT2(0.0f, 0.0f), DirectX::XMFLOAT3(0.5f, 0.5f, 0.5f), DirectX::XMFLOAT2(1.0f, 1.0f) };
@@ -804,7 +801,7 @@ void HCGraphicDX11::CreateGraphicPipeLineBaseSettings()
 	COM_HRESULT_IF_FAILED(m_device->CreateBlendState(&blendDesc, m_baseBlendState.GetAddressOf()),
 		"Failed to create blend state.");
 
-	m_mainPassCB = std::make_unique<IHCDX11ConstBuffer<HC::MainPass>>(m_device.Get(), m_deviceContext.Get());
+	m_mainPassCB = std::make_unique<HCDX11ConstBuffer<HC::MainPass>>(m_device.Get(), m_deviceContext.Get());
 	ID3D11Buffer* baseCBs[] = { static_cast<ID3D11Buffer*>(m_mainPassCB->GetBuffer()) };
 
 	m_deviceContext->VSSetConstantBuffers(0, 1, baseCBs);

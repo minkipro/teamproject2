@@ -36,13 +36,13 @@ private:
 };
 
 template<class T>
-class IHCDX11ConstBuffer final : public IHCCBuffer
+class HCDX11ConstBuffer final : public IHCCBuffer
 {
 public:
-	IHCDX11ConstBuffer() = delete;
-	IHCDX11ConstBuffer(const IHCDX11ConstBuffer& rhs) = delete;
-	IHCDX11ConstBuffer(ID3D11Device* device, ID3D11DeviceContext* deviceContext);
-	virtual ~IHCDX11ConstBuffer() = default;
+	HCDX11ConstBuffer() = delete;
+	HCDX11ConstBuffer(const HCDX11ConstBuffer& rhs) = delete;
+	HCDX11ConstBuffer(ID3D11Device* device, ID3D11DeviceContext* deviceContext);
+	virtual ~HCDX11ConstBuffer() = default;
 
 	virtual void		CopyData(const void* data, UINT index) override;
 	virtual void*		GetBuffer() override;
@@ -53,7 +53,7 @@ private:
 };
 
 template<class T>
-inline IHCDX11ConstBuffer<T>::IHCDX11ConstBuffer(ID3D11Device* device, ID3D11DeviceContext* deviceContext)
+inline HCDX11ConstBuffer<T>::HCDX11ConstBuffer(ID3D11Device* device, ID3D11DeviceContext* deviceContext)
 {
 	m_deviceContext = deviceContext;
 
@@ -70,20 +70,22 @@ inline IHCDX11ConstBuffer<T>::IHCDX11ConstBuffer(ID3D11Device* device, ID3D11Dev
 }
 
 template<class T>
-inline void IHCDX11ConstBuffer<T>::CopyData(const void* data, UINT index)
+inline void HCDX11ConstBuffer<T>::CopyData(const void* data, UINT index)
 {
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
+	UINT64 byteWidth = static_cast<UINT64>(sizeof(T) + (16 - (sizeof(T) % 16)));;
 
 	COM_HRESULT_IF_FAILED(m_deviceContext->Map(m_buffer.Get(), index, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource)
 		, "Failed to map constant buffer.");
 	
-	CopyMemory(mappedResource.pData, data, sizeof(T));
+	CopyMemory(static_cast<BYTE*>(mappedResource.pData) + (byteWidth*index),
+		data, sizeof(T));
 	
 	m_deviceContext->Unmap(m_buffer.Get(), index);
 }
 
 template<class T>
-inline void* IHCDX11ConstBuffer<T>::GetBuffer()
+inline void* HCDX11ConstBuffer<T>::GetBuffer()
 {
 	return m_buffer.Get();
 }

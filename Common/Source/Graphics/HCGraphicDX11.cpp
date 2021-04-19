@@ -43,7 +43,10 @@ void HCGraphicDX11::Update()
 
 	DirectX::XMStoreFloat4x4(&mainPass.OrthoMatrix, orthoP);
 
-	m_mainPassCB->CopyData(&mainPass);
+	m_mainPassCB->CopyData(&mainPass, 0);
+
+	
+	m_skeletonCB->CopyData(&m_cbSkeleton, 1);
 }
 
 void HCGraphicDX11::CreateGraphicPipeLine(const std::string& pipeLineName, HCGraphicPipeLine** out)

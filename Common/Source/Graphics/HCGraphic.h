@@ -69,6 +69,13 @@ namespace HC
 		DirectX::XMFLOAT2	MousePos;
 		DirectX::XMUINT2	RenderTargetSize;
 	};
+
+	struct CB_VS_vertexshader_skeleton
+	{
+		DirectX::XMMATRIX wvpMatrix;
+		DirectX::XMMATRIX worldMatrix;
+		DirectX::XMMATRIX boneTransform[100];
+	};
 }
 
 struct RenderPoint :public HC::InputDataSample
@@ -92,7 +99,6 @@ struct RenderPoint :public HC::InputDataSample
 	int TextureIndex = -1;
 };
 
-//차후에 에디터, 클라 struct 정의 분리해야할듯
 struct RenderVertexSkeleton : public HC::InputDataSample
 {
 	virtual std::vector<HCInputLayoutElement>	GetInputData() const override
@@ -103,7 +109,8 @@ struct RenderVertexSkeleton : public HC::InputDataSample
 				 {"BONEIDA",0,DXGI_FORMAT_R32G32B32A32_FLOAT},
 				 {"BONEIDB",0,DXGI_FORMAT_R32G32B32A32_FLOAT },
 				 {"BONEWEIGHTA",0,DXGI_FORMAT_R32G32B32A32_FLOAT},
-				 {"BONEWEIGHTB",0,DXGI_FORMAT_R32G32B32A32_FLOAT } };
+				 {"BONEWEIGHTB",0,DXGI_FORMAT_R32G32B32A32_FLOAT },
+				 {"TEXINDEX",0,DXGI_FORMAT_R32_SINT} };
 	}
 
 	virtual const char*							GetInputName() const override { return typeid(RenderVertexSkeleton).name(); }

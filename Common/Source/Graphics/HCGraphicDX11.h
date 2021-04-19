@@ -70,6 +70,10 @@ private:
 	ComPtr<ID3D11DeviceContext>												m_deviceContext;
 
 	std::unique_ptr<IHCDX11ConstBuffer<HC::MainPass>>						m_mainPassCB;
+public:
+	HC::CB_VS_vertexshader_skeleton m_cbSkeleton;
+private:
+	std::unique_ptr<IHCDX11ConstBuffer<HC::CB_VS_vertexshader_skeleton>>	m_skeletonCB;
 	ComPtr<ID3D11RasterizerState>											m_baseRasterizer;
 	ComPtr<ID3D11DepthStencilState>											m_baseDepthStencilState;
 	ComPtr<ID3D11BlendState>												m_baseBlendState;

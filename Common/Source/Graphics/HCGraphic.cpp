@@ -68,18 +68,18 @@ void HCGraphicPipeLine::RenderReserveObject(const HC::InputDataSample* object)
 	int textureIndex = object->GetTextureIndex();
 	size_t textureBufferIndex = (textureIndex > -1) ? (textureIndex>>16) : 0;
 
-	if (textureBufferIndex >= m_RenderReservedObjectsByTexture.size())
+	if (textureBufferIndex >= m_renderReservedObjectsByTexture.size())
 	{
-		m_RenderReservedObjectsByTexture.insert(m_RenderReservedObjectsByTexture.end(), 
-												(textureBufferIndex + 1)- m_RenderReservedObjectsByTexture.size(), {});
+		m_renderReservedObjectsByTexture.insert(m_renderReservedObjectsByTexture.end(), 
+												(textureBufferIndex + 1)- m_renderReservedObjectsByTexture.size(), {});
 	}
 
-	m_RenderReservedObjectsByTexture[textureBufferIndex].push_back(object);
+	m_renderReservedObjectsByTexture[textureBufferIndex].push_back(object);
 }
 
 void HCGraphicPipeLine::ClearReservedObjects()
 {
-	for (auto& it : m_RenderReservedObjectsByTexture)
+	for (auto& it : m_renderReservedObjectsByTexture)
 	{
 		it.clear();
 	}

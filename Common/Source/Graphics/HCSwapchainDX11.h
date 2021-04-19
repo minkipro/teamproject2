@@ -34,6 +34,12 @@ private:
 	Microsoft::WRL::ComPtr<ID3D11Texture2D>			m_depthStencilBuffer;
 	Microsoft::WRL::ComPtr<ID3D11DepthStencilView>	m_depthStencilView;
 	Microsoft::WRL::ComPtr<ID3D11RenderTargetView>	m_renderTargetView;
+	
+	Microsoft::WRL::ComPtr<ID3D11Texture2D>			m_renderTargetView;
+	Microsoft::WRL::ComPtr<ID3D11Texture2D>			m_renderTargetView;
+	Microsoft::WRL::ComPtr<ID3D11RenderTargetView>	m_renderTargetView;
+
+
 
 	const DXGI_FORMAT								m_presentBufferFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
 	const DXGI_FORMAT								m_colorBufferFormat = DXGI_FORMAT_R8G8B8A8_UNORM;

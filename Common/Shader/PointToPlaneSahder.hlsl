@@ -47,7 +47,7 @@ PointVertexIn VS(PointVertexIn input)
 	return input;
 }
 
-[maxvertexcount(6)]
+[maxvertexcount(4)]
 void GS(point PointVertexIn input[1], inout TriangleStream<VertexOut> output)
 {
 	CreatePanel(input[0], output);

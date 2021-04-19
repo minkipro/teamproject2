@@ -36,7 +36,7 @@ void DevScene::Init()
 	graphic->CreateShader("testGS", HC::SHADERTYPE::GS, L"./../Common/Shader/PointToPlaneSahder.hlsl", "GS", &gs);
 	graphic->CreateShader("testPS", HC::SHADERTYPE::PS, L"./../Common/Shader/PointToPlaneSahder.hlsl", "PS", &ps);
 
-	testPipeLine->m_Primitive = HC::PRIMITIVE_TOPOLOGY::POINT;
+	testPipeLine->m_primitive = HC::PRIMITIVE_TOPOLOGY::POINT;
 	testPipeLine->SelectInputSample<RenderPoint>();
 	testPipeLine->SetShader(HC::SHADERTYPE::VS, vs);
 	testPipeLine->SetShader(HC::SHADERTYPE::GS, gs);

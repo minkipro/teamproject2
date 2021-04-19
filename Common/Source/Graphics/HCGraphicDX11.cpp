@@ -377,7 +377,7 @@ void HCGraphicDX11::SetPipeLineObject(const HCGraphicPipeLine* pipeLine)
 		}
 	}
 
-	switch (pipeLine->m_Primitive)
+	switch (pipeLine->m_primitive)
 	{
 	case HC::PRIMITIVE_TOPOLOGY::POINT:
 	{
@@ -427,7 +427,7 @@ void HCGraphicDX11::SetPipeLineObject(const HCGraphicPipeLine* pipeLine)
 	const UINT offsets[] = { 0 };
 	m_deviceContext->IASetVertexBuffers(0, 1, vertexBuffers, strides, offsets);
 
-	if (pipeLine->m_Rasterizer)
+	if (pipeLine->m_rasterizer)
 	{
 
 	}
@@ -436,7 +436,7 @@ void HCGraphicDX11::SetPipeLineObject(const HCGraphicPipeLine* pipeLine)
 		m_deviceContext->RSSetState(m_baseRasterizer.Get());
 	}
 
-	if (pipeLine->m_DepthStencilState)
+	if (pipeLine->m_depthStencilState)
 	{
 
 	}
@@ -445,7 +445,7 @@ void HCGraphicDX11::SetPipeLineObject(const HCGraphicPipeLine* pipeLine)
 		m_deviceContext->OMSetDepthStencilState(m_baseDepthStencilState.Get(), 0);
 	}
 
-	if (pipeLine->m_BlendState)
+	if (pipeLine->m_blendState)
 	{
 
 	}

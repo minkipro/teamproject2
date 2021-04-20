@@ -16,7 +16,6 @@ struct VS_INPUT
     float4 inBoneIdB : BONEIDB;
     float4 inBoneWeightsA : BONEWEIGHTA;
     float4 inBoneWeightsB : BONEWEIGHTB;
-    int TexIndex : TEXINDEX;
 };
 
 struct VS_OUTPUT
@@ -25,8 +24,18 @@ struct VS_OUTPUT
     float2 outTexCoord : TEXCOORD;
     float3 outNormal : NORMAL;
     float3 outWorldPos : WORLD_POSITION;
-    nointerpolation int TexIndex : TEXINDEX0;
 };
+
+struct PS_INPUT
+{
+    float4 inPosition : SV_POSITION;
+    float2 inTexCoord : TEXCOORD;
+    float3 inNormal : NORMAL;
+    float3 inWorldPos : WORLD_POSITION;
+};
+
+Texture2D objTexture : TEXTURE : register(t0);
+SamplerState objSamplerState : SAMPLER : register(s0);
 
 struct PS_OUTPUT
 {

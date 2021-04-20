@@ -2,6 +2,8 @@
 #include "HCSwapchainDX11.h"
 #include "GlobalOption.h"
 
+using Microsoft::WRL::ComPtr;
+
 void HCSwapchainDX11::Init(UINT numSwapBuffer, HWND wnd, ID3D11Device** deviceOut, ID3D11DeviceContext** contextOut)
 {
 	m_numSwapBuffer = numSwapBuffer;
@@ -65,17 +67,41 @@ void HCSwapchainDX11::Resize(UINT windowX, UINT windowY)
 			m_renderTargetView.GetAddressOf()),
 		"Failed to create render target view.");
 
-	//Describe our Depth/Stencil Buffer
 	CD3D11_TEXTURE2D_DESC depthStencilTextureDesc(DXGI_FORMAT_D24_UNORM_S8_UINT, windowX, windowY);
 	depthStencilTextureDesc.MipLevels = 1;
 	depthStencilTextureDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
 
+	//D3D11_TEXTURE2D_DESC pixelFuncDesc = {};
+	//pixelFuncDesc.Usage = D3D11_USAGE_STAGING;
+	//pixelFuncDesc.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
+	//pixelFuncDesc.Format = DXGI_FORMAT_R32_SINT;
+	//pixelFuncDesc.MipLevels = 1;
+	//pixelFuncDesc.ArraySize = 1;
+	//pixelFuncDesc.SampleDesc.Count = 1;
+	//pixelFuncDesc.Width = windowX;
+	//pixelFuncDesc.Height = windowY;
+
+	//D3D11_TEXTURE2D_DESC pixelFuncRenderTargetDesc = {};
+	//pixelFuncRenderTargetDesc.Usage = D3D11_USAGE_DEFAULT;
+	//pixelFuncRenderTargetDesc.BindFlags = D3D11_BIND_RENDER_TARGET;
+	//pixelFuncRenderTargetDesc.Format = DXGI_FORMAT_R32_SINT;
+	//pixelFuncRenderTargetDesc.MipLevels = 1;
+	//pixelFuncRenderTargetDesc.ArraySize = 1;
+	//pixelFuncRenderTargetDesc.SampleDesc.Count = 1;
+	//pixelFuncRenderTargetDesc.Width = windowX;
+	//pixelFuncRenderTargetDesc.Height = windowY;
+	//
+	//ComPtr<ID3D11Texture2D> pixelFunc;
+	//COM_HRESULT_IF_FAILED(
+	//	device->CreateTexture2D(&pixelFuncDesc, nullptr, pixelFunc.GetAddressOf()),
+	//	"Failed to create pixelFunc buffer.");
+
 	COM_HRESULT_IF_FAILED(
-		device->CreateTexture2D(&depthStencilTextureDesc, NULL, m_depthStencilBuffer.GetAddressOf()),
+		device->CreateTexture2D(&depthStencilTextureDesc, nullptr, m_depthStencilBuffer.GetAddressOf()),
 		"Failed to create depth stencil buffer.");
 
 	COM_HRESULT_IF_FAILED(
-		device->CreateDepthStencilView(m_depthStencilBuffer.Get(), NULL, m_depthStencilView.GetAddressOf()), 
+		device->CreateDepthStencilView(m_depthStencilBuffer.Get(), nullptr, m_depthStencilView.GetAddressOf()), 
 		"Failed to create depth stencil view.");
 }
 
@@ -83,15 +109,16 @@ void HCSwapchainDX11::PresentRenderTargetSetting(ID3D11DeviceContext* deviceCont
 {
 	auto present = m_renderTargetView.Get();
 
-	deviceContext->OMSetRenderTargets(1, &present, m_depthStencilView.Get());
 	deviceContext->ClearRenderTargetView(present, clearColor);
 	deviceContext->ClearDepthStencilView(m_depthStencilView.Get(), 
 		D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
-
+	
 	CD3D11_VIEWPORT viewport(0.0f, 0.0f, static_cast<float>(HC::GO.WIN.WindowsizeX), static_cast<float>(HC::GO.WIN.WindowsizeY));
 	D3D11_RECT rect = { 0, 0, HC::GO.WIN.WindowsizeX, HC::GO.WIN.WindowsizeY };
 	deviceContext->RSSetViewports(1, &viewport);
 	deviceContext->RSSetScissorRects(1, &rect);
+
+	deviceContext->OMSetRenderTargets(1, &present, m_depthStencilView.Get());
 }
 
 void HCSwapchainDX11::Present()

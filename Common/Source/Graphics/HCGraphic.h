@@ -173,7 +173,7 @@ public:
 	IHCCBuffer() {}
 	virtual ~IHCCBuffer() = default;
 
-	virtual void	CopyData(const void* data) = 0;
+	virtual void	CopyData(const void* data, UINT index) = 0;
 	virtual void*	GetBuffer() = 0;
 
 protected:
@@ -232,42 +232,42 @@ public:
 	HCGraphicPipeLine() = delete;
 	HCGraphicPipeLine(const HCGraphicPipeLine& rhs) = delete;
 	HCGraphicPipeLine(const std::string& name, void* vertexBuffer, std::function<void(void*)> vertexBufferReleaseFunc)
-		: m_PipeLineName(name)
-		, m_VertexBuffer(vertexBuffer)
-		, m_VertexBufferRelease(vertexBufferReleaseFunc)
+		: m_pipeLineName(name)
+		, m_vertexBuffer(vertexBuffer)
+		, m_vertexBufferRelease(vertexBufferReleaseFunc)
 	{
 	}
 	virtual ~HCGraphicPipeLine()
 	{
-		m_VertexBufferRelease(m_VertexBuffer);
+		m_vertexBufferRelease(m_vertexBuffer);
 	}
-	const HC::InputDataSample*	GetCurrInputSample() const { return m_InputSample.get(); }
-	const std::string&			GetPipeLineName() const { return m_PipeLineName; }
-	const auto&					GetReservedObjects() const { return m_RenderReservedObjectsByTexture; }
-	void*						GetVertexBuffer() const { return m_VertexBuffer; }
+	const HC::InputDataSample*	GetCurrInputSample() const { return m_inputSample.get(); }
+	const std::string&			GetPipeLineName() const { return m_pipeLineName; }
+	const auto&					GetReservedObjects() const { return m_renderReservedObjectsByTexture; }
+	void*						GetVertexBuffer() const { return m_vertexBuffer; }
 
 	void						SetShader(HC::SHADERTYPE type, IHCShader* shader) { m_shaders[static_cast<unsigned int>(type)] = shader; }
 	void						RenderReserveObject(const HC::InputDataSample* object);
 	void						ClearReservedObjects();
 
-	template<typename T> void	SelectInputSample() { m_InputSample = std::make_unique<T>(); }
+	template<typename T> void	SelectInputSample() { m_inputSample = std::make_unique<T>(); }
 
 public:
 	IHCShader*												m_shaders[static_cast<unsigned int>(HC::SHADERTYPE::COUNT)] = {};
 	std::vector<IHCCBuffer*>								m_CBuffers;
 
-	HC::PRIMITIVE_TOPOLOGY									m_Primitive = HC::PRIMITIVE_TOPOLOGY::POINT;
+	HC::PRIMITIVE_TOPOLOGY									m_primitive = HC::PRIMITIVE_TOPOLOGY::POINT;
 
-	IHCRasterizer*											m_Rasterizer = nullptr;
-	IHCDepthStencilState*									m_DepthStencilState = nullptr;
-	IHCBlendState*											m_BlendState = nullptr;
+	IHCRasterizer*											m_rasterizer = nullptr;
+	IHCDepthStencilState*									m_depthStencilState = nullptr;
+	IHCBlendState*											m_blendState = nullptr;
 
 private:
-	std::string												m_PipeLineName;
-	void*													m_VertexBuffer;
-	std::function<void(void*)>								m_VertexBufferRelease;
-	std::unique_ptr<HC::InputDataSample>					m_InputSample = nullptr;
-	std::vector<std::vector<const HC::InputDataSample*>>	m_RenderReservedObjectsByTexture;
+	std::string												m_pipeLineName;
+	void*													m_vertexBuffer;
+	std::function<void(void*)>								m_vertexBufferRelease;
+	std::unique_ptr<HC::InputDataSample>					m_inputSample = nullptr;
+	std::vector<std::vector<const HC::InputDataSample*>>	m_renderReservedObjectsByTexture;
 };
 
 class HCGraphic : public IHCDevice

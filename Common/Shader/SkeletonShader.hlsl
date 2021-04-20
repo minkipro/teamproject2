@@ -68,10 +68,6 @@ float4 PS(VS_OUTPUT input) : SV_TARGET
     {
         result = GetTextureSample(gsamPointWrap, input.TexIndex, input.outTexCoord);
     }
-    else
-    {
-        result = input.Color;
-    }
     
     return result;
 }

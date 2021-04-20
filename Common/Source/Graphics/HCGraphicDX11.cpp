@@ -43,10 +43,10 @@ void HCGraphicDX11::Update()
 
 	DirectX::XMStoreFloat4x4(&mainPass.OrthoMatrix, orthoP);
 
-	m_mainPassCB->CopyData(&mainPass, 0);
+	m_mainPassCB->CopyData(&mainPass);
 
 	
-	m_skeletonCB->CopyData(&m_cbSkeleton, 1);
+	m_skeletonCB->CopyData(&m_cbSkeleton);
 }
 
 void HCGraphicDX11::CreateGraphicPipeLine(const std::string& pipeLineName, HCGraphicPipeLine** out)
@@ -805,13 +805,14 @@ void HCGraphicDX11::CreateGraphicPipeLineBaseSettings()
 		"Failed to create blend state.");
 
 	m_mainPassCB = std::make_unique<IHCDX11ConstBuffer<HC::MainPass>>(m_device.Get(), m_deviceContext.Get());
-	ID3D11Buffer* baseCBs[] = { static_cast<ID3D11Buffer*>(m_mainPassCB->GetBuffer()) };
+	m_skeletonCB = std::make_unique<IHCDX11ConstBuffer<HC::CB_VS_vertexshader_skeleton>>(m_device.Get(), m_deviceContext.Get());
+	ID3D11Buffer* baseCBs[] = { static_cast<ID3D11Buffer*>(m_mainPassCB->GetBuffer()) , static_cast<ID3D11Buffer*>(m_skeletonCB->GetBuffer()) };
 
-	m_deviceContext->VSSetConstantBuffers(0, 1, baseCBs);
-	m_deviceContext->HSSetConstantBuffers(0, 1, baseCBs);
-	m_deviceContext->DSSetConstantBuffers(0, 1, baseCBs);
-	m_deviceContext->GSSetConstantBuffers(0, 1, baseCBs);
-	m_deviceContext->PSSetConstantBuffers(0, 1, baseCBs);
+	m_deviceContext->VSSetConstantBuffers(0, 2, baseCBs);
+	m_deviceContext->HSSetConstantBuffers(0, 2, baseCBs);
+	m_deviceContext->DSSetConstantBuffers(0, 2, baseCBs);
+	m_deviceContext->GSSetConstantBuffers(0, 2, baseCBs);
+	m_deviceContext->PSSetConstantBuffers(0, 2, baseCBs);
 }
 
 void HCGraphicDX11::CreateInputLayout(const HC::InputDataSample* sample, HCDX11Shader* vs)

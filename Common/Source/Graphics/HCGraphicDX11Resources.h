@@ -44,7 +44,7 @@ public:
 	IHCDX11ConstBuffer(ID3D11Device* device, ID3D11DeviceContext* deviceContext);
 	virtual ~IHCDX11ConstBuffer() = default;
 
-	virtual void		CopyData(const void* data, UINT index) override;
+	virtual void		CopyData(const void* data) override;
 	virtual void*		GetBuffer() override;
 
 private:
@@ -70,16 +70,16 @@ inline IHCDX11ConstBuffer<T>::IHCDX11ConstBuffer(ID3D11Device* device, ID3D11Dev
 }
 
 template<class T>
-inline void IHCDX11ConstBuffer<T>::CopyData(const void* data, UINT index)
+inline void IHCDX11ConstBuffer<T>::CopyData(const void* data)
 {
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
 
-	COM_HRESULT_IF_FAILED(m_deviceContext->Map(m_buffer.Get(), index, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource)
+	COM_HRESULT_IF_FAILED(m_deviceContext->Map(m_buffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource)
 		, "Failed to map constant buffer.");
 	
 	CopyMemory(mappedResource.pData, data, sizeof(T));
 	
-	m_deviceContext->Unmap(m_buffer.Get(), index);
+	m_deviceContext->Unmap(m_buffer.Get(), 0);
 }
 
 template<class T>

@@ -70,6 +70,7 @@ private:
 	ComPtr<ID3D11DeviceContext>												m_deviceContext;
 
 	std::unique_ptr<HCDX11ConstBuffer<HC::MainPass>>						m_mainPassCB;
+	std::unique_ptr<HCDX11ConstBuffer<HC::CB_VS_vertexshader_skeleton>>		m_skeletonCB;
 public:
 	HC::CB_VS_vertexshader_skeleton m_cbSkeleton;
 private:

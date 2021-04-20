@@ -173,7 +173,7 @@ public:
 	IHCCBuffer() {}
 	virtual ~IHCCBuffer() = default;
 
-	virtual void	CopyData(const void* data, UINT index) = 0;
+	virtual void	CopyData(const void* data) = 0;
 	virtual void*	GetBuffer() = 0;
 
 protected:

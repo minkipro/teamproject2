@@ -70,16 +70,15 @@ inline HCDX11ConstBuffer<T>::HCDX11ConstBuffer(ID3D11Device* device, ID3D11Devic
 }
 
 template<class T>
-inline void IHCDX11ConstBuffer<T>::CopyData(const void* data)
+inline void HCDX11ConstBuffer<T>::CopyData(const void* data)
 {
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
-	UINT64 byteWidth = static_cast<UINT64>(sizeof(T) + (16 - (sizeof(T) % 16)));;
+	UINT64 byteWidth = static_cast<UINT64>(sizeof(T) + (16 - (sizeof(T) % 16)));
 
 	COM_HRESULT_IF_FAILED(m_deviceContext->Map(m_buffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource)
 		, "Failed to map constant buffer.");
 	
-	CopyMemory(static_cast<BYTE*>(mappedResource.pData) + (byteWidth*index),
-		data, sizeof(T));
+	CopyMemory(static_cast<BYTE*>(mappedResource.pData), data, sizeof(T));
 	
 	m_deviceContext->Unmap(m_buffer.Get(), 0);
 }

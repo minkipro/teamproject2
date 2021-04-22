@@ -11,6 +11,8 @@ void DevScene::Init()
 {
 	auto graphic = HCDEVICE(HCGraphic);
 
+
+	m_model.Initialize()
 	IHCTexture* texture = nullptr;
 	IHCTexture* texture2 = nullptr;
 	HCTextureBuffer* texBuffer = nullptr;

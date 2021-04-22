@@ -1,7 +1,7 @@
 #pragma once
 #include "HCScene.h"
 #include "Graphics/HCGraphic.h"
-
+#include "Model.h"
 class DevScene final : public HCScene
 {
 public:
@@ -13,4 +13,5 @@ public:
 
 private:
 	RenderVertexSkeleton m_test;
+	Model m_model;
 };

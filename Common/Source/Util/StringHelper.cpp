@@ -172,7 +172,16 @@ void StringHelper::SearchAllFileFromDirectory(const std::wstring& dirPath, std::
 	}
 
 	std::wstring subFolderPath = dirPath + L"/";
-	std::wstring currFolderName = GetFileNameFromPath(dirPath);
+	std::wstring currFolderName;
+	if (stacked.length() != 0)
+	{
+		currFolderName = stacked + L"/" + GetFileNameFromPath(dirPath);
+	}
+	else
+	{
+		currFolderName = GetFileNameFromPath(dirPath);
+	}
+	
 	std::vector<std::wstring> subFolders;
 
 	while (result)
@@ -188,14 +197,7 @@ void StringHelper::SearchAllFileFromDirectory(const std::wstring& dirPath, std::
 		{
 			std::wstring filePath = subFolderPath + fd.cFileName;
 
-			if (stacked.length() == 0)
-			{
-				out[currFolderName].push_back(filePath);
-			}
-			else
-			{
-				out[stacked].push_back(filePath);
-			}
+			out[currFolderName].push_back(filePath);
 		}
 
 		result = FindNextFile(handle, &fd);
@@ -203,15 +205,7 @@ void StringHelper::SearchAllFileFromDirectory(const std::wstring& dirPath, std::
 
 	for (auto& it : subFolders)
 	{
-		std::wstring stackedString;
-
-		if (stacked.length())
-		{
-			stackedString = stacked + L"/";
-		}
-
-		stackedString += it;
-		SearchAllFileFromDirectory(subFolderPath + it, out, stackedString);
+		SearchAllFileFromDirectory(subFolderPath + it, out, currFolderName);
 	}
 
 	FindClose(handle);

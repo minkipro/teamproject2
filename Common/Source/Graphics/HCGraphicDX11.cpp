@@ -44,9 +44,6 @@ void HCGraphicDX11::Update()
 	DirectX::XMStoreFloat4x4(&mainPass.OrthoMatrix, orthoP);
 
 	m_mainPassCB->CopyData(&mainPass);
-
-	
-	m_skeletonCB->CopyData(&m_cbSkeleton);
 }
 
 void HCGraphicDX11::CreateGraphicPipeLine(const std::string& pipeLineName, HCGraphicPipeLine** out)
@@ -87,8 +84,9 @@ void HCGraphicDX11::CreateShaderResource(const std::string& resourceName, size_t
 {
 }
 
-void HCGraphicDX11::CreateCB(const std::string& bufferName, size_t stride, size_t num, IHCCBuffer** out)
+void HCGraphicDX11::CreateCB(const std::string& bufferName, size_t stride, size_t num, std::unique_ptr<IHCCBuffer>& out)
 {
+	out = std::make_unique<HCDX11ConstBuffer>(m_device.Get(), m_deviceContext.Get(), stride);
 }
 
 void HCGraphicDX11::CreateShader(const std::string& shaderName, HC::SHADERTYPE type, const std::wstring& filePath, const std::string& entryPoint, IHCShader** out)
@@ -457,9 +455,29 @@ void HCGraphicDX11::SetPipeLineObject(const HCGraphicPipeLine* pipeLine)
 		m_deviceContext->OMSetBlendState(m_baseBlendState.Get(), NULL, 0xFFFFFFFF);
 	}
 
-	if (pipeLine->m_CBuffers.size())
+	size_t cbufferNum = pipeLine->m_CBuffers.size();
+	if (cbufferNum != 0)
 	{
+		std::vector< ID3D11Buffer*> buffers;
+		for (size_t i = 0; i < cbufferNum; i++)
+		{
+			buffers.push_back(static_cast<ID3D11Buffer*>(pipeLine->m_CBuffers[i]->GetBuffer()));
+		}
+		m_deviceContext->VSSetConstantBuffers(0, cbufferNum, &buffers[0]);
+		m_deviceContext->HSSetConstantBuffers(0, cbufferNum, &buffers[0]);
+		m_deviceContext->DSSetConstantBuffers(0, cbufferNum, &buffers[0]);
+		m_deviceContext->GSSetConstantBuffers(0, cbufferNum, &buffers[0]);
+		m_deviceContext->PSSetConstantBuffers(0, cbufferNum, &buffers[0]);
+	}
+	else
+	{
+		ID3D11Buffer* baseCBs[] = { static_cast<ID3D11Buffer*>(m_mainPassCB->GetBuffer()) };
 
+		m_deviceContext->VSSetConstantBuffers(0, 1, baseCBs);
+		m_deviceContext->HSSetConstantBuffers(0, 1, baseCBs);
+		m_deviceContext->DSSetConstantBuffers(0, 1, baseCBs);
+		m_deviceContext->GSSetConstantBuffers(0, 1, baseCBs);
+		m_deviceContext->PSSetConstantBuffers(0, 1, baseCBs);
 	}
 }
 
@@ -804,15 +822,14 @@ void HCGraphicDX11::CreateGraphicPipeLineBaseSettings()
 	COM_HRESULT_IF_FAILED(m_device->CreateBlendState(&blendDesc, m_baseBlendState.GetAddressOf()),
 		"Failed to create blend state.");
 
-	m_mainPassCB = std::make_unique<HCDX11ConstBuffer<HC::MainPass>>(m_device.Get(), m_deviceContext.Get());
-	m_skeletonCB = std::make_unique<HCDX11ConstBuffer<HC::CB_VS_vertexshader_skeleton>>(m_device.Get(), m_deviceContext.Get());
-	ID3D11Buffer* baseCBs[] = { static_cast<ID3D11Buffer*>(m_mainPassCB->GetBuffer()) , static_cast<ID3D11Buffer*>(m_skeletonCB->GetBuffer()) };
+	CreateCB("", sizeof(HC::MainPass), 0, m_mainPassCB);
+	ID3D11Buffer* baseCBs[] = { static_cast<ID3D11Buffer*>(m_mainPassCB->GetBuffer()) };
 
-	m_deviceContext->VSSetConstantBuffers(0, 2, baseCBs);
-	m_deviceContext->HSSetConstantBuffers(0, 2, baseCBs);
-	m_deviceContext->DSSetConstantBuffers(0, 2, baseCBs);
-	m_deviceContext->GSSetConstantBuffers(0, 2, baseCBs);
-	m_deviceContext->PSSetConstantBuffers(0, 2, baseCBs);
+	m_deviceContext->VSSetConstantBuffers(0, 1, baseCBs);
+	m_deviceContext->HSSetConstantBuffers(0, 1, baseCBs);
+	m_deviceContext->DSSetConstantBuffers(0, 1, baseCBs);
+	m_deviceContext->GSSetConstantBuffers(0, 1, baseCBs);
+	m_deviceContext->PSSetConstantBuffers(0, 1, baseCBs);
 }
 
 void HCGraphicDX11::CreateInputLayout(const HC::InputDataSample* sample, HCDX11Shader* vs)

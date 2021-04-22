@@ -4,10 +4,19 @@
 #include <assimp/scene.h>
 #include "Texture.h"
 
+
+
+struct CB_VS_vertexshader_skeleton
+{
+	DirectX::XMMATRIX wvpMatrix;
+	DirectX::XMMATRIX worldMatrix;
+	DirectX::XMMATRIX boneTransform[100];
+};
+
 class Mesh
 {
 public:
-	Mesh(ID3D11Device* device, ID3D11DeviceContext* deviceContext, std::vector<>& vertices, std::vector<DWORD>& indices, std::vector<Texture>& textures, const DirectX::XMMATRIX& transformMatrix, bool isTri);
+	Mesh(HCGraphicPipeLine* pipeLine, std::vector<CB_VS_vertexshader_skeleton>& vertices, std::vector<DWORD>& indices, std::vector<Texture>& textures, const DirectX::XMMATRIX& transformMatrix, bool isTri);
 	Mesh(const Mesh& mesh);
 	void Update();
 	const DirectX::XMMATRIX& GetTransformMatirx();

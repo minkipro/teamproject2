@@ -3,6 +3,7 @@
 
 bool Model::Initialize(const std::string& filePath, ID3D11Device* device, ID3D11DeviceContext* deviceContext)
 {
+	auto graphic = HCDEVICE(HCGraphic);
 	_device = device;
 	_deviceContext = deviceContext;
 	_animIndex = 0;
@@ -10,6 +11,7 @@ bool Model::Initialize(const std::string& filePath, ID3D11Device* device, ID3D11
 	{
 		_cb_vs_vertexshader_skeleton->_data.boneTransform[i] = XMMatrixIdentity();
 	}
+
 	COM_THROW_IF_FAILED(!LoadModel(filePath));
 	try
 	{

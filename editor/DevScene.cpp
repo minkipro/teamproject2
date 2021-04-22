@@ -20,26 +20,26 @@ void DevScene::Init()
 	IHCShader* gs = nullptr;
 	IHCShader* ps = nullptr;
 
+	m_test.
 	//m_test.Size = { 100,100 };
 	//m_test.Position = { 100,100, 0.2f };
 	//m_test.TextureIndex = 1;
 
-	graphic->CreateTexture(L"character.png", &texture);
+	/*graphic->CreateTexture(L"character.png", &texture);
 	graphic->CreateTexture(L"knight.png", &texture2);
-	graphic->CreateTextureBuffer("testTexBuffer", &texBuffer);
+	graphic->CreateTextureBuffer("testTexBuffer", &texBuffer);*/
 
 	texBuffer->SetTexture(0, texture);
 	texBuffer->SetTexture(1, texture2);
 
 	graphic->CreateGraphicPipeLine("testPipe", &testPipeLine);
-	graphic->CreateShader("testVS", HC::SHADERTYPE::VS, L"./../Common/Shader/PointToPlaneSahder.hlsl", "VS", &vs);
-	graphic->CreateShader("testGS", HC::SHADERTYPE::GS, L"./../Common/Shader/PointToPlaneSahder.hlsl", "GS", &gs);
-	graphic->CreateShader("testPS", HC::SHADERTYPE::PS, L"./../Common/Shader/PointToPlaneSahder.hlsl", "PS", &ps);
+	graphic->CreateShader("VS", HC::SHADERTYPE::VS, L"./../Common/Shader/SkeletonShader.hlsl", "VS", &vs);
+	graphic->CreateShader("PS", HC::SHADERTYPE::PS, L"./../Common/Shader/SkeletonShader.hlsl", "PS", &ps);
 
-	testPipeLine->m_primitive = HC::PRIMITIVE_TOPOLOGY::POINT;
+	testPipeLine->m_primitive = HC::PRIMITIVE_TOPOLOGY::TRIANGLELIST;
+	testPipeLine->
 	testPipeLine->SelectInputSample<RenderPoint>();
 	testPipeLine->SetShader(HC::SHADERTYPE::VS, vs);
-	testPipeLine->SetShader(HC::SHADERTYPE::GS, gs);
 	testPipeLine->SetShader(HC::SHADERTYPE::PS, ps);
 
 	graphic->NumberingGraphicPipeLineSlot(0, testPipeLine);

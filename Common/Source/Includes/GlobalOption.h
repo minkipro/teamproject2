@@ -14,6 +14,7 @@ namespace HC
 		{
 			unsigned int		NumSwapchainBuffer = 2;
 			const std::wstring	TextureFolderPath = L"./../Common/Texture";
+			const std::wstring	FontFolderPath = L"./../Common/Fonts";
 		}GRAPHIC;
 
 	}GO;

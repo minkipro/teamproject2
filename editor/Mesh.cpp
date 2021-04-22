@@ -7,6 +7,8 @@ Mesh::Mesh(ID3D11Device* device, ID3D11DeviceContext* deviceContext, std::vector
 	_textures = textures;
 	_transformMatrix = transformMatrix;
 
+	auto graphic = HCDEVICE(HCGraphic);
+	
 	COM_HRESULT_IF_FAILED(_vertexbuffer.Initialize(device, vertices.data(), vertices.size()), "Failed to initialize vertex buffer for mesh.");
 
 	COM_HRESULT_IF_FAILED(_indexbuffer.Initialize(device, indices.data(), indices.size()), "Failed to initialize index buffer for mesh.");

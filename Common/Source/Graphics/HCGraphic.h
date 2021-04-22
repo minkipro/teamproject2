@@ -69,13 +69,6 @@ namespace HC
 		DirectX::XMFLOAT2	MousePos;
 		DirectX::XMUINT2	RenderTargetSize;
 	};
-
-	struct CB_VS_vertexshader_skeleton
-	{
-		DirectX::XMMATRIX wvpMatrix;
-		DirectX::XMMATRIX worldMatrix;
-		DirectX::XMMATRIX boneTransform[100];
-	};
 }
 
 struct RenderPoint :public HC::InputDataSample
@@ -220,7 +213,11 @@ public:
 	IHCFont() {}
 	virtual ~IHCFont() = default;
 	virtual void Init(void* device, void* dc) = 0;
-	virtual void SetText(const IHCFont::TextData& textData) = 0;
+	virtual size_t GetFontNum() = 0;
+	virtual void GetFontNames(std::vector<std::wstring>& out) = 0;
+	virtual void SetFont(unsigned int index) = 0;
+	virtual void SetFont(std::wstring fileName) = 0;
+	virtual void SetText(const IHCFont::TextData& textData) = 0;//삭제 필요
 	virtual void Render() = 0;
 protected:
 
@@ -285,7 +282,7 @@ public: //pure virtual method
 
 	virtual void		CreateGraphicPipeLine(const std::string& pipeLineName, HCGraphicPipeLine** out) = 0;
 	virtual void		CreateShaderResource(const std::string& resourceName, size_t stride, const POINT& size, IHCTexture** out) = 0;
-	virtual void		CreateCB(const std::string& bufferName, size_t stride, size_t num, IHCCBuffer** out) = 0;
+	virtual void		CreateCB(const std::string& bufferName, size_t stride, size_t num, std::unique_ptr<IHCCBuffer>& out) = 0;
 	virtual void		CreateShader(const std::string& shaderName, HC::SHADERTYPE type, const std::wstring& filePath, const std::string& entryPoint, IHCShader** out) = 0;
 
 	virtual void		GetGraphicPipeLine(const std::string& pipeLineName, HCGraphicPipeLine** out) = 0;

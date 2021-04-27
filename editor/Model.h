@@ -49,10 +49,10 @@ struct AnimData
 class Model
 {
 public:
-	bool Initialize(const std::string& filePath, ID3D11Device* device, ID3D11DeviceContext* deviceContext);
+	bool Initialize(const std::wstring& filePath);
 	void Update(const XMMATRIX& worldMatrix, const XMMATRIX& viewProjectionMatrix, float* currentTime);
 	bool GetIsAnim();
-	bool LoadModel(const std::string& filePath);
+	bool LoadModel(const std::wstring& filePath);
 protected:
 	void ProcessNode(const aiScene* scene, aiNode* node, const XMMATRIX& parentTransformMatrix, NodeData* data);
 
@@ -77,7 +77,8 @@ protected:
 
 	ID3D11Device* _device = nullptr;
 	ID3D11DeviceContext* _deviceContext = nullptr;
-	IHCCBuffer* _cb_vs_vertexshader_skeleton = nullptr;
+	CB_VS_vertexshader_skeleton m_cbData;
+	IHCCBuffer* m_cbBuffer = nullptr;
 	std::string							_directory = "";
 
 	XMMATRIX _currentBone[100];

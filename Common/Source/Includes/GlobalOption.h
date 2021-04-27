@@ -17,5 +17,9 @@ namespace HC
 			const std::wstring	FontFolderPath = L"./../Common/Fonts";
 		}GRAPHIC;
 
+		struct EditorOption
+		{
+			const std::wstring	ModelFolderPath = L"./../Common/Model";
+		}Editor;
 	}GO;
 }

@@ -1,29 +1,20 @@
 #include "stdafx.h"
 #include "Model.h"
+#include "Util/StringHelper.h"
 
-bool Model::Initialize(const std::string& filePath, ID3D11Device* device, ID3D11DeviceContext* deviceContext)
+bool Model::Initialize(const std::wstring& filePath)
 {
-	auto graphic = HCDEVICE(HCGraphic);
-	_device = device;
-	_deviceContext = deviceContext;
 	_animIndex = 0;
-	for (int i = 0; i < 100; i++)
+	
+	bool isModelLoaded = LoadModel(filePath);
+	if (!isModelLoaded)
 	{
-		_cb_vs_vertexshader_skeleton->_data.boneTransform[i] = XMMatrixIdentity();
-	}
-
-	COM_THROW_IF_FAILED(!LoadModel(filePath));
-	try
-	{
-		if ()
-			return false;
-	}
-	catch (COMException& exception)
-	{
-		ErrorLogger::Log(exception);
+		COM_THROW_IF_FAILED(false , "fail to load model ");
 		return false;
 	}
-
+	auto graphic = HCDEVICE(HCGraphic);
+	std::string mbFilePath = StringHelper::WideToString(filePath.c_str());
+	
 	for (int i = 0; i < 100; i++)
 	{
 		_currentBone[i] = XMMatrixIdentity();
@@ -33,12 +24,6 @@ bool Model::Initialize(const std::string& filePath, ID3D11Device* device, ID3D11
 
 void Model::Update(const XMMATRIX& worldMatrix, const XMMATRIX& viewProjectionMatrix, float* currentTime)
 {
-
-	CB_VS_vertexshader_skeleton cb;
-
-	_cb_vs_vertexshader_skeleton->CopyData()
-	
-
 	if (currentTime)
 	{
 		if (_animIndex < _animations.size())
@@ -50,23 +35,20 @@ void Model::Update(const XMMATRIX& worldMatrix, const XMMATRIX& viewProjectionMa
 			assert("anim이 있는데 시간을 안넣어줬다.");
 		}
 	}
+	for (int j = 0; j < 100; j++)
+	{
+		m_cbData.boneTransform[j] = _currentBone[j];
+	}
 
-	_deviceContext->VSSetConstantBuffers(0, 1, _cb_vs_vertexshader_skeleton->GetAddressOf());
 	static int test = 0;
 	for (int i = 0; i < _meshes.size(); i++)
 	{
 		//Update Constant buffer with WVP Matrix
-		_cb_vs_vertexshader_skeleton->_data.worldMatrix = _meshes[i].GetTransformMatirx() * worldMatrix;
-		_cb_vs_vertexshader_skeleton->_data.wvpMatrix = _cb_vs_vertexshader_skeleton->_data.worldMatrix * viewProjectionMatrix; //Calculate World-View-Projection Matrix
+		m_cbData.worldMatrix = _meshes[i].m_transformMatrix * worldMatrix;
+		m_cbData.wvpMatrix = m_cbData.worldMatrix * viewProjectionMatrix; //Calculate World-View-Projection Matrix
 
 
-		for (int j = 0; j < 100; j++)
-		{
-			_cb_vs_vertexshader_skeleton->_data.boneTransform[j] = _currentBone[j];
-		}
-
-		_cb_vs_vertexshader_skeleton->ApplyChanges();
-		_meshes[i].Update();
+		m_cbBuffer->CopyData();
 	}
 }
 
@@ -76,7 +58,7 @@ bool Model::GetIsAnim()
 }
 
 
-bool Model::LoadModel(const std::string& filePath)
+bool Model::LoadModel(const std::wstring& filePath)
 {
 	Assimp::Importer importer;
 	const aiScene* scene = importer.ReadFile(filePath,

@@ -35,15 +35,14 @@ void HCGraphicDX11::Init()
 
 void HCGraphicDX11::Update()
 {
-	HC::MainPass mainPass;
 	DirectX::XMMATRIX orthoP = DirectX::XMMatrixOrthographicOffCenterLH(
 		0.0f, static_cast<float>(HC::GO.WIN.WindowsizeX),
 		static_cast<float>(HC::GO.WIN.WindowsizeY), 0,
 		D3D11_MIN_DEPTH, D3D11_MAX_DEPTH);
 
-	DirectX::XMStoreFloat4x4(&mainPass.OrthoMatrix, orthoP);
+	DirectX::XMStoreFloat4x4(&m_mainPass.OrthoMatrix, orthoP);
 
-	m_mainPassCB->CopyData(&mainPass);
+	m_mainPassCB->CopyData();
 }
 
 void HCGraphicDX11::CreateGraphicPipeLine(const std::string& pipeLineName, HCGraphicPipeLine** out)
@@ -84,9 +83,16 @@ void HCGraphicDX11::CreateShaderResource(const std::string& resourceName, size_t
 {
 }
 
-void HCGraphicDX11::CreateCB(const std::string& bufferName, size_t stride, size_t num, std::unique_ptr<IHCCBuffer>& out)
+void HCGraphicDX11::CreateCB(const char* bufferName, size_t stride, size_t num, void* data, IHCCBuffer** out)
 {
-	out = std::make_unique<HCDX11ConstBuffer>(m_device.Get(), m_deviceContext.Get(), stride);
+	auto it = m_cbuffers.find(bufferName);
+	if (it != m_cbuffers.end())
+	{
+		COM_THROW_IF_FAILED(false, "this constant buffer name already exist");
+		return;
+	}
+	m_cbuffers[bufferName] = std::make_unique<HCDX11ConstBuffer>(m_device.Get(), m_deviceContext.Get(), stride, data);
+	*out = m_cbuffers[bufferName].get();
 }
 
 void HCGraphicDX11::CreateShader(const std::string& shaderName, HC::SHADERTYPE type, const std::wstring& filePath, const std::string& entryPoint, IHCShader** out)
@@ -295,15 +301,14 @@ LRESULT HCGraphicDX11::WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lP
 
 			m_swapchain->Resize(HC::GO.WIN.WindowsizeX, HC::GO.WIN.WindowsizeY);
 
-			HC::MainPass mainPass;
 			DirectX::XMMATRIX orthoP = DirectX::XMMatrixOrthographicOffCenterLH(
 				0.0f, static_cast<float>(HC::GO.WIN.WindowsizeX),
 				static_cast<float>(HC::GO.WIN.WindowsizeY), 0,
 				D3D11_MIN_DEPTH, D3D11_MAX_DEPTH);
 
-			DirectX::XMStoreFloat4x4(&mainPass.OrthoMatrix, orthoP);
+			DirectX::XMStoreFloat4x4(&m_mainPass.OrthoMatrix, orthoP);
 
-			m_mainPassCB->CopyData(&mainPass);
+			m_mainPassCB->CopyData();
 			m_font = std::make_unique<HCFont>();
 			m_font.get()->Init((void*)m_device.Get(), (void*)m_deviceContext.Get());
 			IHCFont::TextData tempData = { L"test", DirectX::XMFLOAT2(0.0f, 0.0f), DirectX::XMFLOAT3(0.5f, 0.5f, 0.5f), DirectX::XMFLOAT2(1.0f, 1.0f) };
@@ -504,7 +509,7 @@ void HCGraphicDX11::RenderObjects(HCGraphicPipeLine* pipeLine)
 	size_t accumulatedByte = 0;
 	{
 		COM_HRESULT_IF_FAILED(m_deviceContext->Map(currBuffer->Buffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource),
-			"Failed to map constant buffer.");
+			"Failed to map vertex buffer.");
 
 		for (auto& it2 : reservedOBs)
 		{
@@ -527,7 +532,6 @@ void HCGraphicDX11::RenderObjects(HCGraphicPipeLine* pipeLine)
 
 			m_deviceContext->PSSetShaderResources(0, _countof(views), views);
 			m_deviceContext->DrawInstanced(static_cast<UINT>(reservedOBs[i].size()), 1, static_cast<UINT>(currOffset), 0);
-
 			currOffset += reservedOBs[i].size();
 		}
 	}
@@ -822,7 +826,7 @@ void HCGraphicDX11::CreateGraphicPipeLineBaseSettings()
 	COM_HRESULT_IF_FAILED(m_device->CreateBlendState(&blendDesc, m_baseBlendState.GetAddressOf()),
 		"Failed to create blend state.");
 
-	CreateCB("", sizeof(HC::MainPass), 0, m_mainPassCB);
+	CreateCB(typeid(HC::MainPass).name(), sizeof(HC::MainPass), 0, &m_mainPass, &m_mainPassCB);
 	ID3D11Buffer* baseCBs[] = { static_cast<ID3D11Buffer*>(m_mainPassCB->GetBuffer()) };
 
 	m_deviceContext->VSSetConstantBuffers(0, 1, baseCBs);

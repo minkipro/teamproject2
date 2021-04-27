@@ -8,6 +8,12 @@ std::wstring StringHelper::StringToWide(std::string str)
 	return wide_string;
 }
 
+std::string StringHelper::WideToString(std::wstring wstr)
+{
+	std::string str(wstr.begin(), wstr.end());
+	return str;
+}
+
 std::string StringHelper::GetDirectoryFromPath(const std::string& filepath)
 {
 	size_t off1 = filepath.find_last_of('\\');

@@ -25,7 +25,7 @@ namespace HC
 {
 	enum class SHADERTYPE
 	{
-		VS,
+		VS = 0,
 		GS,
 		HS,
 		DS,
@@ -92,35 +92,6 @@ struct RenderPoint :public HC::InputDataSample
 	int TextureIndex = -1;
 };
 
-struct RenderVertexSkeleton : public HC::InputDataSample
-{
-	virtual std::vector<HCInputLayoutElement>	GetInputData() const override
-	{
-		return { {"POSITION",0,DXGI_FORMAT_R32G32B32_FLOAT},
-				 {"TEXCOORD",0,DXGI_FORMAT_R32G32_FLOAT},
-				 {"NORMAL",0,DXGI_FORMAT_R32G32B32_FLOAT},
-				 {"BONEIDA",0,DXGI_FORMAT_R32G32B32A32_FLOAT},
-				 {"BONEIDB",0,DXGI_FORMAT_R32G32B32A32_FLOAT },
-				 {"BONEWEIGHTA",0,DXGI_FORMAT_R32G32B32A32_FLOAT},
-				 {"BONEWEIGHTB",0,DXGI_FORMAT_R32G32B32A32_FLOAT },
-				 {"TEXINDEX",0,DXGI_FORMAT_R32_SINT} };
-	}
-
-	virtual const char*							GetInputName() const override { return typeid(RenderVertexSkeleton).name(); }
-	virtual unsigned int						GetDataSize() const override { return sizeof(RenderPoint); }
-	virtual int									GetTextureIndex() const override { return TextureIndex; }
-
-	DirectX::XMFLOAT3 Position;
-	DirectX::XMFLOAT2 uv;
-	DirectX::XMFLOAT3 normal;
-	DirectX::XMFLOAT4 BoneIdA;
-	DirectX::XMFLOAT4 BoneIdB;
-	DirectX::XMFLOAT4 BoneWeightA;
-	DirectX::XMFLOAT4 BoneWeightB;
-
-	int TextureIndex = -1;
-};
-
 class IHCInputLayout
 {
 public:
@@ -166,8 +137,9 @@ public:
 	IHCCBuffer() {}
 	virtual ~IHCCBuffer() = default;
 
-	virtual void	CopyData(const void* data) = 0;
+	virtual void	CopyData() = 0;
 	virtual void*	GetBuffer() = 0;
+	virtual void	SetData(size_t stride, void* data) = 0;
 
 protected:
 
@@ -282,7 +254,7 @@ public: //pure virtual method
 
 	virtual void		CreateGraphicPipeLine(const std::string& pipeLineName, HCGraphicPipeLine** out) = 0;
 	virtual void		CreateShaderResource(const std::string& resourceName, size_t stride, const POINT& size, IHCTexture** out) = 0;
-	virtual void		CreateCB(const std::string& bufferName, size_t stride, size_t num, std::unique_ptr<IHCCBuffer>& out) = 0;
+	virtual void		CreateCB(const char* bufferName, size_t stride, size_t num, void* data, IHCCBuffer** out) = 0;
 	virtual void		CreateShader(const std::string& shaderName, HC::SHADERTYPE type, const std::wstring& filePath, const std::string& entryPoint, IHCShader** out) = 0;
 
 	virtual void		GetGraphicPipeLine(const std::string& pipeLineName, HCGraphicPipeLine** out) = 0;

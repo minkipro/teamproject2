@@ -155,8 +155,5 @@
     <FxCompile Include="..\Common\Shader\BaseRoot.hlsli">
       <Filter>리소스 파일</Filter>
     </FxCompile>
-    <FxCompile Include="..\Common\Shader\SkeletonShader.hlsl">
-      <Filter>리소스 파일</Filter>
-    </FxCompile>
   </ItemGroup>
 </Project>

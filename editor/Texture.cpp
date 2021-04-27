@@ -1,5 +1,4 @@
 #include "Texture.h"
-#include "..\\ErrorLogger.h"
 #include <WICTextureLoader.h>
 #include <DDSTextureLoader.h>
 std::unordered_map<std::string, Texture::TextureData> Texture::_textureMap;

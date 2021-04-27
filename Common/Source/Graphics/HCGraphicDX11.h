@@ -40,7 +40,7 @@ public:
 
 	virtual void		CreateGraphicPipeLine(const std::string& pipeLineName, HCGraphicPipeLine** out) override;
 	virtual void		CreateShaderResource(const std::string& resourceName, size_t stride, const POINT& size, IHCTexture** out) override;
-	virtual void		CreateCB(const std::string& bufferName, size_t stride, size_t num, std::unique_ptr<IHCCBuffer>& out) override;
+	virtual void		CreateCB(const char* bufferName, size_t stride, size_t num, void* data, IHCCBuffer** out) override;
 	virtual void		CreateShader(const std::string& shaderName, HC::SHADERTYPE type, const std::wstring& filePath, const std::string& entryPoint, IHCShader** out) override;
 
 	virtual void		GetGraphicPipeLine(const std::string& pipeLineName, HCGraphicPipeLine** out) override;
@@ -69,8 +69,9 @@ private:
 	ComPtr<ID3D11Device>													m_device;
 	ComPtr<ID3D11DeviceContext>												m_deviceContext;
 
-	std::unique_ptr<IHCCBuffer>												m_mainPassCB;
-
+	IHCCBuffer*																m_mainPassCB;
+	HC::MainPass															m_mainPass;
+	std::unordered_map<std::string, std::unique_ptr<IHCCBuffer>>			m_cbuffers;
 	ComPtr<ID3D11RasterizerState>											m_baseRasterizer;
 	ComPtr<ID3D11DepthStencilState>											m_baseDepthStencilState;
 	ComPtr<ID3D11BlendState>												m_baseBlendState;

@@ -80,8 +80,6 @@ inline HCDX11ConstBuffer::HCDX11ConstBuffer(ID3D11Device* device, ID3D11DeviceCo
 inline void HCDX11ConstBuffer::CopyData()
 {
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
-	UINT64 byteWidth = static_cast<UINT64>(m_stride + (16 - (m_stride % 16)));
-
 	COM_HRESULT_IF_FAILED(m_deviceContext->Map(m_buffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource)
 		, "Failed to map constant buffer.");
 	

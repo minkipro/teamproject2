@@ -82,7 +82,6 @@ private:
 	std::vector<Texture2DArrayData>											m_textures;
 	std::unordered_map<std::wstring, UINT>									m_textureBufferIndex;
 
-
 	bool																	m_resizing = false;
 	bool																	m_minimized = false;
 	bool																	m_maximized = false;

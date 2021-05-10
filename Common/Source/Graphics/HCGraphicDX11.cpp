@@ -220,19 +220,17 @@ int HCGraphicDX11::GetTextureIndex(const std::wstring& textureName) const
 	int bufferIndex = 0;
 	int TextureIndex = 0;
 	std::wstring directory = StringHelper::GetDirectoryFromPath(textureName);
-	std::wstring texture = StringHelper::GetFileNameFromPath(textureName);
 
 	if (directory.length()==0)
 	{
 		directory = StringHelper::GetFileNameFromPath(HC::GO.GRAPHIC.TextureFolderPath);
-		texture = directory + L"/" + textureName;
 	}
 
 	auto bufferIndexIter = m_textureBufferIndex.find(directory);
 	COM_THROW_IF_FAILED(bufferIndexIter != m_textureBufferIndex.end(), "This TextureBuffer is not loaded");
 	bufferIndex = bufferIndexIter->second;
 
-	auto textureIter = m_textures[bufferIndex].TextureIndex.find(texture);
+	auto textureIter = m_textures[bufferIndex].TextureIndex.find(textureName);
 	COM_THROW_IF_FAILED(textureIter != m_textures[bufferIndex].TextureIndex.end(), "This Texture is not loaded");
 	TextureIndex = textureIter->second;
 

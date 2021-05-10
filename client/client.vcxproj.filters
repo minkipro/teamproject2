@@ -147,12 +147,18 @@
     <ClInclude Include="stdafx.h">
       <Filter>Common\PCH</Filter>
     </ClInclude>
+    <ClInclude Include="InputDataSamples.h">
+      <Filter>Common\Devices\Graphics_Base</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
+    <FxCompile Include="..\Common\Shader\BaseRoot.hlsli">
+      <Filter>리소스 파일</Filter>
+    </FxCompile>
     <FxCompile Include="..\Common\Shader\PointToPlaneSahder.hlsl">
       <Filter>리소스 파일</Filter>
     </FxCompile>
-    <FxCompile Include="..\Common\Shader\BaseRoot.hlsli">
+    <FxCompile Include="..\Common\Shader\PointToUVPlane.hlsl">
       <Filter>리소스 파일</Filter>
     </FxCompile>
   </ItemGroup>

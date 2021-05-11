@@ -85,15 +85,6 @@
     <ClCompile Include="DevScene.cpp">
       <Filter>Editor</Filter>
     </ClCompile>
-    <ClCompile Include="Texture.cpp">
-      <Filter>Editor</Filter>
-    </ClCompile>
-    <ClCompile Include="Model.cpp">
-      <Filter>Editor</Filter>
-    </ClCompile>
-    <ClCompile Include="Mesh.cpp">
-      <Filter>Editor</Filter>
-    </ClCompile>
     <ClCompile Include="Color.cpp">
       <Filter>Editor</Filter>
     </ClCompile>
@@ -159,24 +150,12 @@
     <ClInclude Include="stdafx.h">
       <Filter>PCH</Filter>
     </ClInclude>
-    <ClInclude Include="Model.h">
-      <Filter>Editor</Filter>
-    </ClInclude>
-    <ClInclude Include="Texture.h">
-      <Filter>Editor</Filter>
-    </ClInclude>
     <ClInclude Include="Color.h">
-      <Filter>Editor</Filter>
-    </ClInclude>
-    <ClInclude Include="Mesh.h">
       <Filter>Editor</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\Common\Shader\BaseRoot.hlsli">
-      <Filter>리소스파일</Filter>
-    </FxCompile>
-    <FxCompile Include="..\Common\Shader\SkeletonShader.hlsl">
       <Filter>리소스파일</Filter>
     </FxCompile>
   </ItemGroup>

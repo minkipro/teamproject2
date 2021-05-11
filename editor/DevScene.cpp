@@ -18,29 +18,18 @@ void DevScene::Init()
 
 	std::unordered_map<std::wstring, std::vector<std::wstring>> fileNames;
 	StringHelper::SearchAllFileFromDirectory(HC::GO.Editor.ModelFolderPath, fileNames);
-	for (auto it : fileNames)
-	{
-		for (int i = 0; i < it.second.size(); i++)
-		{
-			m_model.Initialize(it.second[i]);
-		}
-	}
+	
 	IHCShader* vs = nullptr;
 	IHCShader* ps = nullptr;
 	graphic->CreateShader("VS", HC::SHADERTYPE::VS, L"./../Common/Shader/SkeletonShader.hlsl", "VS", &vs);
 	graphic->CreateShader("PS", HC::SHADERTYPE::PS, L"./../Common/Shader/SkeletonShader.hlsl", "PS", &ps);
-	testPipeLine->m_primitive = HC::PRIMITIVE_TOPOLOGY::TRIANGLELIST;
-	testPipeLine->SelectInputSample<RenderVertexSkeleton>();
 	testPipeLine->SetShader(HC::SHADERTYPE::VS, vs);
 	testPipeLine->SetShader(HC::SHADERTYPE::PS, ps);
 
 	graphic->NumberingGraphicPipeLineSlot(0, testPipeLine);
-
-	testPipeLine->RenderReserveObject(&m_test);
 }
 
 void DevScene::Update()
 {
 	auto timer = HCDEVICE(HCTimer);
-	m_test.Position.x += 0.1f * timer->GetDeltatime();
 }

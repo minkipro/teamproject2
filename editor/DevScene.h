@@ -12,6 +12,4 @@ public:
 	virtual void Update() override;
 
 private:
-	RenderVertexSkeleton m_test;
-	Model m_model;
 };

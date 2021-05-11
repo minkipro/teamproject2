@@ -6,7 +6,7 @@
 #include <dxgiformat.h>
 #include <functional>
 #include "GameObject.h"
-#include "InputDataSamples.h"
+#include "HCInputDataSamples.h"
 
 
 

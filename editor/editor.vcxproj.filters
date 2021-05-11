@@ -153,6 +153,9 @@
     <ClInclude Include="Color.h">
       <Filter>Editor</Filter>
     </ClInclude>
+    <ClInclude Include="..\Common\Source\Graphics\HCInputDataSamples.h">
+      <Filter>Common\Devices\Graphics_Base</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\Common\Shader\BaseRoot.hlsli">

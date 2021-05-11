@@ -1,6 +1,6 @@
 #pragma once
 #include "HCSceneObject.h"
-#include "InputDataSamples.h"
+#include "Graphics/HCInputDataSamples.h"
 
 namespace HC
 {

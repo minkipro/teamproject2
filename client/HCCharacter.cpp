@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "HCCharacter.h"
-
+#include "HCCharacterController.h"
 using namespace HC;
 
 Character::Character()
@@ -16,9 +16,19 @@ Character::Character()
 	graphic->GetGraphicPipeLine("testPipe2", &pipeLine);
 
 	pipeLine->RenderReserveObject(&m_test);
+	m_characterController = new HC::CharacterController(&m_test.Position);
+}
+
+Character::~Character()
+{
+	if (m_characterController)
+	{
+		delete m_characterController;
+		m_characterController = nullptr;
+	}
 }
 
 void Character::Update()
 {
-	//m_test.Position.x += 0.1f* timer->GetDeltatime();
+	m_characterController->Update();
 }

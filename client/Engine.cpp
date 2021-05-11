@@ -17,6 +17,7 @@ void Engine::Init(HINSTANCE hInstance)
 	CreateDevice<HCKoreanInput>(typeid(HCKoreanInput).name());
 	CreateDevice<HCTimer>(typeid(HCTimer).name());
 	m_graphic = CreateDevice<HCGraphicDX11>(typeid(HCGraphic).name(),m_window->GetHandle());
+
 	for (auto& it : m_devices)
 	{
 		it->Init();

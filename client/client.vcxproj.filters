@@ -91,6 +91,9 @@
     <ClCompile Include="HCSceneObject.cpp">
       <Filter>Client\Scene\SceneObject</Filter>
     </ClCompile>
+    <ClCompile Include="HCCharacterController.cpp">
+      <Filter>Client\Scene</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Common\Source\Util\StringHelper.h">
@@ -158,6 +161,9 @@
     </ClInclude>
     <ClInclude Include="..\Common\Source\Graphics\HCInputDataSamples.h">
       <Filter>Common\Devices\Graphics_Base</Filter>
+    </ClInclude>
+    <ClInclude Include="HCCharacterController.h">
+      <Filter>Client\Scene</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

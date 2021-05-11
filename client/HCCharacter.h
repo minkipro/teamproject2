@@ -4,14 +4,16 @@
 
 namespace HC
 {
+	class CharacterController;
 	class Character : public HC::SceneObject
 	{
 	public:
 		Character();
-		virtual ~Character() override {};
+		virtual ~Character() override;
 		virtual void Update() override;
 
 	private:
 		RenderPointUV m_test;
+		CharacterController* m_characterController;
 	};
 }

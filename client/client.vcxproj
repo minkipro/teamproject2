@@ -171,6 +171,7 @@
     <ClCompile Include="HCCharacter.cpp" />
     <ClCompile Include="DevScene.cpp" />
     <ClCompile Include="Engine.cpp" />
+    <ClCompile Include="HCCharacterController.cpp" />
     <ClCompile Include="HCSceneObject.cpp" />
     <ClCompile Include="Main.cpp" />
   </ItemGroup>
@@ -222,6 +223,7 @@
     <ClInclude Include="HCCharacter.h" />
     <ClInclude Include="DevScene.h" />
     <ClInclude Include="Engine.h" />
+    <ClInclude Include="HCCharacterController.h" />
     <ClInclude Include="HCSharedPointerMG.h" />
     <ClInclude Include="HCSceneObject.h" />
     <ClInclude Include="stdafx.h" />

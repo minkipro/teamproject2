@@ -1,10 +1,24 @@
 #include "stdafx.h"
 #include "DevScene.h"
-#include "HCDevice.h"
+#include "HCCharacter.h"
 
 DevScene::DevScene()
 {
 
+}
+
+DevScene::~DevScene()
+{
+	size_t sceneObjectSize = m_sceneObjects.size();
+	for (size_t i = 0; i < sceneObjectSize; i++)
+	{
+		if (m_sceneObjects[i])
+		{
+			delete m_sceneObjects[i];
+			m_sceneObjects[i] = nullptr;
+		}
+	}
+	m_sceneObjects.clear();
 }
 
 void DevScene::Init()
@@ -22,10 +36,6 @@ void DevScene::Init()
 	IHCShader* gs2 = nullptr;
 	IHCShader* ps = nullptr;
 
-	m_test.Size = { 100,100 };
-	m_test.Position = { 100,100, 0.2f };
-	m_test.TextureIndex = graphic->GetTextureIndex(L"Texture/PIPOYA FREE RPG Character Sprites NEKONIN/pipo-nekonin001.png");
-	m_test.Uv = { 0.0f, 0.0f, 1.0f / 3.0f, 1.0f / 4.0f };
 	graphic->CreateGraphicPipeLine("testPipe", &testPipeLine);
 	graphic->CreateShader("testVS", HC::SHADERTYPE::VS, L"./../Common/Shader/PointToPlaneSahder.hlsl", "VS", &vs);
 	graphic->CreateShader("testGS", HC::SHADERTYPE::GS, L"./../Common/Shader/PointToPlaneSahder.hlsl", "GS", &gs);
@@ -52,11 +62,16 @@ void DevScene::Init()
 	graphic->NumberingGraphicPipeLineSlot(0, testPipeLine);
 	graphic->NumberingGraphicPipeLineSlot(1, testPipeLine2);
 
-	testPipeLine2->RenderReserveObject(&m_test);
+	m_sceneObjects.push_back(new HC::Character);
 }
 
 void DevScene::Update()
 {
 	auto timer = HCDEVICE(HCTimer);
-	//m_test.Position.x += 0.1f* timer->GetDeltatime();
+	
+	size_t sceneObjectSize = m_sceneObjects.size();
+	for (size_t i = 0; i < sceneObjectSize; i++)
+	{
+		m_sceneObjects[i]->Update();
+	}
 }

@@ -168,9 +168,10 @@
     <ClCompile Include="..\Common\Source\HCScene.cpp" />
     <ClCompile Include="..\Common\Source\Util\StringHelper.cpp" />
     <ClCompile Include="..\Common\Source\Window\HCWindow.cpp" />
-    <ClCompile Include="Character.cpp" />
+    <ClCompile Include="HCCharacter.cpp" />
     <ClCompile Include="DevScene.cpp" />
     <ClCompile Include="Engine.cpp" />
+    <ClCompile Include="HCSceneObject.cpp" />
     <ClCompile Include="Main.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -217,11 +218,12 @@
     <ClInclude Include="..\Common\Source\Includes\HCDevice.h" />
     <ClInclude Include="..\Common\Source\Util\StringHelper.h" />
     <ClInclude Include="..\Common\Source\Window\HCWindow.h" />
-    <ClInclude Include="Character.h" />
+    <ClInclude Include="HCCharacter.h" />
     <ClInclude Include="DevScene.h" />
     <ClInclude Include="Engine.h" />
     <ClInclude Include="HCSharedPointerMG.h" />
     <ClInclude Include="InputDataSamples.h" />
+    <ClInclude Include="HCSceneObject.h" />
     <ClInclude Include="stdafx.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

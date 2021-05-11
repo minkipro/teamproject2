@@ -32,6 +32,9 @@
     <Filter Include="Common\PCH">
       <UniqueIdentifier>{94060252-c7ab-4a79-bdef-f296c5d13c6d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Client\Scene\SceneObject">
+      <UniqueIdentifier>{894dd467-29ef-42f4-a25c-03fe1324a86d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -79,11 +82,14 @@
     <ClCompile Include="..\Common\Source\Graphics\HCFont.cpp">
       <Filter>Common\Devices\Graphics_Dx11</Filter>
     </ClCompile>
-    <ClCompile Include="Character.cpp">
-      <Filter>Client\Scene</Filter>
-    </ClCompile>
     <ClCompile Include="Engine.cpp">
       <Filter>Client</Filter>
+    </ClCompile>
+    <ClCompile Include="HCCharacter.cpp">
+      <Filter>Client\Scene\SceneObject</Filter>
+    </ClCompile>
+    <ClCompile Include="HCSceneObject.cpp">
+      <Filter>Client\Scene\SceneObject</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -138,9 +144,6 @@
     <ClInclude Include="..\Common\Source\Graphics\HCFont.h">
       <Filter>Common\Devices\Graphics_Dx11</Filter>
     </ClInclude>
-    <ClInclude Include="Character.h">
-      <Filter>Client\Scene</Filter>
-    </ClInclude>
     <ClInclude Include="Engine.h">
       <Filter>Client</Filter>
     </ClInclude>
@@ -149,6 +152,12 @@
     </ClInclude>
     <ClInclude Include="InputDataSamples.h">
       <Filter>Common\Devices\Graphics_Base</Filter>
+    </ClInclude>
+    <ClInclude Include="HCSceneObject.h">
+      <Filter>Client\Scene\SceneObject</Filter>
+    </ClInclude>
+    <ClInclude Include="HCCharacter.h">
+      <Filter>Client\Scene\SceneObject</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

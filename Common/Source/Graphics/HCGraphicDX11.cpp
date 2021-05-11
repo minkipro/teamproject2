@@ -200,6 +200,16 @@ void HCGraphicDX11::CreateShader(const std::string& shaderName, HC::SHADERTYPE t
 
 void HCGraphicDX11::GetGraphicPipeLine(const std::string& pipeLineName, HCGraphicPipeLine** out)
 {
+	size_t pipeLineNum = m_PipeLineSlots.size();
+	for (size_t i = 0; i < pipeLineNum; i++)
+	{
+		const std::string& str = m_PipeLineSlots[i]->GetPipeLineName();
+		if (0 == std::strcmp(str.c_str(), pipeLineName.c_str()))
+		{
+			*out = m_PipeLineSlots[i];
+			return;
+		}
+	}
 }
 
 void HCGraphicDX11::GetShaderResource(const std::string& resourceName, IHCTexture** out)

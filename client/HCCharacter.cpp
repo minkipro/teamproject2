@@ -16,7 +16,21 @@ Character::Character()
 	graphic->GetGraphicPipeLine("testPipe2", &pipeLine);
 
 	pipeLine->RenderReserveObject(&m_test);
-	m_characterController = new HC::CharacterController(&m_test.Position);
+	std::vector<DirectX::XMUINT2> animationIndex[(int)CharacterController::CharacterState::COUNT];
+	animationIndex[(int)CharacterController::CharacterState::IDLE].push_back({ 1, 0 });
+	animationIndex[(int)CharacterController::CharacterState::UP].push_back({ 0, 3 });
+	animationIndex[(int)CharacterController::CharacterState::UP].push_back({ 1, 3 });
+	animationIndex[(int)CharacterController::CharacterState::UP].push_back({ 2, 3 });
+	animationIndex[(int)CharacterController::CharacterState::LEFT].push_back({ 0, 1 });
+	animationIndex[(int)CharacterController::CharacterState::LEFT].push_back({ 1, 1 });
+	animationIndex[(int)CharacterController::CharacterState::LEFT].push_back({ 2, 1 });
+	animationIndex[(int)CharacterController::CharacterState::DOWN].push_back({ 0, 0 });
+	animationIndex[(int)CharacterController::CharacterState::DOWN].push_back({ 1, 0 });
+	animationIndex[(int)CharacterController::CharacterState::DOWN].push_back({ 2, 0 });
+	animationIndex[(int)CharacterController::CharacterState::RIGHT].push_back({ 0, 2 });
+	animationIndex[(int)CharacterController::CharacterState::RIGHT].push_back({ 1, 2 });
+	animationIndex[(int)CharacterController::CharacterState::RIGHT].push_back({ 2, 2 });
+	m_characterController = new HC::CharacterController(&m_test.Position, &m_test.Uv, 3, 4, animationIndex);
 }
 
 Character::~Character()

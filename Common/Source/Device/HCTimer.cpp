@@ -21,5 +21,5 @@ void HCTimer::Update()
 
 float HCTimer::GetDeltatime()
 {
-	return m_deltaTime;
+	return m_deltaTime*0.001f;
 }

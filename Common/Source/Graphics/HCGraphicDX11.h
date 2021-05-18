@@ -57,6 +57,7 @@ private:
 	virtual void		SetPipeLineObject(const HCGraphicPipeLine* pipeLine) override;
 	virtual void		RenderObjects(HCGraphicPipeLine* pipeLine) override;
 	virtual void		RenderFont() override;
+	virtual IHCFont*	GetFont() override;
 
 private:
 	void				CreateBaseSamplers();
@@ -86,6 +87,7 @@ private:
 	bool																	m_minimized = false;
 	bool																	m_maximized = false;
 
+public:
 	std::unique_ptr<IHCFont>												m_font;
 };
 

@@ -39,12 +39,12 @@ public:
 	virtual void		Update();
 
 	virtual void		CreateGraphicPipeLine(const std::string& pipeLineName, HCGraphicPipeLine** out) override;
-	virtual void		CreateShaderResource(const std::string& resourceName, size_t stride, const POINT& size, IHCTexture** out) override;
-	virtual void		CreateCB(const char* bufferName, size_t stride, size_t num, void* data, IHCCBuffer** out) override;
-	virtual void		CreateShader(const std::string& shaderName, HC::SHADERTYPE type, const std::wstring& filePath, const std::string& entryPoint, IHCShader** out) override;
+	virtual void		CreateResource(const std::string& resourceName, const HC::GRAPHIC_RESOURCE_DESC& desc, IHCResource** out) override;
+	virtual void		CreateCB(const std::string& bufferName, size_t stride, size_t num, std::unique_ptr<IHCCBuffer>& out) override;
+	virtual void		CreateShader(const std::string& shaderName, HC::SHADER_TYPE type, const std::wstring& filePath, const std::string& entryPoint, IHCShader** out) override;
 
 	virtual void		GetGraphicPipeLine(const std::string& pipeLineName, HCGraphicPipeLine** out) override;
-	virtual void		GetShaderResource(const std::string& resourceName, IHCTexture** out) override;
+	virtual void		GetShaderResource(const std::string& resourceName, IHCResource** out) override;
 	virtual void		GetCB(const std::string& bufferName, IHCCBuffer** out) override;
 	virtual void		GetShader(const std::string& shaderName, IHCShader** out) override;
 
@@ -62,25 +62,25 @@ private:
 	void				CreateBaseSamplers();
 	void				CreateTextures();
 	void				CreateGraphicPipeLineBaseSettings();
-	void				CreateInputLayout(const HC::InputDataSample* sample, HCDX11Shader* vs);
+	void				CreateInputLayout(size_t inputLayoutHash, const std::vector<HCInputLayoutElement>* inputLayoutEle, HCDX11Shader* vs);
 
 private:
 	std::unique_ptr<HCSwapchainDX11>										m_swapchain;
 	ComPtr<ID3D11Device>													m_device;
 	ComPtr<ID3D11DeviceContext>												m_deviceContext;
 
-	IHCCBuffer*																m_mainPassCB;
-	HC::MainPass															m_mainPass;
-	std::unordered_map<std::string, std::unique_ptr<IHCCBuffer>>			m_cbuffers;
+	std::unique_ptr<IHCCBuffer>												m_mainPassCB;
+
 	ComPtr<ID3D11RasterizerState>											m_baseRasterizer;
 	ComPtr<ID3D11DepthStencilState>											m_baseDepthStencilState;
 	ComPtr<ID3D11BlendState>												m_baseBlendState;
 	std::vector<ComPtr<ID3D11SamplerState>>									m_samplers;
 
-	std::unordered_map<std::string, ComPtr<ID3D11InputLayout>>				m_inputLayout;
+	std::unordered_map<size_t, ComPtr<ID3D11InputLayout>>					m_inputLayout;
 	std::unordered_map<std::string, std::unique_ptr<IHCShader>>				m_shaders;
 	std::vector<Texture2DArrayData>											m_textures;
 	std::unordered_map<std::wstring, UINT>									m_textureBufferIndex;
+
 
 	bool																	m_resizing = false;
 	bool																	m_minimized = false;

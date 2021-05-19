@@ -3,7 +3,7 @@
 class HCScene
 {
 public:
-	HCScene();
+	HCScene() {};
 	virtual ~HCScene() = default;
 
 	virtual void Init() = 0;

@@ -2,7 +2,7 @@
 #include "HCGraphic.h"
 
 
-void HCGraphic::ReserveRender(const std::string& pipeLineName, const HC::InputDataSample* object)
+void HCGraphic::ReserveRender(const std::string& pipeLineName, const void* object, int textureIndex)
 {
 	size_t index = 0;
 	for (auto& it : m_PipeLineSlots)
@@ -11,16 +11,16 @@ void HCGraphic::ReserveRender(const std::string& pipeLineName, const HC::InputDa
 		{
 			if (pipeLineName == it->GetPipeLineName())
 			{
-				ReserveRender(index, object);
+				ReserveRender(index, object, textureIndex);
 			}
 		}
 		index++;
 	}
 }
 
-void HCGraphic::ReserveRender(size_t pipeLineSlot, const HC::InputDataSample* object)
+void HCGraphic::ReserveRender(size_t pipeLineSlot, const void* object, int textureIndex)
 {
-	m_PipeLineSlots[pipeLineSlot]->RenderReserveObject(object);
+	m_PipeLineSlots[pipeLineSlot]->RenderReserveObject(object, textureIndex);
 }
 
 void HCGraphic::Render()
@@ -63,9 +63,8 @@ void HCGraphic::NumberingGraphicPipeLineSlot(size_t slot, const std::string& pip
 	m_PipeLineSlots[slot] = iter->second.get();
 }
 
-void HCGraphicPipeLine::RenderReserveObject(const HC::InputDataSample* object)
+void HCGraphicPipeLine::RenderReserveObject(const void* inputData, int textureIndex)
 {
-	int textureIndex = object->GetTextureIndex();
 	size_t textureBufferIndex = (textureIndex > -1) ? (textureIndex>>16) : 0;
 
 	if (textureBufferIndex >= m_renderReservedObjectsByTexture.size())
@@ -74,7 +73,11 @@ void HCGraphicPipeLine::RenderReserveObject(const HC::InputDataSample* object)
 												(textureBufferIndex + 1)- m_renderReservedObjectsByTexture.size(), {});
 	}
 
-	m_renderReservedObjectsByTexture[textureBufferIndex].push_back(object);
+	auto& currBuffer = m_renderReservedObjectsByTexture[textureBufferIndex];
+	size_t currSize = currBuffer.size();
+
+	currBuffer.insert(currBuffer.end(), m_InputDataSize, 0);
+	memcpy(currBuffer.data() + currSize, inputData, m_InputDataSize);
 }
 
 void HCGraphicPipeLine::ClearReservedObjects()

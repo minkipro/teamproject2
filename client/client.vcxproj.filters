@@ -35,6 +35,9 @@
     <Filter Include="Client\Scene\SceneObject">
       <UniqueIdentifier>{894dd467-29ef-42f4-a25c-03fe1324a86d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Common\Devices\Graphics_Base\UI">
+      <UniqueIdentifier>{33dd55ac-0a55-4b0e-a244-10b1a00e857b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

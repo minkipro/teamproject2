@@ -88,6 +88,12 @@
     <ClCompile Include="HCCharacterController.cpp">
       <Filter>Client\Scene</Filter>
     </ClCompile>
+    <ClCompile Include="HCTileMap.cpp">
+      <Filter>Client\Scene\SceneObject</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Common\Source\Graphics\HCCameraManager.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Common\Source\Util\StringHelper.h">
@@ -158,6 +164,12 @@
     </ClInclude>
     <ClInclude Include="HCCharacterController.h">
       <Filter>Client\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="HCTileMap.h">
+      <Filter>Client\Scene\SceneObject</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\Source\Graphics\HCCameraManager.h">
+      <Filter>Common</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

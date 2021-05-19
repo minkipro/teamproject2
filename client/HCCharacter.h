@@ -13,7 +13,7 @@ namespace HC
 		virtual void Update() override;
 
 	private:
-		RenderPointUV m_test;
+		RenderPointUV m_renderPointUV;
 		CharacterController* m_characterController;
 	};
 }

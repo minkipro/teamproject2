@@ -7,15 +7,15 @@ Character::Character()
 {
 	auto graphic = HCDEVICE(HCGraphic);
 
-	m_test.Size = { 100,100 };
-	m_test.Position = { 100,100, 0.2f };
-	m_test.TextureIndex = graphic->GetTextureIndex(L"Texture/PIPOYA FREE RPG Character Sprites NEKONIN/pipo-nekonin001.png");
-	m_test.Uv = { 0.0f, 0.0f, 1.0f / 3.0f, 1.0f / 4.0f };
+	m_renderPointUV.Size = { 100,100 };
+	m_renderPointUV.Position = { 100,100, 0.2f };
+	m_renderPointUV.TextureIndex = graphic->GetTextureIndex(L"Texture/PIPOYA FREE RPG Character Sprites NEKONIN/pipo-nekonin001.png");
+	m_renderPointUV.Uv = { 0.0f, 0.0f, 1.0f / 3.0f, 1.0f / 4.0f };
 
 	HCGraphicPipeLine* pipeLine;
 	graphic->GetGraphicPipeLine("testPipe2", &pipeLine);
 
-	pipeLine->RenderReserveObject(&m_test);
+	pipeLine->RenderReserveObject(&m_renderPointUV);
 	std::vector<DirectX::XMUINT2> animationIndex[(int)CharacterController::CharacterState::COUNT];
 	animationIndex[(int)CharacterController::CharacterState::IDLE].push_back({ 1, 0 });
 	animationIndex[(int)CharacterController::CharacterState::UP].push_back({ 0, 3 });
@@ -30,7 +30,7 @@ Character::Character()
 	animationIndex[(int)CharacterController::CharacterState::RIGHT].push_back({ 0, 2 });
 	animationIndex[(int)CharacterController::CharacterState::RIGHT].push_back({ 1, 2 });
 	animationIndex[(int)CharacterController::CharacterState::RIGHT].push_back({ 2, 2 });
-	m_characterController = new HC::CharacterController(&m_test.Position, &m_test.Uv, 3, 4, animationIndex);
+	m_characterController = new HC::CharacterController(&m_renderPointUV.Position, &m_renderPointUV.Uv, 3, 4, animationIndex);
 }
 
 Character::~Character()

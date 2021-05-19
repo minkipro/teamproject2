@@ -6,6 +6,7 @@
 #include <WICTextureLoader.h>
 #include "Util\StringHelper.h"
 #include "HCFont.h"
+#include "HCCameraManager.h"
 
 using Microsoft::WRL::ComPtr;
 
@@ -41,7 +42,7 @@ void HCGraphicDX11::Update()
 		D3D11_MIN_DEPTH, D3D11_MAX_DEPTH);
 
 	DirectX::XMStoreFloat4x4(&m_mainPass.OrthoMatrix, orthoP);
-
+	DirectX::XMStoreFloat4x4(&m_mainPass.ViewMatrix, HC::CameraManager::Get()->GetMatrix());
 	m_mainPassCB->CopyData();
 }
 

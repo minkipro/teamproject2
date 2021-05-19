@@ -31,6 +31,7 @@ void CreatePanel(PointVertexIn vin, inout TriangleStream<VertexOut> output)
     [unroll(4)]
     for (int i = 0; i < 4; i++)
     {
+        vertices[i].PosH = mul(vertices[i].PosH, gView);
         vertices[i].PosH = mul(vertices[i].PosH, gOrthoMatrix);
     }
     

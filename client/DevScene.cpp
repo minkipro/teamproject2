@@ -58,11 +58,10 @@ void DevScene::Init()
 	testPipeLine2->SetShader(HC::SHADERTYPE::VS, vs2);
 	testPipeLine2->SetShader(HC::SHADERTYPE::GS, gs2);
 	testPipeLine2->SetShader(HC::SHADERTYPE::PS, ps);
-
 	graphic->NumberingGraphicPipeLineSlot(0, testPipeLine);
 	graphic->NumberingGraphicPipeLineSlot(1, testPipeLine2);
-
 	m_sceneObjects.push_back(new HC::Character);
+	//m_sceneObjects.push_back(new )
 }
 
 void DevScene::Update()

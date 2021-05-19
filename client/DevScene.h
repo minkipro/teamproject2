@@ -2,6 +2,7 @@
 #include "HCScene.h"
 #include "Graphics/HCGraphic.h"
 #include "HCSceneObject.h"
+#include "Graphics/HCCameraManager.h"
 
 class DevScene final : public HCScene
 {
@@ -14,5 +15,5 @@ public:
 
 private:
 	std::vector<HC::SceneObject*> m_sceneObjects;
-	
+	HC::CameraManager m_cameraManager;
 };

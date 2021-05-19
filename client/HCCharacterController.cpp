@@ -3,14 +3,15 @@
 
 HC::CharacterController::CharacterController(DirectX::XMFLOAT3* position, DirectX::XMFLOAT4* uv, int indexSizeX, int indexSizeY, std::vector<DirectX::XMUINT2> animationIndex[])
 {
-	m_keyMapping[(int)BehaviorState::UP] = { true, DirectX::Keyboard::W };
-	m_keyMapping[(int)BehaviorState::DOWN] = { true, DirectX::Keyboard::S };
-	m_keyMapping[(int)BehaviorState::LEFT] = { true, DirectX::Keyboard::A };
-	m_keyMapping[(int)BehaviorState::RIGHT] = { true, DirectX::Keyboard::D };
-	m_keyMapping[(int)BehaviorState::A] = { true, DirectX::Keyboard::F };
-	m_keyMapping[(int)BehaviorState::B] = { true, DirectX::Keyboard::F };
-	m_keyMapping[(int)BehaviorState::C] = { true, DirectX::Keyboard::F };
-	m_keyMapping[(int)BehaviorState::D] = { true, DirectX::Keyboard::F };
+	auto mouse = HCDEVICE(HCMouse);
+	m_keyMapping[(unsigned char)BehaviorState::UP] = { true, DirectX::Keyboard::W };
+	m_keyMapping[(unsigned char)BehaviorState::DOWN] = { true, DirectX::Keyboard::S };
+	m_keyMapping[(unsigned char)BehaviorState::LEFT] = { true, DirectX::Keyboard::A };
+	m_keyMapping[(unsigned char)BehaviorState::RIGHT] = { true, DirectX::Keyboard::D };
+	m_keyMapping[(unsigned char)BehaviorState::A] = { false, HCMouse::MouseButton::LBUTTON };
+	m_keyMapping[(unsigned char)BehaviorState::B] = { false, HCMouse::MouseButton::RBUTTON };
+	m_keyMapping[(unsigned char)BehaviorState::C] = { true, DirectX::Keyboard::None };
+	m_keyMapping[(unsigned char)BehaviorState::D] = { true, DirectX::Keyboard::None };
 	m_state = CharacterState::IDLE;
 	m_prevState = CharacterState::IDLE;
 	m_continuos = true;
@@ -20,7 +21,7 @@ HC::CharacterController::CharacterController(DirectX::XMFLOAT3* position, Direct
 	m_deltaTime = 0.0f;
 	m_animationIndexChangeTime = 0.3f;
 	m_currentAnimationIndex = 0;
-	for (int i = 0; i < (int)CharacterState::COUNT; i++)
+	for (unsigned char i = 0; i < (unsigned char)CharacterState::COUNT; i++)
 	{
 		size_t animationIndexNum = animationIndex[i].size();
 		for (size_t j = 0; j < animationIndexNum; j++)
@@ -33,21 +34,20 @@ HC::CharacterController::CharacterController(DirectX::XMFLOAT3* position, Direct
 		}
 	}
 	auto timer = HCDEVICE(HCTimer);
-	m_behaviorStateFunction[(unsigned long long)BehaviorState::UP][(unsigned long long)KeyState::PRESSED].push_back([this, timer] 
-		{ 
-			m_characterMoveState[(int)CharacterMoveState::UP] = true;
-		});
-	m_behaviorStateFunction[(unsigned long long)BehaviorState::LEFT][(unsigned long long)KeyState::PRESSED].push_back([this, timer] 
-		{ 
-			m_characterMoveState[(int)CharacterMoveState::LEFT] = true;
-		});
-	m_behaviorStateFunction[(unsigned long long)BehaviorState::DOWN][(unsigned long long)KeyState::PRESSED].push_back([this, timer] 
-		{ 
-			m_characterMoveState[(int)CharacterMoveState::DOWN] = true;
-		});
-	m_behaviorStateFunction[(unsigned long long)BehaviorState::RIGHT][(unsigned long long)KeyState::PRESSED].push_back([this, timer] 
+	for (unsigned char i = (unsigned char)BehaviorState::UP; i < (unsigned char)BehaviorState::RIGHT; i++)
+	{
+		m_behaviorStateFunction[i][(int)KeyState::PRESSED].push_back([this, i]
+			{
+				m_characterMoveState[i] = true;
+			});
+	}
+	m_behaviorStateFunction[(unsigned char)BehaviorState::A][(unsigned char)KeyState::PRESSED].push_back([this]
 		{
-			m_characterMoveState[(int)CharacterMoveState::RIGHT] = true;
+			m_buttonState[0] = true;//test
+		});
+	m_behaviorStateFunction[(unsigned char)BehaviorState::B][(unsigned char)KeyState::PRESSED].push_back([this]
+		{
+			m_buttonState[1] = true;//test
 		});
 
 	auto graphic = HCDEVICE(HCGraphic);
@@ -56,10 +56,12 @@ HC::CharacterController::CharacterController(DirectX::XMFLOAT3* position, Direct
 	texts->push_back(tempData);
 	m_textIndex = texts->size() - 1;
 
-	for (int i = 0; i < (int)CharacterMoveState::COUNT; i++)
+	for (unsigned char i = 0; i < (unsigned char)CharacterMoveState::COUNT; i++)
 	{
 		m_characterMoveState[i] = false;
 	}
+
+	m_buttonState[0] = m_buttonState[1] = false;
 }
 
 void HC::CharacterController::Update()
@@ -68,70 +70,68 @@ void HC::CharacterController::Update()
 	auto mouse = HCDEVICE(HCMouse);
 	auto timer = HCDEVICE(HCTimer);
 	auto state = keyboard->GetLastState();
-	static std::function<bool(DirectX::Keyboard::Keys key)> keyStateConditionalFunction[(unsigned long long)KeyState::COUNT];
-	keyStateConditionalFunction[(unsigned long long)KeyState::ONCE] = [keyboard](DirectX::Keyboard::Keys key){return keyboard->IsKeyPressed(key); };
-	keyStateConditionalFunction[(unsigned long long)KeyState::PRESSED] = [state](DirectX::Keyboard::Keys key){return state.IsKeyDown(key); };
-	keyStateConditionalFunction[(unsigned long long)KeyState::RELEASED] = [keyboard](DirectX::Keyboard::Keys key){return keyboard->IsKeyReleased(key); };
+	
+	static std::function<bool(unsigned char key)> keyStateConditionalFunction[2][(int)KeyState::COUNT];
+	keyStateConditionalFunction[0][(unsigned char)KeyState::ONCE] = [keyboard](unsigned char key) {return keyboard->IsKeyPressed((DirectX::Keyboard::Keys)key); };
+	keyStateConditionalFunction[0][(unsigned char)KeyState::PRESSED] = [state](unsigned char key) {return state.IsKeyDown((DirectX::Keyboard::Keys)key); };
+	keyStateConditionalFunction[0][(unsigned char)KeyState::RELEASED] = [keyboard](unsigned char key) {return keyboard->IsKeyReleased((DirectX::Keyboard::Keys)key); };
+	keyStateConditionalFunction[1][(unsigned char)KeyState::ONCE] = [mouse](unsigned char key) {return mouse->GetButtonState((HCMouse::MouseButton)key)== DirectX::Mouse::ButtonStateTracker::ButtonState::PRESSED; };
+	keyStateConditionalFunction[1][(unsigned char)KeyState::PRESSED] = [mouse](unsigned char key) {return mouse->GetButtonState((HCMouse::MouseButton)key) == DirectX::Mouse::ButtonStateTracker::ButtonState::HELD; };
+	keyStateConditionalFunction[1][(unsigned char)KeyState::RELEASED] = [mouse](unsigned char key) {return mouse->GetButtonState((HCMouse::MouseButton)key) == DirectX::Mouse::ButtonStateTracker::ButtonState::RELEASED; };
 	m_isThereInput = false;
-
-	for (int i = 0; i < (int)CharacterMoveState::COUNT; i++)
+	m_buttonState[0] = m_buttonState[1] = false;//test
+	for (unsigned char i = 0; i < (unsigned char)CharacterMoveState::COUNT; i++)
 	{
 		m_characterMoveState[i] = false;
 	}
 
-	for(int i = 0; i < (int)BehaviorState::COUNT; i++)
+	for(unsigned char i = 0; i < (unsigned char)BehaviorState::COUNT; i++)
 	{
-		for (int k = 0; k < (int)KeyState::COUNT; k++)
+		for (unsigned char k = 0; k < (unsigned char)KeyState::COUNT; k++)
 		{
 			size_t functionNum = m_behaviorStateFunction[i][k].size();
 			for (size_t j = 0; j < functionNum; j++)
 			{
-				if (m_keyMapping[i].isKeyboard)
+				int isKeyboard = m_keyMapping[i].isKeyboard ? 0 : 1;
+				if (keyStateConditionalFunction[isKeyboard][k](m_keyMapping[i].data))
 				{
-					if (keyStateConditionalFunction[k]((DirectX::Keyboard::Keys)m_keyMapping[i].data))
-					{
-						m_behaviorStateFunction[i][k][j]();
-					}
-				}
-				else//마우스입력일때
-				{
-
+					m_behaviorStateFunction[i][k][j]();
 				}
 			}
 		}
 	}
 
-	if (m_characterMoveState[(int)CharacterMoveState::LEFT] && m_characterMoveState[(int)CharacterMoveState::RIGHT])//왼쪽 오른쪽 동시에 눌렀을때 처리
+	if (m_characterMoveState[(unsigned char)CharacterMoveState::LEFT] && m_characterMoveState[(unsigned char)CharacterMoveState::RIGHT])//왼쪽 오른쪽 동시에 눌렀을때 처리
 	{
-		m_characterMoveState[(int)CharacterMoveState::LEFT] = m_characterMoveState[(int)CharacterMoveState::RIGHT] = false;
+		m_characterMoveState[(unsigned char)CharacterMoveState::LEFT] = m_characterMoveState[(unsigned char)CharacterMoveState::RIGHT] = false;
 	}
-	if (m_characterMoveState[(int)CharacterMoveState::UP] && m_characterMoveState[(int)CharacterMoveState::DOWN])//위아래 처리
+	if (m_characterMoveState[(unsigned char)CharacterMoveState::UP] && m_characterMoveState[(unsigned char)CharacterMoveState::DOWN])//위아래 처리
 	{
-		m_characterMoveState[(int)CharacterMoveState::UP] = m_characterMoveState[(int)CharacterMoveState::DOWN] = false;
+		m_characterMoveState[(unsigned char)CharacterMoveState::UP] = m_characterMoveState[(unsigned char)CharacterMoveState::DOWN] = false;
 	}
-	static std::function<void()> moveFunctions[(int)CharacterMoveState::COUNT];
-	moveFunctions[(int)CharacterMoveState::UP] = [this, timer]()
+	static std::function<void()> moveFunctions[(unsigned char)CharacterMoveState::COUNT];
+	moveFunctions[(unsigned char)CharacterMoveState::UP] = [this, timer]()
 	{
 		m_continuos = m_prevState == CharacterState::UP;
 		m_state = CharacterState::UP;
 		m_isThereInput = true;
 		m_position->y -= 50.0f * timer->GetDeltatime();
 	};
-	moveFunctions[(int)CharacterMoveState::LEFT] = [this, timer]()
+	moveFunctions[(unsigned char)CharacterMoveState::LEFT] = [this, timer]()
 	{
 		m_continuos = m_prevState == CharacterState::LEFT;
 		m_state = CharacterState::LEFT;
 		m_isThereInput = true;
 		m_position->x -= 50.0f * timer->GetDeltatime();
 	};
-	moveFunctions[(int)CharacterMoveState::DOWN] = [this, timer]()
+	moveFunctions[(unsigned char)CharacterMoveState::DOWN] = [this, timer]()
 	{
 		m_continuos = m_prevState == CharacterState::DOWN;
 		m_state = CharacterState::DOWN;
 		m_isThereInput = true;
 		m_position->y += 50.0f * timer->GetDeltatime();
 	};
-	moveFunctions[(int)CharacterMoveState::RIGHT] = [this, timer]()
+	moveFunctions[(unsigned char)CharacterMoveState::RIGHT] = [this, timer]()
 	{
 		m_continuos = m_prevState == CharacterState::RIGHT;
 		m_state = CharacterState::RIGHT;
@@ -139,7 +139,7 @@ void HC::CharacterController::Update()
 		m_position->x += 50.0f * timer->GetDeltatime();
 	};
 
-	for (int i = 0; i < (int)CharacterMoveState::COUNT; i++)
+	for (unsigned char i = 0; i < (unsigned char)CharacterMoveState::COUNT; i++)
 	{
 		if (m_characterMoveState[i])
 		{
@@ -161,23 +161,25 @@ void HC::CharacterController::Update()
 		{
 			m_deltaTime -= m_animationIndexChangeTime;
 			m_currentAnimationIndex += 1;
-			if (m_animationIndex[(unsigned long long)m_state].size() <= m_currentAnimationIndex)
+			if (m_animationIndex[(unsigned char)m_state].size() <= m_currentAnimationIndex)
 			{
 				m_currentAnimationIndex = 0;
 			}
 
-			*m_uv = m_animationIndex[(unsigned long long)m_state][(unsigned long long)m_currentAnimationIndex];
+			*m_uv = m_animationIndex[(unsigned char)m_state][m_currentAnimationIndex];//애니메이션이 없는 경우에는 오류발생
 		}
 	}
 	else
 	{
 		m_deltaTime = 0.0f;
 		m_currentAnimationIndex = 0;
-		*m_uv = m_animationIndex[(unsigned long long)m_state][(unsigned long long)m_currentAnimationIndex];
+		*m_uv = m_animationIndex[(unsigned char)m_state][m_currentAnimationIndex];
 	}
 
 	auto graphic = HCDEVICE(HCGraphic);
 	auto texts = graphic->GetFont()->GetText();
+	std::wstring imtrue = L"true";
+	std::wstring imfalse = L"false";
 	(*texts)[m_textIndex].Text
 		= /*L"m_position->x : " + std::to_wstring(m_position->x)
 		+ L"m_position->y : " + std::to_wstring(m_position->y)
@@ -187,5 +189,8 @@ void HC::CharacterController::Update()
 		+ L"m_uv->y : " + std::to_wstring(m_uv->y)
 		+ L"m_uv->z : " + std::to_wstring(m_uv->z)
 		+ L"m_uv->w : " + std::to_wstring(m_uv->w)*/
-		L"m_state : " + std::to_wstring((int)m_state);
+		//L"leftButtonState : " + std::to_wstring((int)mouse->leftButton);
+		
+		L" m_buttonState[0] : " + (m_buttonState[0] ? imtrue : imfalse)
+		+L" m_buttonState[1] : " + (m_buttonState[1] ? imtrue : imfalse);
 }

@@ -165,14 +165,12 @@
     <ClCompile Include="..\Common\Source\Graphics\HCGraphicDX11.cpp" />
     <ClCompile Include="..\Common\Source\Graphics\HCGraphicDX11Resources.cpp" />
     <ClCompile Include="..\Common\Source\Graphics\HCSwapchainDX11.cpp" />
-    <ClCompile Include="..\Common\Source\HCScene.cpp" />
     <ClCompile Include="..\Common\Source\Util\StringHelper.cpp" />
     <ClCompile Include="..\Common\Source\Window\HCWindow.cpp" />
     <ClCompile Include="HCCharacter.cpp" />
     <ClCompile Include="DevScene.cpp" />
     <ClCompile Include="Engine.cpp" />
     <ClCompile Include="HCCharacterController.cpp" />
-    <ClCompile Include="HCSceneObject.cpp" />
     <ClCompile Include="Main.cpp" />
   </ItemGroup>
   <ItemGroup>

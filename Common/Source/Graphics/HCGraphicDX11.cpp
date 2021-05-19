@@ -343,13 +343,7 @@ LRESULT HCGraphicDX11::WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lP
 				static_cast<float>(HC::GO.WIN.WindowsizeY), 0,
 				D3D11_MIN_DEPTH, D3D11_MAX_DEPTH);
 
-			DirectX::XMStoreFloat4x4(&mainPass.OrthoMatrix, orthoP);
-
-			m_mainPassCB->CopyData(&mainPass);
-			m_font = std::make_unique<HCFont>();
-			m_font.get()->Init((void*)m_device.Get(), (void*)m_deviceContext.Get());
-			IHCFont::TextData tempData = { L"test", DirectX::XMFLOAT2(0.0f, 0.0f), DirectX::XMFLOAT3(0.5f, 0.5f, 0.5f), DirectX::XMFLOAT2(1.0f, 1.0f) };
-			m_font->SetText(tempData);
+			DirectX::XMStoreFloat4x4(&m_mainPass.OrthoMatrix, orthoP);
 		}
 
 		return 0;
@@ -576,6 +570,11 @@ void HCGraphicDX11::RenderFont()
 {
 	m_deviceContext->GSSetShader(nullptr, nullptr, 0);
 	m_font.get()->Render();
+}
+
+IHCFont* HCGraphicDX11::GetFont()
+{
+	return m_font.get();
 }
 
 void HCGraphicDX11::CreateBaseSamplers()

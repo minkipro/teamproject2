@@ -49,9 +49,6 @@
     <ClCompile Include="Main.cpp">
       <Filter>Client</Filter>
     </ClCompile>
-    <ClCompile Include="..\Common\Source\HCScene.cpp">
-      <Filter>Client\Scene</Filter>
-    </ClCompile>
     <ClCompile Include="..\Common\Source\Window\HCWindow.cpp">
       <Filter>Common\Window</Filter>
     </ClCompile>
@@ -89,9 +86,6 @@
       <Filter>Client</Filter>
     </ClCompile>
     <ClCompile Include="HCCharacter.cpp">
-      <Filter>Client\Scene\SceneObject</Filter>
-    </ClCompile>
-    <ClCompile Include="HCSceneObject.cpp">
       <Filter>Client\Scene\SceneObject</Filter>
     </ClCompile>
     <ClCompile Include="HCCharacterController.cpp">

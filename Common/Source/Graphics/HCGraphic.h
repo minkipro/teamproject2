@@ -167,6 +167,7 @@ public:
 	virtual void SetFont(unsigned int index) = 0;
 	virtual void SetFont(std::wstring fileName) = 0;
 	virtual void SetText(const IHCFont::TextData& textData) = 0;//삭제 필요
+	virtual std::vector<IHCFont::TextData>* GetText() = 0;
 	virtual void Render() = 0;
 protected:
 
@@ -240,7 +241,7 @@ private:
 
 	std::vector<std::vector<BYTE>>							m_renderReservedObjectsByTexture;
 };
-
+class HCFont;
 class HCGraphic : public IHCDevice
 {
 public: //pure virtual method
@@ -275,13 +276,13 @@ public:
 	void				ReserveRender(const std::string& pipeLineName, const void* object, int textureIndex);
 	void				ReserveRender(size_t pipeLineSlot, const void* object, int textureIndex);
 	void				Render();
-
+	virtual void		RenderFont() {};
+	virtual IHCFont*	GetFont() { return nullptr; };
 protected: //pure virtual method
 	virtual void		RenderBegin() = 0;
 	virtual void		RenderEnd() = 0;
 	virtual void		SetPipeLineObject(const HCGraphicPipeLine* pipeLine) = 0;
 	virtual void		RenderObjects(HCGraphicPipeLine* pipeLine) = 0;
-	virtual void		RenderFont() = 0;
 
 private:
 	virtual std::string GetDeviceName() const override { return typeid(HCGraphic).name(); }

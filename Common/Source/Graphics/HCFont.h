@@ -13,10 +13,15 @@ public:
 	virtual void SetFont(unsigned int index) override;
 	virtual void SetFont(std::wstring fileName) override;
 	virtual void SetText(const IHCFont::TextData& textData) override;//삭제 필요
+	virtual std::vector<IHCFont::TextData>* GetText() override {
+		return &m_texts;
+	};
 	virtual void Render() override;
 private:
 	std::unordered_map<std::wstring, std::unique_ptr<DirectX::SpriteFont>> m_spriteFonts;
 	DirectX::SpriteFont* m_currentFont = nullptr;
 	std::unique_ptr<DirectX::SpriteBatch> m_spriteBatch;
+
+public:
 	std::vector<IHCFont::TextData> m_texts;//삭제 필요
 };

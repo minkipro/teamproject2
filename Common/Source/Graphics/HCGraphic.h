@@ -8,13 +8,11 @@
 #include "GameObject.h"
 #include "HCInputDataSamples.h"
 
-
-
 namespace HC
 {
-	enum class SHADERTYPE
+	enum class SHADER_TYPE
 	{
-		VS = 0,
+		VS,
 		GS,
 		HS,
 		DS,
@@ -22,10 +20,33 @@ namespace HC
 		COUNT
 	};
 
-	enum class TEXTURETYPE
+	enum class GRAPHIC_RESOURCE_TYPE
 	{
-		D2TEXTURE,
-		DEPTH_STENCIL
+		GRAPHIC_RESOURCE_BUFFER,
+		GRAPHIC_RESOURCE_UPLOAD_BUFFER,
+		GRAPHIC_RESOURCE_TEXTURE1D,
+		GRAPHIC_RESOURCE_TEXTURE2D,
+		GRAPHIC_RESOURCE_TEXTURE3D,
+	};
+
+	enum GRAPHIC_RESOURCE_FLAGS
+	{
+		GRAPHIC_RESOURCE_FLAG_NONE = 0,
+		GRAPHIC_RESOURCE_FLAG_RENDERTARGET = 1,
+		GRAPHIC_RESOURCE_FLAG_SHADERRESOURCE_VS = 1 << 1,
+		GRAPHIC_RESOURCE_FLAG_SHADERRESOURCE_HS = 1 << 2,
+		GRAPHIC_RESOURCE_FLAG_SHADERRESOURCE_DS = 1 << 3,
+		GRAPHIC_RESOURCE_FLAG_SHADERRESOURCE_PS = 1 << 4,
+		GRAPHIC_RESOURCE_FLAG_ONLY_READBACK = 1 << 5,
+	};
+
+	struct GRAPHIC_RESOURCE_DESC
+	{
+		GRAPHIC_RESOURCE_TYPE	Type;
+		GRAPHIC_RESOURCE_FLAGS	Flags;
+		DXGI_FORMAT				Format;
+		POINT					Size;
+		UINT					Stride;
 	};
 
 	enum class PRIMITIVE_TOPOLOGY
@@ -48,20 +69,6 @@ namespace HC
 	};
 }
 
-
-
-class IHCInputLayout
-{
-public:
-	IHCInputLayout() {}
-	virtual ~IHCInputLayout() = default;
-
-	virtual void* GetInputLayoutData() = 0;
-
-private:
-
-};
-
 class IHCShader
 {
 public:
@@ -76,15 +83,15 @@ public:
 protected:
 };
 
-class IHCTexture
+class IHCResource
 {
 public:
-	IHCTexture() {}
+	IHCResource() {}
 
-	virtual ~IHCTexture() = default;
+	virtual ~IHCResource() = default;
 
-	virtual void*	GetTextureData() = 0;
-	virtual POINT	GetTextureSize() = 0;
+	virtual void*	GetResourceData() = 0;
+	virtual POINT	GetResourceSize() = 0;
 protected:
 
 };
@@ -95,9 +102,21 @@ public:
 	IHCCBuffer() {}
 	virtual ~IHCCBuffer() = default;
 
-	virtual void	CopyData() = 0;
+	virtual void	CopyData(const void* data) = 0;
 	virtual void*	GetBuffer() = 0;
-	virtual void	SetData(size_t stride, void* data) = 0;
+
+protected:
+
+};
+
+class IHCVertexBuffer
+{
+public:
+	IHCVertexBuffer() {}
+	virtual ~IHCVertexBuffer() = default;
+
+	virtual void	CopyData(const void* data) = 0;
+	virtual void*	GetBuffer() = 0;
 
 protected:
 
@@ -148,8 +167,17 @@ public:
 	virtual void SetFont(unsigned int index) = 0;
 	virtual void SetFont(std::wstring fileName) = 0;
 	virtual void SetText(const IHCFont::TextData& textData) = 0;//삭제 필요
+	virtual std::vector<IHCFont::TextData>* GetText() = 0;
 	virtual void Render() = 0;
 protected:
+
+};
+
+struct HCRenderInfo
+{
+	IHCVertexBuffer*	VertexBuffer = nullptr;
+	int					TextureIndex = -1;
+	int					MaterialIndex = -1;
 
 };
 
@@ -162,25 +190,38 @@ public:
 		: m_pipeLineName(name)
 		, m_vertexBuffer(vertexBuffer)
 		, m_vertexBufferRelease(vertexBufferReleaseFunc)
+		, m_InputLayout(nullptr)
+		, m_InputHash(0)
+		, m_InputDataSize(0)
 	{
 	}
 	virtual ~HCGraphicPipeLine()
 	{
 		m_vertexBufferRelease(m_vertexBuffer);
 	}
-	const HC::InputDataSample*	GetCurrInputSample() const { return m_inputSample.get(); }
-	const std::string&			GetPipeLineName() const { return m_pipeLineName; }
-	const auto&					GetReservedObjects() const { return m_renderReservedObjectsByTexture; }
-	void*						GetVertexBuffer() const { return m_vertexBuffer; }
 
-	void						SetShader(HC::SHADERTYPE type, IHCShader* shader) { m_shaders[static_cast<unsigned int>(type)] = shader; }
-	void						RenderReserveObject(const HC::InputDataSample* object);
-	void						ClearReservedObjects();
+	const std::string&							GetPipeLineName() const { return m_pipeLineName; }
+	const auto&									GetReservedObjects() const { return m_renderReservedObjectsByTexture; }
+	void*										GetVertexBuffer() const { return m_vertexBuffer; }
 
-	template<typename T> void	SelectInputSample() { m_inputSample = std::make_unique<T>(); }
+	const std::vector<HCInputLayoutElement>*	GetInputLayoutVector() const { return m_InputLayout; }
+	size_t										GetInputLayoutHash() const { return m_InputHash; }
+	UINT										GetInputDataSize() const { return m_InputDataSize; }
+
+	void										SetShader(HC::SHADER_TYPE type, IHCShader* shader) { m_shaders[static_cast<unsigned int>(type)] = shader; }
+	void										RenderReserveObject(const void* inputData, int textureIndex);
+	void										ClearReservedObjects();
+
+	template<typename T> void					SelectInputSample()
+	{
+		ClearReservedObjects();
+		m_InputHash = typeid(T).hash_code();
+		m_InputDataSize = sizeof(T);
+		m_InputLayout = T::InputLayout;
+	}
 
 public:
-	IHCShader*												m_shaders[static_cast<unsigned int>(HC::SHADERTYPE::COUNT)] = {};
+	IHCShader*												m_shaders[static_cast<unsigned int>(HC::SHADER_TYPE::COUNT)] = {};
 	std::vector<IHCCBuffer*>								m_CBuffers;
 
 	HC::PRIMITIVE_TOPOLOGY									m_primitive = HC::PRIMITIVE_TOPOLOGY::POINT;
@@ -193,10 +234,14 @@ private:
 	std::string												m_pipeLineName;
 	void*													m_vertexBuffer;
 	std::function<void(void*)>								m_vertexBufferRelease;
-	std::unique_ptr<HC::InputDataSample>					m_inputSample = nullptr;
-	std::vector<std::vector<const HC::InputDataSample*>>	m_renderReservedObjectsByTexture;
-};
 
+	size_t													m_InputHash;
+	const std::vector<HCInputLayoutElement>*				m_InputLayout;
+	UINT													m_InputDataSize;
+
+	std::vector<std::vector<BYTE>>							m_renderReservedObjectsByTexture;
+};
+class HCFont;
 class HCGraphic : public IHCDevice
 {
 public: //pure virtual method
@@ -211,12 +256,12 @@ public: //pure virtual method
 	virtual void		Update() = 0;
 
 	virtual void		CreateGraphicPipeLine(const std::string& pipeLineName, HCGraphicPipeLine** out) = 0;
-	virtual void		CreateShaderResource(const std::string& resourceName, size_t stride, const POINT& size, IHCTexture** out) = 0;
-	virtual void		CreateCB(const char* bufferName, size_t stride, size_t num, void* data, IHCCBuffer** out) = 0;
-	virtual void		CreateShader(const std::string& shaderName, HC::SHADERTYPE type, const std::wstring& filePath, const std::string& entryPoint, IHCShader** out) = 0;
+	virtual void		CreateResource(const std::string& resourceName, const HC::GRAPHIC_RESOURCE_DESC& desc, IHCResource** out) = 0;
+	virtual void		CreateCB(const std::string& bufferName, size_t stride, size_t num, std::unique_ptr<IHCCBuffer>& out) = 0;
+	virtual void		CreateShader(const std::string& shaderName, HC::SHADER_TYPE type, const std::wstring& filePath, const std::string& entryPoint, IHCShader** out) = 0;
 
 	virtual void		GetGraphicPipeLine(const std::string& pipeLineName, HCGraphicPipeLine** out) = 0;
-	virtual void		GetShaderResource(const std::string& resourceName, IHCTexture** out) = 0;
+	virtual void		GetShaderResource(const std::string& resourceName, IHCResource** out) = 0;
 	virtual void		GetCB(const std::string& bufferName, IHCCBuffer** out) = 0;
 	virtual void		GetShader(const std::string& shaderName, IHCShader** out) = 0;
 
@@ -228,16 +273,16 @@ public: //Optional virtual function
 	virtual void		NumberingGraphicPipeLineSlot(size_t slot, const std::string& pipelineName);
 
 public:
-	void				ReserveRender(const std::string& pipeLineName, const HC::InputDataSample* object);
-	void				ReserveRender(size_t pipeLineSlot, const HC::InputDataSample* object);
+	void				ReserveRender(const std::string& pipeLineName, const void* object, int textureIndex);
+	void				ReserveRender(size_t pipeLineSlot, const void* object, int textureIndex);
 	void				Render();
-
+	virtual void		RenderFont() {};
+	virtual IHCFont*	GetFont() { return nullptr; };
 protected: //pure virtual method
 	virtual void		RenderBegin() = 0;
 	virtual void		RenderEnd() = 0;
 	virtual void		SetPipeLineObject(const HCGraphicPipeLine* pipeLine) = 0;
 	virtual void		RenderObjects(HCGraphicPipeLine* pipeLine) = 0;
-	virtual void		RenderFont() = 0;
 
 private:
 	virtual std::string GetDeviceName() const override { return typeid(HCGraphic).name(); }

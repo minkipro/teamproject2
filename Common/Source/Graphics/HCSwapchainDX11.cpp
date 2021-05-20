@@ -71,31 +71,6 @@ void HCSwapchainDX11::Resize(UINT windowX, UINT windowY)
 	depthStencilTextureDesc.MipLevels = 1;
 	depthStencilTextureDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
 
-	//D3D11_TEXTURE2D_DESC pixelFuncDesc = {};
-	//pixelFuncDesc.Usage = D3D11_USAGE_STAGING;
-	//pixelFuncDesc.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
-	//pixelFuncDesc.Format = DXGI_FORMAT_R32_SINT;
-	//pixelFuncDesc.MipLevels = 1;
-	//pixelFuncDesc.ArraySize = 1;
-	//pixelFuncDesc.SampleDesc.Count = 1;
-	//pixelFuncDesc.Width = windowX;
-	//pixelFuncDesc.Height = windowY;
-
-	//D3D11_TEXTURE2D_DESC pixelFuncRenderTargetDesc = {};
-	//pixelFuncRenderTargetDesc.Usage = D3D11_USAGE_DEFAULT;
-	//pixelFuncRenderTargetDesc.BindFlags = D3D11_BIND_RENDER_TARGET;
-	//pixelFuncRenderTargetDesc.Format = DXGI_FORMAT_R32_SINT;
-	//pixelFuncRenderTargetDesc.MipLevels = 1;
-	//pixelFuncRenderTargetDesc.ArraySize = 1;
-	//pixelFuncRenderTargetDesc.SampleDesc.Count = 1;
-	//pixelFuncRenderTargetDesc.Width = windowX;
-	//pixelFuncRenderTargetDesc.Height = windowY;
-	//
-	//ComPtr<ID3D11Texture2D> pixelFunc;
-	//COM_HRESULT_IF_FAILED(
-	//	device->CreateTexture2D(&pixelFuncDesc, nullptr, pixelFunc.GetAddressOf()),
-	//	"Failed to create pixelFunc buffer.");
-
 	COM_HRESULT_IF_FAILED(
 		device->CreateTexture2D(&depthStencilTextureDesc, nullptr, m_depthStencilBuffer.GetAddressOf()),
 		"Failed to create depth stencil buffer.");

@@ -42,9 +42,9 @@ void HCGraphicDX11::Update()
 		static_cast<float>(HC::GO.WIN.WindowsizeY), 0,
 		D3D11_MIN_DEPTH, D3D11_MAX_DEPTH);
 
-	DirectX::XMStoreFloat4x4(&m_mainPass.OrthoMatrix, orthoP);
-	DirectX::XMStoreFloat4x4(&m_mainPass.ViewMatrix, HC::CameraManager::Get()->GetMatrix());
-	m_mainPassCB->CopyData();
+	DirectX::XMStoreFloat4x4(&mainPass.OrthoMatrix, orthoP);
+	DirectX::XMStoreFloat4x4(&mainPass.ViewMatrix, HC::CameraManager::Get()->GetMatrix());
+	m_mainPassCB->CopyData(&mainPass);
 }
 
 void HCGraphicDX11::CreateGraphicPipeLine(const std::string& pipeLineName, HCGraphicPipeLine** out)
@@ -237,6 +237,16 @@ void HCGraphicDX11::CreateShader(const std::string& shaderName, HC::SHADER_TYPE 
 
 void HCGraphicDX11::GetGraphicPipeLine(const std::string& pipeLineName, HCGraphicPipeLine** out)
 {
+	size_t pipeLineNum = m_PipeLineSlots.size();
+	for (size_t i = 0; i < pipeLineNum; i++)
+	{
+		const std::string& str = m_PipeLineSlots[i]->GetPipeLineName();
+		if (0 == std::strcmp(str.c_str(), pipeLineName.c_str()))
+		{
+			*out = m_PipeLineSlots[i];
+			return;
+		}
+	}
 }
 
 void HCGraphicDX11::GetShaderResource(const std::string& resourceName, IHCResource** out)
@@ -257,19 +267,17 @@ int HCGraphicDX11::GetTextureIndex(const std::wstring& textureName) const
 	int bufferIndex = 0;
 	int TextureIndex = 0;
 	std::wstring directory = StringHelper::GetDirectoryFromPath(textureName);
-	std::wstring texture = StringHelper::GetFileNameFromPath(textureName);
 
 	if (directory.length() == 0)
 	{
 		directory = StringHelper::GetFileNameFromPath(HC::GO.GRAPHIC.TextureFolderPath);
-		texture = directory + L"/" + textureName;
 	}
 
 	auto bufferIndexIter = m_textureBufferIndex.find(directory);
 	COM_THROW_IF_FAILED(bufferIndexIter != m_textureBufferIndex.end(), "This TextureBuffer is not loaded");
 	bufferIndex = bufferIndexIter->second;
 
-	auto textureIter = m_textures[bufferIndex].TextureIndex.find(texture);
+	auto textureIter = m_textures[bufferIndex].TextureIndex.find(textureName);
 	COM_THROW_IF_FAILED(textureIter != m_textures[bufferIndex].TextureIndex.end(), "This Texture is not loaded");
 	TextureIndex = textureIter->second;
 
@@ -344,7 +352,9 @@ LRESULT HCGraphicDX11::WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lP
 				static_cast<float>(HC::GO.WIN.WindowsizeY), 0,
 				D3D11_MIN_DEPTH, D3D11_MAX_DEPTH);
 
-			DirectX::XMStoreFloat4x4(&m_mainPass.OrthoMatrix, orthoP);
+			DirectX::XMStoreFloat4x4(&mainPass.OrthoMatrix, orthoP);
+			DirectX::XMStoreFloat4x4(&mainPass.ViewMatrix, HC::CameraManager::Get()->GetMatrix());
+			m_mainPassCB->CopyData(&mainPass);
 		}
 
 		return 0;
@@ -519,18 +529,19 @@ void HCGraphicDX11::SetPipeLineObject(const HCGraphicPipeLine* pipeLine)
 void HCGraphicDX11::RenderObjects(HCGraphicPipeLine* pipeLine)
 {
 	HCDX11VertexBuffer* currBuffer = static_cast<HCDX11VertexBuffer*>(pipeLine->GetVertexBuffer());
-	auto reservedOBs = pipeLine->GetReservedObjects();
+	auto reservedOBData = pipeLine->GetReservedObjectData();
 	UINT dataSize = pipeLine->GetInputDataSize();
 
 	size_t numObjects = 0;
 	{
-		for (auto& it : reservedOBs)
+		for (auto& it : reservedOBData)
 		{
-			numObjects += it.size();
+			numObjects += it.size()/ dataSize;
 		}
 
 		if (numObjects * dataSize > currBuffer->BufferSize)
 		{
+			assert(false);
 			//TODO: resize vertex buffer
 		}
 	}
@@ -538,31 +549,31 @@ void HCGraphicDX11::RenderObjects(HCGraphicPipeLine* pipeLine)
 	D3D11_MAPPED_SUBRESOURCE mappedResource = {};
 	size_t accumulatedByte = 0;
 	{
-		COM_HRESULT_IF_FAILED(m_deviceContext->Map(currBuffer->Buffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource),
+		COM_HRESULT_IF_FAILED(m_deviceContext->Map(currBuffer->Buffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0,  &mappedResource),
 			"Failed to map constant buffer.");
 
-		for (auto& it2 : reservedOBs)
+		for (auto& it2 : reservedOBData)
 		{
 			size_t bufferSize = it2.size();
 			CopyMemory(static_cast<BYTE*>(mappedResource.pData) + accumulatedByte, it2.data(), bufferSize);
-
+			RenderPointUV* test = (RenderPointUV * )it2.data();
 			accumulatedByte += bufferSize;
 		}
 		m_deviceContext->Unmap(currBuffer->Buffer.Get(), 0);
 	}
 
 	size_t currOffset = 0;
-	for (size_t i = 0; i < reservedOBs.size(); i++)
+	for (size_t i = 0; i < reservedOBData.size(); i++)
 	{
-		if (reservedOBs[i].size())
+		if (reservedOBData[i].size())
 		{
 			ID3D11ShaderResourceView* views[] = { m_textures[i].TextureInfoView.Get(),
 												  m_textures[i].TextureView.Get() };
 
 			m_deviceContext->PSSetShaderResources(0, _countof(views), views);
-			m_deviceContext->DrawInstanced(static_cast<UINT>(reservedOBs[i].size()), 1, static_cast<UINT>(currOffset), 0);
+			m_deviceContext->DrawInstanced(static_cast<UINT>(reservedOBData[i].size()/ dataSize), 1, static_cast<UINT>(currOffset), 0);
 
-			currOffset += reservedOBs[i].size();
+			currOffset += reservedOBData[i].size();
 		}
 	}
 }

@@ -12,10 +12,7 @@ Character::Character()
 	m_renderPointUV.TextureIndex = graphic->GetTextureIndex(L"Texture/PIPOYA FREE RPG Character Sprites NEKONIN/pipo-nekonin001.png");
 	m_renderPointUV.Uv = { 0.0f, 0.0f, 1.0f / 3.0f, 1.0f / 4.0f };
 
-	HCGraphicPipeLine* pipeLine;
-	graphic->GetGraphicPipeLine("testPipe2", &pipeLine);
-
-	pipeLine->RenderReserveObject(&m_renderPointUV);
+	
 	std::vector<DirectX::XMUINT2> animationIndex[(int)CharacterController::CharacterState::COUNT];
 	animationIndex[(int)CharacterController::CharacterState::IDLE].push_back({ 1, 0 });
 	animationIndex[(int)CharacterController::CharacterState::UP].push_back({ 0, 3 });
@@ -44,5 +41,12 @@ Character::~Character()
 
 void Character::Update()
 {
+	auto graphic = HCDEVICE(HCGraphic);
+
 	m_characterController->Update();
+
+	HCGraphicPipeLine* pipeLine;
+	graphic->GetGraphicPipeLine("testPipe2", &pipeLine);
+
+	pipeLine->RenderReserveObject(&m_renderPointUV, m_renderPointUV.TextureIndex);
 }

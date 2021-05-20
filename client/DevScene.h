@@ -8,7 +8,7 @@ class DevScene final : public HCScene
 {
 public:
 	DevScene();
-	virtual ~DevScene() = default;
+	virtual ~DevScene() override;
 
 	virtual void Init() override;
 	virtual void Update() override;

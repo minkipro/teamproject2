@@ -69,6 +69,30 @@ namespace HC
 	};
 }
 
+struct RenderPoint
+{
+	static std::vector<HCInputLayoutElement> InputLayout;
+
+	DirectX::XMFLOAT3	Position;
+	DirectX::XMFLOAT2	Size;
+	DirectX::XMFLOAT4	Color;
+	int					TextureIndex = -1;
+};
+
+
+
+struct RenderPointUV
+{
+	static std::vector<HCInputLayoutElement> InputLayout;
+
+	DirectX::XMFLOAT3	Position;
+	DirectX::XMFLOAT2	Size;
+	DirectX::XMFLOAT4	Color;
+	DirectX::XMFLOAT4	Uv;
+	int					TextureIndex = -1;
+};
+
+
 class IHCShader
 {
 public:
@@ -201,7 +225,7 @@ public:
 	}
 
 	const std::string&							GetPipeLineName() const { return m_pipeLineName; }
-	const auto&									GetReservedObjects() const { return m_renderReservedObjectsByTexture; }
+	const auto&									GetReservedObjectData() const { return m_renderReservedObjectsByTexture; }
 	void*										GetVertexBuffer() const { return m_vertexBuffer; }
 
 	const std::vector<HCInputLayoutElement>*	GetInputLayoutVector() const { return m_InputLayout; }
@@ -212,13 +236,8 @@ public:
 	void										RenderReserveObject(const void* inputData, int textureIndex);
 	void										ClearReservedObjects();
 
-	template<typename T> void					SelectInputSample()
-	{
-		ClearReservedObjects();
-		m_InputHash = typeid(T).hash_code();
-		m_InputDataSize = sizeof(T);
-		m_InputLayout = T::InputLayout;
-	}
+	template<typename T> void					SelectInputSample();
+	
 
 public:
 	IHCShader*												m_shaders[static_cast<unsigned int>(HC::SHADER_TYPE::COUNT)] = {};
@@ -241,6 +260,16 @@ private:
 
 	std::vector<std::vector<BYTE>>							m_renderReservedObjectsByTexture;
 };
+
+template<typename T> 
+inline void HCGraphicPipeLine::SelectInputSample()
+{
+	ClearReservedObjects();
+	m_InputHash = typeid(T).hash_code();
+	m_InputDataSize = sizeof(T);
+	m_InputLayout = &T::InputLayout;
+}
+
 class HCFont;
 class HCGraphic : public IHCDevice
 {

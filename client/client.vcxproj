@@ -168,6 +168,7 @@
     <ClCompile Include="..\Common\Source\Graphics\HCSwapchainDX11.cpp" />
     <ClCompile Include="..\Common\Source\Util\StringHelper.cpp" />
     <ClCompile Include="..\Common\Source\Window\HCWindow.cpp" />
+    <ClCompile Include="..\Common\Source\Xml\Xml.cpp" />
     <ClCompile Include="HCCharacter.cpp" />
     <ClCompile Include="DevScene.cpp" />
     <ClCompile Include="Engine.cpp" />
@@ -182,16 +183,6 @@
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
     </FxCompile>
     <FxCompile Include="..\Common\Shader\PointToPlaneSahder.hlsl">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">5.0</ShaderModel>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
-    </FxCompile>
-    <FxCompile Include="..\Common\Shader\PointToUVPlane.hlsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
@@ -221,6 +212,7 @@
     <ClInclude Include="..\Common\Source\Includes\HCDevice.h" />
     <ClInclude Include="..\Common\Source\Util\StringHelper.h" />
     <ClInclude Include="..\Common\Source\Window\HCWindow.h" />
+    <ClInclude Include="..\Common\Source\Xml\Xml.h" />
     <ClInclude Include="HCCharacter.h" />
     <ClInclude Include="DevScene.h" />
     <ClInclude Include="Engine.h" />

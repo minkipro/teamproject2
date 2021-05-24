@@ -79,18 +79,6 @@ struct RenderPoint
 	int					TextureIndex = -1;
 };
 
-struct RenderPointUV
-{
-	static std::vector<HCInputLayoutElement> InputLayout;
-
-	DirectX::XMFLOAT3	Position;
-	DirectX::XMFLOAT2	Size;
-	DirectX::XMFLOAT4	Color;
-	DirectX::XMFLOAT4	Uv;
-	int					TextureIndex = -1;
-};
-
-
 class IHCShader
 {
 public:

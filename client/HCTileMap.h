@@ -14,7 +14,7 @@ namespace HC
 		virtual void Update() override;
 
 	private:
-		RenderPointUV m_renderPointUV[TILESIZEX][TILESIZEY];
+		RenderPoint m_renderPoint[TILESIZEX][TILESIZEY];
 	};
 }
 

@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "HCCharacterController.h"
 
-HC::CharacterController::CharacterController(DirectX::XMFLOAT3* position, DirectX::XMFLOAT4* uv, int indexSizeX, int indexSizeY, std::vector<DirectX::XMUINT2> animationIndex[])
+HC::CharacterController::CharacterController(DirectX::XMFLOAT3* position, int* textureIndex, int spriteNum, std::vector<int> animationIndex[])
 {
 	auto mouse = HCDEVICE(HCMouse);
 	m_keyMapping[(unsigned char)BehaviorState::UP] = { true, DirectX::Keyboard::W };
@@ -17,21 +17,17 @@ HC::CharacterController::CharacterController(DirectX::XMFLOAT3* position, Direct
 	m_continuos = true;
 	m_isThereInput = false;
 	m_position = position;
-	m_uv = uv;
+	m_textureIndex = textureIndex;
+	m_originTextureIndex = *m_textureIndex;
 	m_deltaTime = 0.0f;
 	m_animationIndexChangeTime = 0.3f;
 	m_currentAnimationIndex = 0;
-	float significantError = 0.02f;
 	for (unsigned char i = 0; i < (unsigned char)CharacterState::COUNT; i++)
 	{
 		size_t animationIndexNum = animationIndex[i].size();
 		for (size_t j = 0; j < animationIndexNum; j++)
 		{
-			float startX = ((float)animationIndex[i][j].x+ significantError) / indexSizeX;
-			float endX = ((float)animationIndex[i][j].x + 1.0f- significantError) / indexSizeX;
-			float startY = (float)(animationIndex[i][j].y+ significantError) / indexSizeY;
-			float endY = (float)(animationIndex[i][j].y + 1.0f- significantError) / indexSizeY;
-			m_animationIndex[i].push_back(DirectX::XMFLOAT4(startX, startY, endX, endY));
+			m_animationIndex[i].push_back(animationIndex[i][j]);
 		}
 	}
 	auto timer = HCDEVICE(HCTimer);
@@ -167,14 +163,14 @@ void HC::CharacterController::Update()
 				m_currentAnimationIndex = 0;
 			}
 
-			*m_uv = m_animationIndex[(unsigned char)m_state][m_currentAnimationIndex];//애니메이션이 없는 경우에는 오류발생
+			*m_textureIndex = m_originTextureIndex + m_animationIndex[(unsigned char)m_state][m_currentAnimationIndex];//애니메이션이 없는 경우에는 오류발생
 		}
 	}
 	else
 	{
 		m_deltaTime = 0.0f;
 		m_currentAnimationIndex = 0;
-		*m_uv = m_animationIndex[(unsigned char)m_state][m_currentAnimationIndex];
+		*m_textureIndex = m_originTextureIndex + m_animationIndex[(unsigned char)m_state][m_currentAnimationIndex];
 	}
 
 	auto graphic = HCDEVICE(HCGraphic);

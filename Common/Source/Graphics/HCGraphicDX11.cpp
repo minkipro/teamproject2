@@ -558,14 +558,13 @@ void HCGraphicDX11::RenderObjects(HCGraphicPipeLine* pipeLine)
 		{
 			size_t bufferSize = it2.size();
 			CopyMemory(static_cast<BYTE*>(mappedResource.pData) + accumulatedByte, it2.data(), bufferSize);
-			RenderPointUV* test = (RenderPointUV*)it2.data();
 			accumulatedByte += bufferSize;
 		}
 		m_deviceContext->Unmap(currBuffer->Buffer.Get(), 0);
 	}
 
 	size_t currOffset = 0;
-	for (size_t i = 0; i < reservedOBData.size(); i++)
+	for (size_t i = 0; i < reservedOBData.size()/ dataSize; i++)
 	{
 		if (reservedOBData[i].size())
 		{
@@ -573,9 +572,9 @@ void HCGraphicDX11::RenderObjects(HCGraphicPipeLine* pipeLine)
 												  m_textures[i].TextureView.Get() };
 
 			m_deviceContext->PSSetShaderResources(0, _countof(views), views);
-			m_deviceContext->DrawInstanced(static_cast<UINT>(reservedOBData[i].size() / dataSize), 1, static_cast<UINT>(currOffset), 0);
+			m_deviceContext->DrawInstanced(static_cast<UINT>(reservedOBData[i].size() / dataSize), 1,  static_cast<UINT>(currOffset), 0);
 
-			currOffset += reservedOBData[i].size();
+			currOffset += reservedOBData[i].size() / dataSize;
 		}
 	}
 }
@@ -717,7 +716,7 @@ void HCGraphicDX11::CreateTextures()
 
 	m_textures.resize(filePathes.size());
 
-	COM_THROW_IF_FAILED(filePathes.size() > 0xff, "This TextureBuffer is overflow");
+	COM_THROW_IF_FAILED(filePathes.size() < 0xff, "This TextureBuffer is overflow");
 
 	std::vector<SpriteData> spriteDatas;
 	UINT currIndex = 0;
@@ -800,7 +799,8 @@ void HCGraphicDX11::CreateTextures()
 			
 			locationData.Index = static_cast<UINT>(i);
 			currTexture2DArrayData.TextureIndex[it.first + L"/" + StringHelper::GetFileNameFromPath(it.second[i])] = locationDataIndexCount;
-
+			std::wstring abc = "abc";
+			std::wstring def = "def";
 			if (std::wstring(textureName, HC::GO.GRAPHIC.SpriteTextureSuffix.length()) == HC::GO.GRAPHIC.SpriteTextureSuffix)
 			{
 				spriteDatas.clear();
@@ -838,7 +838,7 @@ void HCGraphicDX11::CreateTextures()
 				currFolderTextures[i].Get(), 0, &srcBox);
 		}
 
-		COM_THROW_IF_FAILED(currTexture2DArrayData.TextureDatas.size() > 0xfffff, "This TextureIndex is overflow");
+		COM_THROW_IF_FAILED(currTexture2DArrayData.TextureDatas.size() < 0xfffff, "This TextureIndex is overflow");
 
 		{
 			ComPtr<ID3D11Buffer> textureInfoBuffer;

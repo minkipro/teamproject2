@@ -53,18 +53,19 @@ namespace HC
 			COUNT
 		};
 	public:
-		CharacterController(DirectX::XMFLOAT3* position, DirectX::XMFLOAT4* uv, int indexSizeX, int indexSizeY, 
-			std::vector<DirectX::XMUINT2> animationIndex[] /*CharacterState::COUNT크기의 배열을 무조건 요구함*/);
+		CharacterController(DirectX::XMFLOAT3* position, int* textureIndex, int spriteNum, 
+			std::vector<int> animationIndex[] /*CharacterState::COUNT크기의 배열을 무조건 요구함*/);
 		void Update();
 	private:
 		DirectX::XMFLOAT3* m_position;
-		DirectX::XMFLOAT4* m_uv;
+		int* m_textureIndex;
+		int m_originTextureIndex;
 		Keys m_keyMapping[(unsigned char)BehaviorState::COUNT];
 		CharacterState m_state;
 		CharacterState m_prevState;
 		bool m_isThereInput;//인풋이 있는지 없는지
 		bool m_continuos;//기존 상태와 일치하면 true 아니면 false
-		std::vector<DirectX::XMFLOAT4> m_animationIndex[(unsigned char)CharacterState::COUNT];
+		std::vector<int> m_animationIndex[(unsigned char)CharacterState::COUNT];
 		float m_deltaTime;
 		float m_animationIndexChangeTime;
 		int m_currentAnimationIndex;

@@ -38,6 +38,12 @@
     <Filter Include="Common\Devices\Graphics_Base\UI">
       <UniqueIdentifier>{33dd55ac-0a55-4b0e-a244-10b1a00e857b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Common\Externel">
+      <UniqueIdentifier>{7aacc62a-0500-408a-8794-344e2a145618}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common\Externel\Xml">
+      <UniqueIdentifier>{4a82e0f2-97bb-4e9a-af4a-cb0516ed82d7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -96,6 +102,9 @@
     </ClCompile>
     <ClCompile Include="..\Common\Source\Graphics\HCCameraManager.cpp">
       <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Common\Source\Xml\Xml.cpp">
+      <Filter>Common\Externel\Xml</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -174,15 +183,15 @@
     <ClInclude Include="..\Common\Source\Graphics\HCCameraManager.h">
       <Filter>Common</Filter>
     </ClInclude>
+    <ClInclude Include="..\Common\Source\Xml\Xml.h">
+      <Filter>Common\Externel\Xml</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\Common\Shader\BaseRoot.hlsli">
       <Filter>리소스 파일</Filter>
     </FxCompile>
     <FxCompile Include="..\Common\Shader\PointToPlaneSahder.hlsl">
-      <Filter>리소스 파일</Filter>
-    </FxCompile>
-    <FxCompile Include="..\Common\Shader\PointToUVPlane.hlsl">
       <Filter>리소스 파일</Filter>
     </FxCompile>
   </ItemGroup>

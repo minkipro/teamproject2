@@ -13,19 +13,19 @@ Character::Character()
 	m_renderPoint.TextureIndex = textureData.textureIndex;
 	
 	std::vector<int> animationIndex[(int)CharacterController::CharacterState::COUNT];
-	animationIndex[(int)CharacterController::CharacterState::IDLE].push_back(1*3 +0);
-	animationIndex[(int)CharacterController::CharacterState::UP].push_back(0*3+3 );
-	animationIndex[(int)CharacterController::CharacterState::UP].push_back(1 * 3 + 3 );
-	animationIndex[(int)CharacterController::CharacterState::UP].push_back(2 * 3 + 3 );
-	animationIndex[(int)CharacterController::CharacterState::LEFT].push_back(0 * 3 + 1);
-	animationIndex[(int)CharacterController::CharacterState::LEFT].push_back(1 * 3 + 1);
-	animationIndex[(int)CharacterController::CharacterState::LEFT].push_back(2 * 3 + 1);
-	animationIndex[(int)CharacterController::CharacterState::DOWN].push_back(0 * 3 + 0);
-	animationIndex[(int)CharacterController::CharacterState::DOWN].push_back(1 * 3 + 0);
-	animationIndex[(int)CharacterController::CharacterState::DOWN].push_back(2 * 3 + 0);
-	animationIndex[(int)CharacterController::CharacterState::RIGHT].push_back(0 * 3 + 2);
-	animationIndex[(int)CharacterController::CharacterState::RIGHT].push_back(1 * 3 + 2);
-	animationIndex[(int)CharacterController::CharacterState::RIGHT].push_back(2 * 3 + 2);
+	animationIndex[(int)CharacterController::CharacterState::IDLE].push_back(1 +0*3);
+	animationIndex[(int)CharacterController::CharacterState::UP].push_back(0+3*3);
+	animationIndex[(int)CharacterController::CharacterState::UP].push_back(1 + 3*3);
+	animationIndex[(int)CharacterController::CharacterState::UP].push_back(2 + 3*3);
+	animationIndex[(int)CharacterController::CharacterState::LEFT].push_back(0 + 1 * 3);
+	animationIndex[(int)CharacterController::CharacterState::LEFT].push_back(1 + 1 * 3);
+	animationIndex[(int)CharacterController::CharacterState::LEFT].push_back(2 + 1 * 3);
+	animationIndex[(int)CharacterController::CharacterState::DOWN].push_back(0 + 0 * 3);
+	animationIndex[(int)CharacterController::CharacterState::DOWN].push_back(1 + 0 * 3);
+	animationIndex[(int)CharacterController::CharacterState::DOWN].push_back(2 + 0 * 3);
+	animationIndex[(int)CharacterController::CharacterState::RIGHT].push_back(0 + 2 * 3);
+	animationIndex[(int)CharacterController::CharacterState::RIGHT].push_back(1 + 2 * 3);
+	animationIndex[(int)CharacterController::CharacterState::RIGHT].push_back(2 + 2 * 3);
 	m_characterController = new HC::CharacterController(&m_renderPoint.Position, &m_renderPoint.TextureIndex, textureData.spriteNum, animationIndex);
 }
 

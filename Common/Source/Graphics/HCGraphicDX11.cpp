@@ -564,7 +564,7 @@ void HCGraphicDX11::RenderObjects(HCGraphicPipeLine* pipeLine)
 	}
 
 	size_t currOffset = 0;
-	for (size_t i = 0; i < reservedOBData.size()/ dataSize; i++)
+	for (size_t i = 0; i < reservedOBData.size(); i++)
 	{
 		if (reservedOBData[i].size())
 		{
@@ -799,9 +799,12 @@ void HCGraphicDX11::CreateTextures()
 			
 			locationData.Index = static_cast<UINT>(i);
 			currTexture2DArrayData.TextureIndex[it.first + L"/" + StringHelper::GetFileNameFromPath(it.second[i])] = locationDataIndexCount;
-			std::wstring abc = "abc";
-			std::wstring def = "def";
-			if (std::wstring(textureName, HC::GO.GRAPHIC.SpriteTextureSuffix.length()) == HC::GO.GRAPHIC.SpriteTextureSuffix)
+			std::wstring abc = L"abc";
+			std::wstring abc2 = L"abc";
+			std::wstring def = L"def";
+
+			std::wstring postString = std::wstring(textureName.c_str(), HC::GO.GRAPHIC.SpriteTextureSuffix.length());
+			if (postString == HC::GO.GRAPHIC.SpriteTextureSuffix)
 			{
 				spriteDatas.clear();
 				GetSpriteData(it.second[i], &spriteDatas);
@@ -962,19 +965,21 @@ void HCGraphicDX11::GetSpriteData(const std::wstring& texturePath, std::vector<S
 
 		COM_THROW_IF_FAILED((gridInfoTextEndIndex != std::wstring::npos) && (gridInfoSplitIndex != std::wstring::npos),
 			textureName + L"this Texture name has not sprtie grid info");
-
-		int sizeX = std::stoul(std::wstring(textureName[gridInfoTextStartIndex], gridInfoSplitIndex - gridInfoTextStartIndex), 0);
-		int sizeY = std::stoul(std::wstring(textureName[gridInfoSplitIndex+1], gridInfoTextEndIndex - (gridInfoSplitIndex + 1)), 0);
+		
+		std::wstring wstr = std::wstring(textureName.c_str() + gridInfoTextStartIndex, gridInfoSplitIndex - gridInfoTextStartIndex).c_str();
+		int sizeX = _wtoi(wstr.c_str());
+		wstr = std::wstring(textureName.c_str() + gridInfoSplitIndex + 1, gridInfoTextEndIndex - (gridInfoSplitIndex + 1)).c_str();
+		int sizeY = _wtoi(wstr.c_str());
 		float offsetX = 1.0f / sizeX;
 		float offsetY = 1.0f / sizeY;
 
 		SpriteData spData;
-		for (int y = sizeY; y < sizeY; y++)
+		for (int y = 0; y < sizeY; y++)
 		{
 			spData.StartUV.y = y * offsetY;
 			spData.EndUV.y = (y + 1) * offsetY;
 
-			for (int x = sizeX; x < sizeX; x++)
+			for (int x = 0; x < sizeX; x++)
 			{
 				spData.StartUV.x = x * offsetX;
 				spData.EndUV.x = (x + 1) * offsetX;

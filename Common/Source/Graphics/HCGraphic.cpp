@@ -71,7 +71,7 @@ void HCGraphic::NumberingGraphicPipeLineSlot(size_t slot, const std::string& pip
 
 void HCGraphicPipeLine::RenderReserveObject(const void* inputData, int textureIndex)
 {
-	size_t textureBufferIndex = (textureIndex > -1) ? (textureIndex>>16) : 0;
+	size_t textureBufferIndex = (textureIndex > -1) ? (textureIndex>>20) : 0;
 
 	if (textureBufferIndex >= m_renderReservedObjectsByTexture.size())
 	{

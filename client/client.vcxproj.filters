@@ -44,6 +44,9 @@
     <Filter Include="Common\Externel\Xml">
       <UniqueIdentifier>{4a82e0f2-97bb-4e9a-af4a-cb0516ed82d7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Common\Devices\Physics">
+      <UniqueIdentifier>{d8d02539-ede7-4889-b748-bdd4be720627}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -105,6 +108,9 @@
     </ClCompile>
     <ClCompile Include="..\Common\Source\Xml\Xml.cpp">
       <Filter>Common\Externel\Xml</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Common\Source\Device\HCPhysics.cpp">
+      <Filter>Common\Devices\Physics</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -185,6 +191,9 @@
     </ClInclude>
     <ClInclude Include="..\Common\Source\Xml\Xml.h">
       <Filter>Common\Externel\Xml</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\Source\Device\HCPhysics.h">
+      <Filter>Common\Devices\Physics</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

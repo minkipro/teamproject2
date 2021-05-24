@@ -38,6 +38,9 @@
     <Filter Include="Common\Devices\Graphics_Base\UI">
       <UniqueIdentifier>{33dd55ac-0a55-4b0e-a244-10b1a00e857b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Common\Devices\Physics">
+      <UniqueIdentifier>{d8d02539-ede7-4889-b748-bdd4be720627}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -96,6 +99,9 @@
     </ClCompile>
     <ClCompile Include="..\Common\Source\Graphics\HCCameraManager.cpp">
       <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Common\Source\Device\HCPhysics.cpp">
+      <Filter>Common\Devices\Physics</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -173,6 +179,9 @@
     </ClInclude>
     <ClInclude Include="..\Common\Source\Graphics\HCCameraManager.h">
       <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\Source\Device\HCPhysics.h">
+      <Filter>Common\Devices\Physics</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

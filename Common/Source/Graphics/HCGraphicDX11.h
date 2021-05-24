@@ -10,21 +10,27 @@ using Microsoft::WRL::ComPtr;
 
 class HCGraphicDX11 final : public HCGraphic
 {
-	struct TextureInTextureData
+	struct TextureArrayInTextureData
 	{
 		DirectX::XMFLOAT2 StartUV = {};
 		DirectX::XMFLOAT2 EndUV = {};
 		UINT Index = 0;
-		UINT Pad0 = 0;
+		int	 NumSprite = -1;
 		UINT Pad1 = 0;
 		UINT Pad2 = 0;
+	};
+
+	struct SpriteData
+	{
+		DirectX::XMFLOAT2 StartUV;
+		DirectX::XMFLOAT2 EndUV;
 	};
 
 	struct Texture2DArrayData
 	{
 		ComPtr<ID3D11ShaderResourceView>						TextureView;
 		ComPtr<ID3D11ShaderResourceView>						TextureInfoView;
-		std::vector<TextureInTextureData>						TextureDatas;
+		std::vector<TextureArrayInTextureData>					TextureDatas;
 		std::unordered_map<std::wstring, UINT>					TextureIndex;
 	};
 
@@ -48,7 +54,7 @@ public:
 	virtual void		GetCB(const std::string& bufferName, IHCCBuffer** out) override;
 	virtual void		GetShader(const std::string& shaderName, IHCShader** out) override;
 
-	virtual int			GetTextureIndex(const std::wstring& textureName) const override;
+	virtual TextureData	GetTextureIndex(const std::wstring& textureName) const override;
 
 	virtual LRESULT		WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) override;
 private:
@@ -61,9 +67,11 @@ private:
 
 private:
 	void				CreateBaseSamplers();
-	void				CreateTextures();
+void					CreateTextures();
 	void				CreateGraphicPipeLineBaseSettings();
 	void				CreateInputLayout(size_t inputLayoutHash, const std::vector<HCInputLayoutElement>* inputLayoutEle, HCDX11Shader* vs);
+
+	void				GetSpriteData(const std::wstring& texturePath, std::vector<SpriteData>* out);
 
 private:
 	std::unique_ptr<HCSwapchainDX11>										m_swapchain;

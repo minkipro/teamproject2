@@ -9,9 +9,8 @@ Character::Character()
 
 	m_renderPointUV.Size = { 100,100 };
 	m_renderPointUV.Position = { 100,100, 0.2f };
-	m_renderPointUV.TextureIndex = graphic->GetTextureIndex(L"Texture/PIPOYA FREE RPG Character Sprites NEKONIN/pipo-nekonin001.png");
+	m_renderPointUV.TextureIndex = graphic->GetTextureIndex(L"Texture/PIPOYA FREE RPG Character Sprites NEKONIN/pipo-nekonin001.png").textureIndex;
 	m_renderPointUV.Uv = { 0.0f, 0.0f, 1.0f / 3.0f, 1.0f / 4.0f };
-
 	
 	std::vector<DirectX::XMUINT2> animationIndex[(int)CharacterController::CharacterState::COUNT];
 	animationIndex[(int)CharacterController::CharacterState::IDLE].push_back({ 1, 0 });

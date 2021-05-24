@@ -79,8 +79,6 @@ struct RenderPoint
 	int					TextureIndex = -1;
 };
 
-
-
 struct RenderPointUV
 {
 	static std::vector<HCInputLayoutElement> InputLayout;
@@ -197,12 +195,10 @@ protected:
 
 };
 
-struct HCRenderInfo
+struct TextureData
 {
-	IHCVertexBuffer*	VertexBuffer = nullptr;
-	int					TextureIndex = -1;
-	int					MaterialIndex = -1;
-
+	int textureIndex = -1;
+	int spriteNum = -1;
 };
 
 class HCGraphicPipeLine
@@ -294,7 +290,7 @@ public: //pure virtual method
 	virtual void		GetCB(const std::string& bufferName, IHCCBuffer** out) = 0;
 	virtual void		GetShader(const std::string& shaderName, IHCShader** out) = 0;
 
-	virtual int			GetTextureIndex(const std::wstring& textureName) const = 0;
+	virtual TextureData	GetTextureIndex(const std::wstring& textureName) const = 0;
 
 public: //Optional virtual function
 	virtual LRESULT		WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) { return LRESULT(0); }

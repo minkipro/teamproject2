@@ -170,6 +170,10 @@
     <ClCompile Include="..\Common\Source\Util\StringHelper.cpp" />
     <ClCompile Include="..\Common\Source\Window\HCWindow.cpp" />
     <ClCompile Include="..\Common\Source\Xml\Xml.cpp" />
+    <ClCompile Include="..\Common\UI\UIButton.cpp" />
+    <ClCompile Include="..\Common\UI\UIObject.cpp" />
+    <ClCompile Include="..\Common\UI\UIPanel.cpp" />
+    <ClCompile Include="..\Common\UI\UIParam.cpp" />
     <ClCompile Include="HCCharacter.cpp" />
     <ClCompile Include="DevScene.cpp" />
     <ClCompile Include="Engine.cpp" />
@@ -215,6 +219,10 @@
     <ClInclude Include="..\Common\Source\Util\StringHelper.h" />
     <ClInclude Include="..\Common\Source\Window\HCWindow.h" />
     <ClInclude Include="..\Common\Source\Xml\Xml.h" />
+    <ClInclude Include="..\Common\UI\UIButton.h" />
+    <ClInclude Include="..\Common\UI\UIObject.h" />
+    <ClInclude Include="..\Common\UI\UIPanel.h" />
+    <ClInclude Include="..\Common\UI\UIParam.h" />
     <ClInclude Include="HCCharacter.h" />
     <ClInclude Include="DevScene.h" />
     <ClInclude Include="Engine.h" />

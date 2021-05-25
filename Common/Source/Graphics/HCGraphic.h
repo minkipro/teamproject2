@@ -46,7 +46,7 @@ namespace HC
 		GRAPHIC_RESOURCE_FLAGS	Flags;
 		DXGI_FORMAT				Format;
 		POINT					Size;
-		UINT					Stride;
+		UINT					Stride = 0;
 	};
 
 	enum class PRIMITIVE_TOPOLOGY
@@ -73,9 +73,9 @@ struct RenderPoint
 {
 	static std::vector<HCInputLayoutElement> InputLayout;
 
-	DirectX::XMFLOAT3	Position;
-	DirectX::XMFLOAT2	Size;
-	DirectX::XMFLOAT4	Color;
+	DirectX::XMFLOAT3	Position = { 0,0,0 };
+	DirectX::XMFLOAT2	Size = { 0,0 };
+	DirectX::XMFLOAT4	Color = { 0,0,0,1 };
 	int					TextureIndex = -1;
 };
 

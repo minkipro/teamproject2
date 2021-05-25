@@ -2,6 +2,7 @@
 #include "Engine.h"
 #include "Window/HCWindow.h"
 #include "Graphics/HCGraphicDX11.h"
+#include "TCPSocket/SocketCommunication.h"
 
 Engine* Engine::m_engine = nullptr;
 
@@ -25,6 +26,10 @@ void Engine::Init(HINSTANCE hInstance)
 	}
 	
 	m_scene.Init();
+
+	std::vector<unsigned long> ips;
+	SocketCommunication::Get()->GetIp(ips);
+	int a = 1;
 }
 
 int Engine::Run()
@@ -47,9 +52,10 @@ int Engine::Run()
 				it->Update();
 			}
 
+			SocketCommunication::Get()->Update();
 			m_graphic->Render();
 		}
 	}
-
+	delete SocketCommunication::Get();
 	return (int)msg.wParam;
 }

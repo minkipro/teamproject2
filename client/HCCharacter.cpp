@@ -3,30 +3,17 @@
 #include "HCCharacterController.h"
 using namespace HC;
 
-Character::Character()
+Character::Character(const wchar_t* textureName)
 {
 	auto graphic = HCDEVICE(HCGraphic);
 
-	m_renderPoint.Size = { 100,100 };
+	m_renderPoint.Size = { 128,128 };
 	m_renderPoint.Position = { 100,100, 0.2f };
-	TextureData textureData = graphic->GetTextureIndex(L"Texture/PIPOYA FREE RPG Character Sprites NEKONIN/sp_3x4_pipo-nekonin001.png");
+	TextureData textureData = graphic->GetTextureIndex(textureName);
 	m_renderPoint.TextureIndex = textureData.textureIndex;
-	
-	std::vector<int> animationIndex[(int)CharacterController::CharacterState::COUNT];
-	animationIndex[(int)CharacterController::CharacterState::IDLE].push_back(1 +0*3);
-	animationIndex[(int)CharacterController::CharacterState::UP].push_back(0+3*3);
-	animationIndex[(int)CharacterController::CharacterState::UP].push_back(1 + 3*3);
-	animationIndex[(int)CharacterController::CharacterState::UP].push_back(2 + 3*3);
-	animationIndex[(int)CharacterController::CharacterState::LEFT].push_back(0 + 1 * 3);
-	animationIndex[(int)CharacterController::CharacterState::LEFT].push_back(1 + 1 * 3);
-	animationIndex[(int)CharacterController::CharacterState::LEFT].push_back(2 + 1 * 3);
-	animationIndex[(int)CharacterController::CharacterState::DOWN].push_back(0 + 0 * 3);
-	animationIndex[(int)CharacterController::CharacterState::DOWN].push_back(1 + 0 * 3);
-	animationIndex[(int)CharacterController::CharacterState::DOWN].push_back(2 + 0 * 3);
-	animationIndex[(int)CharacterController::CharacterState::RIGHT].push_back(0 + 2 * 3);
-	animationIndex[(int)CharacterController::CharacterState::RIGHT].push_back(1 + 2 * 3);
-	animationIndex[(int)CharacterController::CharacterState::RIGHT].push_back(2 + 2 * 3);
-	m_characterController = new HC::CharacterController(&m_renderPoint.Position, &m_renderPoint.TextureIndex, textureData.spriteNum, animationIndex);
+	m_spriteNum = textureData.spriteNum;
+
+	m_characterController = nullptr;
 }
 
 Character::~Character()

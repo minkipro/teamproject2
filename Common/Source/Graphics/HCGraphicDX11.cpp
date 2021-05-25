@@ -31,20 +31,20 @@ void HCGraphicDX11::Init()
 
 	m_font = std::make_unique<HCFont>();
 	m_font.get()->Init((void*)m_device.Get(), (void*)m_deviceContext.Get());
-	IHCFont::TextData tempData = { L"test", DirectX::XMFLOAT2(0.0f, 0.0f), DirectX::XMFLOAT3(0.5f, 0.5f, 0.5f), DirectX::XMFLOAT2(1.0f, 1.0f) };
-	m_font->SetText(tempData);
 }
 
 void HCGraphicDX11::Update()
 {
 	HC::MainPass mainPass;
 	DirectX::XMMATRIX orthoP = DirectX::XMMatrixOrthographicOffCenterLH(
-		0.0f, static_cast<float>(HC::GO.WIN.WindowsizeX),
-		static_cast<float>(HC::GO.WIN.WindowsizeY), 0,
+		-static_cast<float>(HC::GO.WIN.WindowsizeX)*0.5f, static_cast<float>(HC::GO.WIN.WindowsizeX)*0.5f,
+		static_cast<float>(HC::GO.WIN.WindowsizeY) * 0.5f, -static_cast<float>(HC::GO.WIN.WindowsizeY) * 0.5f,
 		D3D11_MIN_DEPTH, D3D11_MAX_DEPTH);
 
+	HC::CameraManager* cameraManager = HC::CameraManager::Get();
+	cameraManager->Update();
 	DirectX::XMStoreFloat4x4(&mainPass.OrthoMatrix, orthoP);
-	DirectX::XMStoreFloat4x4(&mainPass.ViewMatrix, HC::CameraManager::Get()->GetMatrix());
+	DirectX::XMStoreFloat4x4(&mainPass.ViewMatrix, cameraManager->GetMatrix());
 	m_mainPassCB->CopyData(&mainPass);
 }
 
@@ -558,17 +558,57 @@ void HCGraphicDX11::RenderObjects(HCGraphicPipeLine* pipeLine)
 	auto reservedOBData = pipeLine->GetReservedObjectData();
 	UINT dataSize = pipeLine->GetInputDataSize();
 
-	size_t numObjects = 0;
+	size_t totalDataSize = 0;
 	{
 		for (auto& it : reservedOBData)
 		{
-			numObjects += it.size() / dataSize;
+			totalDataSize += it.size();
 		}
 
-		if (numObjects * dataSize > currBuffer->BufferSize)
+		if (totalDataSize > currBuffer->BufferSize)
 		{
-			assert(false);
-			//TODO: resize vertex buffer
+			size_t beforeBufferSize = currBuffer->BufferSize;
+			size_t goalBufferSize = currBuffer->BufferSize;
+			if (goalBufferSize == 0)
+				goalBufferSize = 2048;
+			while (totalDataSize > goalBufferSize)
+			{
+				goalBufferSize *= 2;
+			}
+
+			HCDX11VertexBuffer* newVertexBuffer = new HCDX11VertexBuffer;
+			newVertexBuffer->BufferSize = goalBufferSize;
+			
+
+
+			D3D11_BUFFER_DESC vertexBufferDesc = {};
+
+			vertexBufferDesc.ByteWidth = static_cast<UINT>(newVertexBuffer->BufferSize);
+			vertexBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
+			vertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+			vertexBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+			vertexBufferDesc.MiscFlags = 0;
+
+			COM_HRESULT_IF_FAILED(
+				m_device->CreateBuffer(&vertexBufferDesc, nullptr, newVertexBuffer->Buffer.GetAddressOf()),
+				"Fail to create vertexBuffer");
+
+			/*D3D11_MAPPED_SUBRESOURCE beforeMappedResource = {};
+			D3D11_MAPPED_SUBRESOURCE afterMappedResource = {};
+
+			COM_HRESULT_IF_FAILED(m_deviceContext->Map(currBuffer->Buffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &beforeMappedResource),
+				"Failed to map constant buffer.");
+
+			COM_HRESULT_IF_FAILED(m_deviceContext->Map(newVertexBuffer->Buffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &afterMappedResource),
+				"Failed to map constant buffer.");
+			CopyMemory(static_cast<BYTE*>(afterMappedResource.pData), static_cast<BYTE*>(beforeMappedResource.pData), beforeBufferSize);
+
+			m_deviceContext->Unmap(newVertexBuffer->Buffer.Get(), 0);
+			m_deviceContext->Unmap(currBuffer->Buffer.Get(), 0);*/
+
+			delete currBuffer;
+			pipeLine->SetVertexBuffer(newVertexBuffer);
+			currBuffer = newVertexBuffer;
 		}
 	}
 
@@ -868,7 +908,7 @@ void HCGraphicDX11::CreateTextures()
 			ComPtr<ID3D11Buffer> textureInfoBuffer;
 
 			D3D11_BUFFER_DESC bufferDesc = {};
-			bufferDesc.ByteWidth = arraySize * sizeof(TextureArrayInTextureData);
+			bufferDesc.ByteWidth = currTexture2DArrayData.TextureDatas.size() * sizeof(TextureArrayInTextureData);
 			bufferDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
 			bufferDesc.Usage = D3D11_USAGE_DEFAULT;
 			bufferDesc.StructureByteStride = sizeof(TextureArrayInTextureData);
@@ -886,7 +926,7 @@ void HCGraphicDX11::CreateTextures()
 			bufferViewDesc.ViewDimension = D3D11_SRV_DIMENSION_BUFFER;
 			bufferViewDesc.Buffer.ElementOffset = 0;
 			bufferViewDesc.Buffer.ElementWidth = sizeof(TextureArrayInTextureData);
-			bufferViewDesc.Buffer.NumElements = arraySize;
+			bufferViewDesc.Buffer.NumElements = currTexture2DArrayData.TextureDatas.size();
 
 			m_device->CreateShaderResourceView(textureInfoBuffer.Get(), &bufferViewDesc, currTexture2DArrayData.TextureInfoView.GetAddressOf());
 		}

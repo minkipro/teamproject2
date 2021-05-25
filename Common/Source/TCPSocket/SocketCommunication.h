@@ -2,16 +2,34 @@
 #define _WINSOCK_DEPRECATED_NO_WARNINGS
 #include <WinSock2.h>
 #include <atomic>
+#include <thread>
 class SocketCommunication
 {
 public:
-	bool Init();
+	SocketCommunication();
 	~SocketCommunication();
-public:
-	static void ListenFunction();
+	static SocketCommunication* Get() 
+	{
+		if (nullptr == instance)
+		{
+			instance = new SocketCommunication;
+		}
+		return instance;
+	}
+	void Update();
+	void GetIp(std::vector<unsigned long>& out);
+	
 private:
-	static SOCKET _socket; 
-	static std::atomic<char> _buffer[1024];
-	static bool _exit;
+	static SocketCommunication* instance;
+
+	void ConnectStart();
+	void ListenStart();
+private:
+	std::thread* m_pthread;
+	SOCKET m_socket;
+	std::atomic<char> m_buffer[1024] = { 0, };
+	bool m_exit;
+	size_t m_textIndex;
 };
+
 

@@ -49,9 +49,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
     <ClCompile Include="..\Common\Source\Util\StringHelper.cpp">
       <Filter>Common\Util</Filter>
     </ClCompile>
@@ -97,7 +94,7 @@
     <ClCompile Include="HCCharacter.cpp">
       <Filter>Client\Scene\SceneObject</Filter>
     </ClCompile>
-    <ClCompile Include="HCCharacterController.cpp">
+    <ClCompile Include="HCCharacterControllerByKeyboard.cpp">
       <Filter>Client\Scene</Filter>
     </ClCompile>
     <ClCompile Include="HCTileMap.cpp">
@@ -138,9 +135,6 @@
     <ClInclude Include="..\Common\Source\Device\HCMouse.h">
       <Filter>Common\Devices</Filter>
     </ClInclude>
-    <ClInclude Include="HCSharedPointerMG.h">
-      <Filter>Common\Util</Filter>
-    </ClInclude>
     <ClInclude Include="..\Common\Source\Graphics\HCGraphic.h">
       <Filter>Common\Devices\Graphics_Base</Filter>
     </ClInclude>
@@ -180,7 +174,7 @@
     <ClInclude Include="..\Common\Source\Graphics\HCInputDataSamples.h">
       <Filter>Common\Devices\Graphics_Base</Filter>
     </ClInclude>
-    <ClInclude Include="HCCharacterController.h">
+    <ClInclude Include="HCCharacterControllerByKeyboard.h">
       <Filter>Client\Scene</Filter>
     </ClInclude>
     <ClInclude Include="HCTileMap.h">
@@ -195,6 +189,9 @@
     <ClInclude Include="..\Common\Source\Device\HCPhysics.h">
       <Filter>Common\Devices\Physics</Filter>
     </ClInclude>
+    <ClInclude Include="HCCharacterController.h">
+      <Filter>Client\Scene</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\Common\Shader\BaseRoot.hlsli">
@@ -203,5 +200,8 @@
     <FxCompile Include="..\Common\Shader\PointToPlaneSahder.hlsl">
       <Filter>리소스 파일</Filter>
     </FxCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
 </Project>

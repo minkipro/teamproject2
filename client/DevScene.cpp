@@ -2,7 +2,8 @@
 #include "DevScene.h"
 #include "HCDevice.h"
 #include "HCCharacter.h"
-
+#include "HCTileMap.h"
+#include "HCCharacterControllerByKeyboard.h"
 DevScene::DevScene()
 {
 
@@ -46,8 +47,28 @@ void DevScene::Init()
 	testPipeLine->SetShader(HC::SHADER_TYPE::PS, ps);
 
 	graphic->NumberingGraphicPipeLineSlot(0, testPipeLine);
-	m_sceneObjects.push_back(new HC::Character);
-	//m_sceneObjects.push_back(new )
+
+	HC::Character* character = new HC::Character(L"Texture/PIPOYA FREE RPG Character Sprites NEKONIN/sp_3x4_pipo-nekonin001.png");
+
+	std::vector<int> animationIndex[(int)HC::CharacterControllerByKeyboard::CharacterState::COUNT];
+	animationIndex[(int)HC::CharacterControllerByKeyboard::CharacterState::IDLE].push_back(1 + 0 * 3);
+	animationIndex[(int)HC::CharacterControllerByKeyboard::CharacterState::UP].push_back(0 + 3 * 3);
+	animationIndex[(int)HC::CharacterControllerByKeyboard::CharacterState::UP].push_back(1 + 3 * 3);
+	animationIndex[(int)HC::CharacterControllerByKeyboard::CharacterState::UP].push_back(2 + 3 * 3);
+	animationIndex[(int)HC::CharacterControllerByKeyboard::CharacterState::LEFT].push_back(0 + 1 * 3);
+	animationIndex[(int)HC::CharacterControllerByKeyboard::CharacterState::LEFT].push_back(1 + 1 * 3);
+	animationIndex[(int)HC::CharacterControllerByKeyboard::CharacterState::LEFT].push_back(2 + 1 * 3);
+	animationIndex[(int)HC::CharacterControllerByKeyboard::CharacterState::DOWN].push_back(0 + 0 * 3);
+	animationIndex[(int)HC::CharacterControllerByKeyboard::CharacterState::DOWN].push_back(1 + 0 * 3);
+	animationIndex[(int)HC::CharacterControllerByKeyboard::CharacterState::DOWN].push_back(2 + 0 * 3);
+	animationIndex[(int)HC::CharacterControllerByKeyboard::CharacterState::RIGHT].push_back(0 + 2 * 3);
+	animationIndex[(int)HC::CharacterControllerByKeyboard::CharacterState::RIGHT].push_back(1 + 2 * 3);
+	animationIndex[(int)HC::CharacterControllerByKeyboard::CharacterState::RIGHT].push_back(2 + 2 * 3);
+	character->m_characterController = new HC::CharacterControllerByKeyboard(&character->m_renderPoint.Position, &character->m_renderPoint.TextureIndex, character->m_spriteNum, animationIndex);
+	
+	
+	m_sceneObjects.push_back(character);
+	m_sceneObjects.push_back(new HC::TileMap(128.0f, 128.0f, 100, 100));
 }
 
 void DevScene::Update()

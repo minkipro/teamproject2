@@ -1,11 +1,10 @@
 #pragma once
-
-
 namespace HC
 {
-	class CharacterController
+	class SceneObject
 	{
 	public:
+		virtual ~SceneObject() = 0 {};
 		virtual void Update() = 0;
 	};
 }

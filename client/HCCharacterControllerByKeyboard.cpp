@@ -1,17 +1,8 @@
 #include "stdafx.h"
-#include "HCCharacterController.h"
+#include "HCCharacterControllerByKeyboard.h"
 
-HC::CharacterController::CharacterController(DirectX::XMFLOAT3* position, int* textureIndex, int spriteNum, std::vector<int> animationIndex[])
+HC::CharacterControllerByKeyboard::CharacterControllerByKeyboard(DirectX::XMFLOAT3* position, int* textureIndex, int spriteNum, std::vector<int> animationIndex[])
 {
-	auto mouse = HCDEVICE(HCMouse);
-	m_keyMapping[(unsigned char)BehaviorState::UP] = { true, DirectX::Keyboard::W };
-	m_keyMapping[(unsigned char)BehaviorState::DOWN] = { true, DirectX::Keyboard::S };
-	m_keyMapping[(unsigned char)BehaviorState::LEFT] = { true, DirectX::Keyboard::A };
-	m_keyMapping[(unsigned char)BehaviorState::RIGHT] = { true, DirectX::Keyboard::D };
-	m_keyMapping[(unsigned char)BehaviorState::A] = { false, HCMouse::MouseButton::LBUTTON };
-	m_keyMapping[(unsigned char)BehaviorState::B] = { false, HCMouse::MouseButton::RBUTTON };
-	m_keyMapping[(unsigned char)BehaviorState::C] = { true, DirectX::Keyboard::None };
-	m_keyMapping[(unsigned char)BehaviorState::D] = { true, DirectX::Keyboard::None };
 	m_state = CharacterState::IDLE;
 	m_prevState = CharacterState::IDLE;
 	m_continuos = true;
@@ -22,6 +13,12 @@ HC::CharacterController::CharacterController(DirectX::XMFLOAT3* position, int* t
 	m_deltaTime = 0.0f;
 	m_animationIndexChangeTime = 0.3f;
 	m_currentAnimationIndex = 0;
+
+	for (unsigned char i = 0; i < (unsigned char)CharacterMoveState::COUNT; i++)
+	{
+		m_characterMoveState[i] = false;
+	}
+
 	for (unsigned char i = 0; i < (unsigned char)CharacterState::COUNT; i++)
 	{
 		size_t animationIndexNum = animationIndex[i].size();
@@ -30,6 +27,17 @@ HC::CharacterController::CharacterController(DirectX::XMFLOAT3* position, int* t
 			m_animationIndex[i].push_back(animationIndex[i][j]);
 		}
 	}
+
+	m_keyMapping[(unsigned char)BehaviorState::UP] = { true, DirectX::Keyboard::W };
+	m_keyMapping[(unsigned char)BehaviorState::DOWN] = { true, DirectX::Keyboard::S };
+	m_keyMapping[(unsigned char)BehaviorState::LEFT] = { true, DirectX::Keyboard::A };
+	m_keyMapping[(unsigned char)BehaviorState::RIGHT] = { true, DirectX::Keyboard::D };
+	m_keyMapping[(unsigned char)BehaviorState::A] = { false, HCMouse::MouseButton::LBUTTON };
+	m_keyMapping[(unsigned char)BehaviorState::B] = { false, HCMouse::MouseButton::RBUTTON };
+	m_keyMapping[(unsigned char)BehaviorState::C] = { true, DirectX::Keyboard::None };
+	m_keyMapping[(unsigned char)BehaviorState::D] = { true, DirectX::Keyboard::None };
+	
+	
 	auto timer = HCDEVICE(HCTimer);
 	for (unsigned char i = (unsigned char)BehaviorState::UP; i <= (unsigned char)BehaviorState::RIGHT; i++)
 	{
@@ -47,21 +55,19 @@ HC::CharacterController::CharacterController(DirectX::XMFLOAT3* position, int* t
 			m_buttonState[1] = true;//test
 		});
 
+
+	//debug¿ë ÄÚµå
 	auto graphic = HCDEVICE(HCGraphic);
 	auto texts = graphic->GetFont()->GetText();
 	IHCFont::TextData tempData = { L"test2", DirectX::XMFLOAT2(0.0f, 10.0f), DirectX::XMFLOAT3(0.5f, 0.5f, 0.5f), DirectX::XMFLOAT2(1.0f, 1.0f) };
 	texts->push_back(tempData);
 	m_textIndex = texts->size() - 1;
-
-	for (unsigned char i = 0; i < (unsigned char)CharacterMoveState::COUNT; i++)
-	{
-		m_characterMoveState[i] = false;
-	}
+	//
 
 	m_buttonState[0] = m_buttonState[1] = false;
 }
 
-void HC::CharacterController::Update()
+void HC::CharacterControllerByKeyboard::Update()
 {
 	auto keyboard = HCDEVICE(HCKeyboard);
 	auto mouse = HCDEVICE(HCMouse);

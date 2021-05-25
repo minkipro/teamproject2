@@ -72,7 +72,6 @@ namespace HC
 struct RenderPoint
 {
 	static std::vector<HCInputLayoutElement> InputLayout;
-
 	DirectX::XMFLOAT3	Position;
 	DirectX::XMFLOAT2	Size;
 	DirectX::XMFLOAT4	Color;
@@ -221,6 +220,10 @@ public:
 	void										ClearReservedObjects();
 
 	template<typename T> void					SelectInputSample();
+	void										SetVertexBuffer(void* vertexBuffer)
+	{
+		m_vertexBuffer = vertexBuffer;
+	}
 	
 
 public:

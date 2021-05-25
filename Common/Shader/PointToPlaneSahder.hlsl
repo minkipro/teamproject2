@@ -66,6 +66,10 @@ float4 PS(VertexOut input) : SV_TARGET
     {
         result = input.Color;
     }
-    
+    if (result.a !=1)
+    {
+        clip(-1);
+    }
+
     return result;
 }

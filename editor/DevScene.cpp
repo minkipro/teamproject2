@@ -1,35 +1,61 @@
 #include "stdafx.h"
 #include "DevScene.h"
 #include "HCDevice.h"
-#include "GlobalOption.h"
-#include "Util/StringHelper.h"
 
 DevScene::DevScene()
 {
 
 }
+DevScene::~DevScene()
+{
+	size_t objectNum = m_sceneObjects.size();
 
+	for (size_t i = 0; i < objectNum; i++)
+	{
+		if (m_sceneObjects[i])
+		{
+			delete m_sceneObjects[i];
+			m_sceneObjects[i] = nullptr;
+		}
+	}
+}
 void DevScene::Init()
 {
 	auto graphic = HCDEVICE(HCGraphic);
 
-	HCGraphicPipeLine* testPipeLine = nullptr;
-	graphic->CreateGraphicPipeLine("testPipe", &testPipeLine);
+	IHCResource* texture = nullptr;
+	IHCResource* texture2 = nullptr;
 
-	std::unordered_map<std::wstring, std::vector<std::wstring>> fileNames;
-	StringHelper::SearchAllFileFromDirectory(HC::GO.Editor.ModelFolderPath, fileNames);
-	
+	HCGraphicPipeLine* testPipeLine = nullptr;
 	IHCShader* vs = nullptr;
+	IHCShader* gs = nullptr;
 	IHCShader* ps = nullptr;
-	graphic->CreateShader("VS", HC::SHADERTYPE::VS, L"./../Common/Shader/SkeletonShader.hlsl", "VS", &vs);
-	graphic->CreateShader("PS", HC::SHADERTYPE::PS, L"./../Common/Shader/SkeletonShader.hlsl", "PS", &ps);
-	testPipeLine->SetShader(HC::SHADERTYPE::VS, vs);
-	testPipeLine->SetShader(HC::SHADERTYPE::PS, ps);
+
+
+	graphic->CreateGraphicPipeLine("testPipe", &testPipeLine);
+	graphic->CreateShader("testVS", HC::SHADER_TYPE::VS, L"./../Common/Shader/PointToPlaneSahder.hlsl", "VS", &vs);
+	graphic->CreateShader("testGS", HC::SHADER_TYPE::GS, L"./../Common/Shader/PointToPlaneSahder.hlsl", "GS", &gs);
+	graphic->CreateShader("testPS", HC::SHADER_TYPE::PS, L"./../Common/Shader/PointToPlaneSahder.hlsl", "PS", &ps);
+
+	testPipeLine->m_primitive = HC::PRIMITIVE_TOPOLOGY::POINT;
+	testPipeLine->SelectInputSample<RenderPoint>();
+
+	testPipeLine->SetShader(HC::SHADER_TYPE::VS, vs);
+	testPipeLine->SetShader(HC::SHADER_TYPE::GS, gs);
+	testPipeLine->SetShader(HC::SHADER_TYPE::PS, ps);
 
 	graphic->NumberingGraphicPipeLineSlot(0, testPipeLine);
+	//m_sceneObjects.push_back(new HC::Character);
 }
 
 void DevScene::Update()
 {
-	auto timer = HCDEVICE(HCTimer);
+	size_t objectNum = m_sceneObjects.size();
+	for (size_t i = 0; i < objectNum; i++)
+	{
+		if (m_sceneObjects[i])
+		{
+			m_sceneObjects[i]->Update();
+		}
+	}
 }

@@ -31,8 +31,6 @@ void HCGraphicDX11::Init()
 
 	m_font = std::make_unique<HCFont>();
 	m_font.get()->Init((void*)m_device.Get(), (void*)m_deviceContext.Get());
-	IHCFont::TextData tempData = { L"test", DirectX::XMFLOAT2(0.0f, 0.0f), DirectX::XMFLOAT3(0.5f, 0.5f, 0.5f), DirectX::XMFLOAT2(1.0f, 1.0f) };
-	m_font->SetText(tempData);
 }
 
 void HCGraphicDX11::Update()

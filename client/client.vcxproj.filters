@@ -47,6 +47,9 @@
     <Filter Include="Common\Devices\Physics">
       <UniqueIdentifier>{d8d02539-ede7-4889-b748-bdd4be720627}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Common\TCP_IP_Socket">
+      <UniqueIdentifier>{6f28d303-7bea-439c-96c9-d61fa4f8c473}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Common\Source\Util\StringHelper.cpp">
@@ -108,6 +111,9 @@
     </ClCompile>
     <ClCompile Include="..\Common\Source\Device\HCPhysics.cpp">
       <Filter>Common\Devices\Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Common\Source\TCPSocket\SocketCommunication.cpp">
+      <Filter>Common\TCP_IP_Socket</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -191,6 +197,9 @@
     </ClInclude>
     <ClInclude Include="HCCharacterController.h">
       <Filter>Client\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\Source\TCPSocket\SocketCommunication.h">
+      <Filter>Common\TCP_IP_Socket</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

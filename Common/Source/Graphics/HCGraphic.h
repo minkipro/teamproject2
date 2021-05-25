@@ -175,8 +175,9 @@ public:
 	virtual void GetFontNames(std::vector<std::wstring>& out) = 0;
 	virtual void SetFont(unsigned int index) = 0;
 	virtual void SetFont(std::wstring fileName) = 0;
-	virtual void SetText(const IHCFont::TextData& textData) = 0;//삭제 필요
-	virtual std::vector<IHCFont::TextData>* GetText() = 0;
+	virtual size_t AddText(const IHCFont::TextData& textData) = 0;//삭제 필요
+	virtual size_t AddText() = 0;
+	virtual void SetText(int index, const wchar_t* text) = 0;
 	virtual void Render() = 0;
 protected:
 

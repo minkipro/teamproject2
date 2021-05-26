@@ -67,10 +67,12 @@ private:
 
 private:
 	void				CreateBaseSamplers();
-void					CreateTextures();
+	void				CreateTextures();
 	void				CreateGraphicPipeLineBaseSettings();
 	void				CreateInputLayout(size_t inputLayoutHash, const std::vector<HCInputLayoutElement>* inputLayoutEle, HCDX11Shader* vs);
 
+	D3D11_USAGE			GetResourceUsage(const HC::GRAPHIC_RESOURCE_DESC& desc);
+	UINT				GetResourceBindFlags(const HC::GRAPHIC_RESOURCE_DESC& desc);
 	void				GetSpriteData(const std::wstring& texturePath, std::vector<SpriteData>* out);
 
 private:

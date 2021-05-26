@@ -112,6 +112,18 @@
     <ClCompile Include="..\Common\Source\Device\HCPhysics.cpp">
       <Filter>Common\Devices\Physics</Filter>
     </ClCompile>
+    <ClCompile Include="..\Common\UI\UIButton.cpp">
+      <Filter>Common\Devices\Graphics_Base\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Common\UI\UIObject.cpp">
+      <Filter>Common\Devices\Graphics_Base\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Common\UI\UIPanel.cpp">
+      <Filter>Common\Devices\Graphics_Base\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Common\UI\UIParam.cpp">
+      <Filter>Common\Devices\Graphics_Base\UI</Filter>
+    </ClCompile>
     <ClCompile Include="..\Common\Source\TCPSocket\SocketCommunication.cpp">
       <Filter>Common\TCP_IP_Socket</Filter>
     </ClCompile>
@@ -194,6 +206,18 @@
     </ClInclude>
     <ClInclude Include="..\Common\Source\Device\HCPhysics.h">
       <Filter>Common\Devices\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\UI\UIButton.h">
+      <Filter>Common\Devices\Graphics_Base\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\UI\UIObject.h">
+      <Filter>Common\Devices\Graphics_Base\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\UI\UIPanel.h">
+      <Filter>Common\Devices\Graphics_Base\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\UI\UIParam.h">
+      <Filter>Common\Devices\Graphics_Base\UI</Filter>
     </ClInclude>
     <ClInclude Include="HCCharacterController.h">
       <Filter>Client\Scene</Filter>

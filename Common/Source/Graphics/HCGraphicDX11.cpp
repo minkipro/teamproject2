@@ -84,48 +84,72 @@ void HCGraphicDX11::CreateGraphicPipeLine(const std::string& pipeLineName, HCGra
 
 void HCGraphicDX11::CreateResource(const std::string& resourceName, const HC::GRAPHIC_RESOURCE_DESC& desc, IHCResource** out)
 {
-	/*switch (type)
+	switch (desc.Type)
 	{
-	case HC::GRAPHIC_RESOURCE_TYPE::DEFAULT_SHADER_RESOURCE:
+	case HC::GRAPHIC_RESOURCE_TYPE::GRAPHIC_RESOURCE_BUFFER:
+	{
+	}
+	break;
+	case HC::GRAPHIC_RESOURCE_TYPE::GRAPHIC_RESOURCE_UPLOAD_BUFFER:
+	{
+	}
+	break;
+	case HC::GRAPHIC_RESOURCE_TYPE::GRAPHIC_RESOURCE_TEXTURE1D:
+	{
+	}
+	break;
+	case HC::GRAPHIC_RESOURCE_TYPE::GRAPHIC_RESOURCE_TEXTURE2D:
 	{
 		D3D11_TEXTURE2D_DESC pixelFuncRenderTargetDesc = {};
-		pixelFuncRenderTargetDesc.Usage = D3D11_USAGE_DEFAULT;
-		pixelFuncRenderTargetDesc.BindFlags = D3D11_BIND_RENDER_TARGET;
-		pixelFuncRenderTargetDesc.Format = format;
+		pixelFuncRenderTargetDesc.Usage = GetResourceUsage(desc);
+		pixelFuncRenderTargetDesc.BindFlags = GetResourceBindFlags(desc);
+		pixelFuncRenderTargetDesc.Format = desc.Format;
 		pixelFuncRenderTargetDesc.MipLevels = 1;
 		pixelFuncRenderTargetDesc.ArraySize = 1;
 		pixelFuncRenderTargetDesc.SampleDesc.Count = 1;
-		pixelFuncRenderTargetDesc.Width = size.x;
-		pixelFuncRenderTargetDesc.Height = size.y;
-
-		ComPtr<ID3D11Texture2D> pixelFunc;
-		COM_HRESULT_IF_FAILED(
-			m_device->CreateTexture2D(&pixelFuncDesc, nullptr, pixelFunc.GetAddressOf()),
-			"Failed to create pixelFunc buffer.");
+		pixelFuncRenderTargetDesc.Width = desc.Size.x;
+		pixelFuncRenderTargetDesc.Height = desc.Size.y;
 	}
 	break;
-	case HC::GRAPHIC_RESOURCE_TYPE::READBACK_BUFFER:
+	case HC::GRAPHIC_RESOURCE_TYPE::GRAPHIC_RESOURCE_TEXTURE3D:
 	{
-		D3D11_TEXTURE2D_DESC pixelFuncDesc = {};
-		pixelFuncDesc.Usage = D3D11_USAGE_STAGING;
-		pixelFuncDesc.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
-		pixelFuncDesc.Format = format;
-		pixelFuncDesc.MipLevels = 1;
-		pixelFuncDesc.ArraySize = 1;
-		pixelFuncDesc.SampleDesc.Count = 1;
-		pixelFuncDesc.Width = size.x;
-		pixelFuncDesc.Height = size.y;
-
-		ComPtr<ID3D11Texture2D> pixelFunc;
-		COM_HRESULT_IF_FAILED(
-			m_device->CreateTexture2D(&pixelFuncDesc, nullptr, pixelFunc.GetAddressOf()),
-			"Failed to create pixelFunc buffer.");
 	}
 	break;
 	default:
 		COM_THROW_IF_FAILED(false, "this type is not supported type");
 		break;
-	}*/
+	}
+
+	D3D11_TEXTURE2D_DESC pixelFuncRenderTargetDesc = {};
+	pixelFuncRenderTargetDesc.Usage = D3D11_USAGE_DEFAULT;
+	pixelFuncRenderTargetDesc.BindFlags = D3D11_BIND_RENDER_TARGET;
+	pixelFuncRenderTargetDesc.pixelFuncRenderTargetDesc.Format = format;
+	pixelFuncRenderTargetDesc.MipLevels = 1;
+	pixelFuncRenderTargetDesc.ArraySize = 1;
+	pixelFuncRenderTargetDesc.SampleDesc.Count = 1;
+	pixelFuncRenderTargetDesc.Width = size.x;
+	pixelFuncRenderTargetDesc.Height = size.y;
+
+	//ComPtr<ID3D11Texture2D> pixelFunc;
+	//COM_HRESULT_IF_FAILED(
+	//	m_device->CreateTexture2D(&pixelFuncDesc, nullptr, pixelFunc.GetAddressOf()),
+	//	"Failed to create pixelFunc buffer.");
+
+
+	//D3D11_TEXTURE2D_DESC pixelFuncDesc = {};
+	//pixelFuncDesc.Usage = D3D11_USAGE_STAGING;
+	//pixelFuncDesc.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
+	//pixelFuncDesc.Format = format;
+	//pixelFuncDesc.MipLevels = 1;
+	//pixelFuncDesc.ArraySize = 1;
+	//pixelFuncDesc.SampleDesc.Count = 1;
+	//pixelFuncDesc.Width = size.x;
+	//pixelFuncDesc.Height = size.y;
+
+	//ComPtr<ID3D11Texture2D> pixelFunc;
+	//COM_HRESULT_IF_FAILED(
+	//	m_device->CreateTexture2D(&pixelFuncDesc, nullptr, pixelFunc.GetAddressOf()),
+	//	"Failed to create pixelFunc buffer.");
 }
 
 void HCGraphicDX11::CreateCB(const std::string& bufferName, size_t stride, size_t num, std::unique_ptr<IHCCBuffer>& out)
@@ -839,9 +863,6 @@ void HCGraphicDX11::CreateTextures()
 			
 			locationData.Index = static_cast<UINT>(i);
 			currTexture2DArrayData.TextureIndex[it.first + L"/" + StringHelper::GetFileNameFromPath(it.second[i])] = locationDataIndexCount;
-			std::wstring abc = L"abc";
-			std::wstring abc2 = L"abc";
-			std::wstring def = L"def";
 
 			std::wstring postString = std::wstring(textureName.c_str(), HC::GO.GRAPHIC.SpriteTextureSuffix.length());
 			if (postString == HC::GO.GRAPHIC.SpriteTextureSuffix)
@@ -987,6 +1008,16 @@ void HCGraphicDX11::CreateInputLayout(size_t inputLayoutHash, const std::vector<
 	m_inputLayout[inputLayoutHash] = layout;
 }
 
+D3D11_USAGE HCGraphicDX11::GetResourceUsage(const HC::GRAPHIC_RESOURCE_DESC& desc)
+{
+
+	return D3D11_USAGE();
+}
+
+UINT HCGraphicDX11::GetResourceBindFlags(const HC::GRAPHIC_RESOURCE_DESC& desc)
+{
+}
+
 void HCGraphicDX11::GetSpriteData(const std::wstring& texturePath, std::vector<SpriteData>* out)
 {
 	std::wstring textureName = StringHelper::GetFileNameFromPath(texturePath);
@@ -1006,10 +1037,8 @@ void HCGraphicDX11::GetSpriteData(const std::wstring& texturePath, std::vector<S
 		COM_THROW_IF_FAILED((gridInfoTextEndIndex != std::wstring::npos) && (gridInfoSplitIndex != std::wstring::npos),
 			textureName + L"this Texture name has not sprtie grid info");
 		
-		std::wstring wstr = std::wstring(textureName.c_str() + gridInfoTextStartIndex, gridInfoSplitIndex - gridInfoTextStartIndex).c_str();
-		int sizeX = _wtoi(wstr.c_str());
-		wstr = std::wstring(textureName.c_str() + gridInfoSplitIndex + 1, gridInfoTextEndIndex - (gridInfoSplitIndex + 1)).c_str();
-		int sizeY = _wtoi(wstr.c_str());
+		int sizeX = _wtoi(std::wstring(textureName.c_str() + gridInfoTextStartIndex, gridInfoSplitIndex - gridInfoTextStartIndex).c_str());
+		int sizeY = _wtoi(std::wstring(textureName.c_str() + gridInfoSplitIndex + 1, gridInfoTextEndIndex - (gridInfoSplitIndex + 1)).c_str());
 		float offsetX = 1.0f / sizeX;
 		float offsetY = 1.0f / sizeY;
 

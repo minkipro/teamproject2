@@ -7,6 +7,7 @@
 #include "Util\StringHelper.h"
 #include "HCFont.h"
 #include "HCCameraManager.h"
+#include "Xml\Xml.h"
 
 using Microsoft::WRL::ComPtr;
 
@@ -27,23 +28,23 @@ void HCGraphicDX11::Init()
 	CreateBaseSamplers();
 	CreateTextures();
 	CreateGraphicPipeLineBaseSettings();
-	 
+
 	m_font = std::make_unique<HCFont>();
 	m_font.get()->Init((void*)m_device.Get(), (void*)m_deviceContext.Get());
-	IHCFont::TextData tempData = { L"test", DirectX::XMFLOAT2(0.0f, 0.0f), DirectX::XMFLOAT3(0.5f, 0.5f, 0.5f), DirectX::XMFLOAT2(1.0f, 1.0f) };
-	m_font->SetText(tempData);
 }
 
 void HCGraphicDX11::Update()
 {
 	HC::MainPass mainPass;
 	DirectX::XMMATRIX orthoP = DirectX::XMMatrixOrthographicOffCenterLH(
-		0.0f, static_cast<float>(HC::GO.WIN.WindowsizeX),
-		static_cast<float>(HC::GO.WIN.WindowsizeY), 0,
+		-static_cast<float>(HC::GO.WIN.WindowsizeX)*0.5f, static_cast<float>(HC::GO.WIN.WindowsizeX)*0.5f,
+		static_cast<float>(HC::GO.WIN.WindowsizeY) * 0.5f, -static_cast<float>(HC::GO.WIN.WindowsizeY) * 0.5f,
 		D3D11_MIN_DEPTH, D3D11_MAX_DEPTH);
 
+	HC::CameraManager* cameraManager = HC::CameraManager::Get();
+	cameraManager->Update();
 	DirectX::XMStoreFloat4x4(&mainPass.OrthoMatrix, orthoP);
-	DirectX::XMStoreFloat4x4(&mainPass.ViewMatrix, HC::CameraManager::Get()->GetMatrix());
+	DirectX::XMStoreFloat4x4(&mainPass.ViewMatrix, cameraManager->GetMatrix());
 	m_mainPassCB->CopyData(&mainPass);
 }
 
@@ -83,48 +84,72 @@ void HCGraphicDX11::CreateGraphicPipeLine(const std::string& pipeLineName, HCGra
 
 void HCGraphicDX11::CreateResource(const std::string& resourceName, const HC::GRAPHIC_RESOURCE_DESC& desc, IHCResource** out)
 {
-	/*switch (type)
+	switch (desc.Type)
 	{
-	case HC::GRAPHIC_RESOURCE_TYPE::DEFAULT_SHADER_RESOURCE:
+	case HC::GRAPHIC_RESOURCE_TYPE::GRAPHIC_RESOURCE_BUFFER:
+	{
+	}
+	break;
+	case HC::GRAPHIC_RESOURCE_TYPE::GRAPHIC_RESOURCE_UPLOAD_BUFFER:
+	{
+	}
+	break;
+	case HC::GRAPHIC_RESOURCE_TYPE::GRAPHIC_RESOURCE_TEXTURE1D:
+	{
+	}
+	break;
+	case HC::GRAPHIC_RESOURCE_TYPE::GRAPHIC_RESOURCE_TEXTURE2D:
 	{
 		D3D11_TEXTURE2D_DESC pixelFuncRenderTargetDesc = {};
-		pixelFuncRenderTargetDesc.Usage = D3D11_USAGE_DEFAULT;
-		pixelFuncRenderTargetDesc.BindFlags = D3D11_BIND_RENDER_TARGET;
-		pixelFuncRenderTargetDesc.Format = format;
+		pixelFuncRenderTargetDesc.Usage = GetResourceUsage(desc);
+		pixelFuncRenderTargetDesc.BindFlags = GetResourceBindFlags(desc);
+		pixelFuncRenderTargetDesc.Format = desc.Format;
 		pixelFuncRenderTargetDesc.MipLevels = 1;
 		pixelFuncRenderTargetDesc.ArraySize = 1;
 		pixelFuncRenderTargetDesc.SampleDesc.Count = 1;
-		pixelFuncRenderTargetDesc.Width = size.x;
-		pixelFuncRenderTargetDesc.Height = size.y;
-
-		ComPtr<ID3D11Texture2D> pixelFunc;
-		COM_HRESULT_IF_FAILED(
-			m_device->CreateTexture2D(&pixelFuncDesc, nullptr, pixelFunc.GetAddressOf()),
-			"Failed to create pixelFunc buffer.");
+		pixelFuncRenderTargetDesc.Width = desc.Size.x;
+		pixelFuncRenderTargetDesc.Height = desc.Size.y;
 	}
 	break;
-	case HC::GRAPHIC_RESOURCE_TYPE::READBACK_BUFFER:
+	case HC::GRAPHIC_RESOURCE_TYPE::GRAPHIC_RESOURCE_TEXTURE3D:
 	{
-		D3D11_TEXTURE2D_DESC pixelFuncDesc = {};
-		pixelFuncDesc.Usage = D3D11_USAGE_STAGING;
-		pixelFuncDesc.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
-		pixelFuncDesc.Format = format;
-		pixelFuncDesc.MipLevels = 1;
-		pixelFuncDesc.ArraySize = 1;
-		pixelFuncDesc.SampleDesc.Count = 1;
-		pixelFuncDesc.Width = size.x;
-		pixelFuncDesc.Height = size.y;
-
-		ComPtr<ID3D11Texture2D> pixelFunc;
-		COM_HRESULT_IF_FAILED(
-			m_device->CreateTexture2D(&pixelFuncDesc, nullptr, pixelFunc.GetAddressOf()),
-			"Failed to create pixelFunc buffer.");
 	}
 	break;
 	default:
 		COM_THROW_IF_FAILED(false, "this type is not supported type");
 		break;
-	}*/
+	}
+
+	D3D11_TEXTURE2D_DESC pixelFuncRenderTargetDesc = {};
+	pixelFuncRenderTargetDesc.Usage = D3D11_USAGE_DEFAULT;
+	pixelFuncRenderTargetDesc.BindFlags = D3D11_BIND_RENDER_TARGET;
+	pixelFuncRenderTargetDesc.pixelFuncRenderTargetDesc.Format = format;
+	pixelFuncRenderTargetDesc.MipLevels = 1;
+	pixelFuncRenderTargetDesc.ArraySize = 1;
+	pixelFuncRenderTargetDesc.SampleDesc.Count = 1;
+	pixelFuncRenderTargetDesc.Width = size.x;
+	pixelFuncRenderTargetDesc.Height = size.y;
+
+	//ComPtr<ID3D11Texture2D> pixelFunc;
+	//COM_HRESULT_IF_FAILED(
+	//	m_device->CreateTexture2D(&pixelFuncDesc, nullptr, pixelFunc.GetAddressOf()),
+	//	"Failed to create pixelFunc buffer.");
+
+
+	//D3D11_TEXTURE2D_DESC pixelFuncDesc = {};
+	//pixelFuncDesc.Usage = D3D11_USAGE_STAGING;
+	//pixelFuncDesc.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
+	//pixelFuncDesc.Format = format;
+	//pixelFuncDesc.MipLevels = 1;
+	//pixelFuncDesc.ArraySize = 1;
+	//pixelFuncDesc.SampleDesc.Count = 1;
+	//pixelFuncDesc.Width = size.x;
+	//pixelFuncDesc.Height = size.y;
+
+	//ComPtr<ID3D11Texture2D> pixelFunc;
+	//COM_HRESULT_IF_FAILED(
+	//	m_device->CreateTexture2D(&pixelFuncDesc, nullptr, pixelFunc.GetAddressOf()),
+	//	"Failed to create pixelFunc buffer.");
 }
 
 void HCGraphicDX11::CreateCB(const std::string& bufferName, size_t stride, size_t num, std::unique_ptr<IHCCBuffer>& out)
@@ -261,11 +286,11 @@ void HCGraphicDX11::GetShader(const std::string& shaderName, IHCShader** out)
 {
 }
 
-int HCGraphicDX11::GetTextureIndex(const std::wstring& textureName) const
+TextureData HCGraphicDX11::GetTextureIndex(const std::wstring& textureName) const
 {
-	int result = -1;
+	TextureData result;
 	int bufferIndex = 0;
-	int TextureIndex = 0;
+	int textureIndex = 0;
 	std::wstring directory = StringHelper::GetDirectoryFromPath(textureName);
 
 	if (directory.length() == 0)
@@ -279,9 +304,10 @@ int HCGraphicDX11::GetTextureIndex(const std::wstring& textureName) const
 
 	auto textureIter = m_textures[bufferIndex].TextureIndex.find(textureName);
 	COM_THROW_IF_FAILED(textureIter != m_textures[bufferIndex].TextureIndex.end(), "This Texture is not loaded");
-	TextureIndex = textureIter->second;
+	textureIndex = textureIter->second;
 
-	result = (bufferIndex << 16) + TextureIndex;
+	result.textureIndex = (bufferIndex << 20) + textureIndex;
+	result.spriteNum = m_textures[bufferIndex].TextureDatas[textureIndex].NumSprite;
 
 	return result;
 }
@@ -532,31 +558,70 @@ void HCGraphicDX11::RenderObjects(HCGraphicPipeLine* pipeLine)
 	auto reservedOBData = pipeLine->GetReservedObjectData();
 	UINT dataSize = pipeLine->GetInputDataSize();
 
-	size_t numObjects = 0;
+	size_t totalDataSize = 0;
 	{
 		for (auto& it : reservedOBData)
 		{
-			numObjects += it.size()/ dataSize;
+			totalDataSize += it.size();
 		}
 
-		if (numObjects * dataSize > currBuffer->BufferSize)
+		if (totalDataSize > currBuffer->BufferSize)
 		{
-			assert(false);
-			//TODO: resize vertex buffer
+			size_t beforeBufferSize = currBuffer->BufferSize;
+			size_t goalBufferSize = currBuffer->BufferSize;
+			if (goalBufferSize == 0)
+				goalBufferSize = 2048;
+			while (totalDataSize > goalBufferSize)
+			{
+				goalBufferSize *= 2;
+			}
+
+			HCDX11VertexBuffer* newVertexBuffer = new HCDX11VertexBuffer;
+			newVertexBuffer->BufferSize = goalBufferSize;
+			
+
+
+			D3D11_BUFFER_DESC vertexBufferDesc = {};
+
+			vertexBufferDesc.ByteWidth = static_cast<UINT>(newVertexBuffer->BufferSize);
+			vertexBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
+			vertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+			vertexBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+			vertexBufferDesc.MiscFlags = 0;
+
+			COM_HRESULT_IF_FAILED(
+				m_device->CreateBuffer(&vertexBufferDesc, nullptr, newVertexBuffer->Buffer.GetAddressOf()),
+				"Fail to create vertexBuffer");
+
+			/*D3D11_MAPPED_SUBRESOURCE beforeMappedResource = {};
+			D3D11_MAPPED_SUBRESOURCE afterMappedResource = {};
+
+			COM_HRESULT_IF_FAILED(m_deviceContext->Map(currBuffer->Buffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &beforeMappedResource),
+				"Failed to map constant buffer.");
+
+			COM_HRESULT_IF_FAILED(m_deviceContext->Map(newVertexBuffer->Buffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &afterMappedResource),
+				"Failed to map constant buffer.");
+			CopyMemory(static_cast<BYTE*>(afterMappedResource.pData), static_cast<BYTE*>(beforeMappedResource.pData), beforeBufferSize);
+
+			m_deviceContext->Unmap(newVertexBuffer->Buffer.Get(), 0);
+			m_deviceContext->Unmap(currBuffer->Buffer.Get(), 0);*/
+
+			delete currBuffer;
+			pipeLine->SetVertexBuffer(newVertexBuffer);
+			currBuffer = newVertexBuffer;
 		}
 	}
 
 	D3D11_MAPPED_SUBRESOURCE mappedResource = {};
 	size_t accumulatedByte = 0;
 	{
-		COM_HRESULT_IF_FAILED(m_deviceContext->Map(currBuffer->Buffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0,  &mappedResource),
+		COM_HRESULT_IF_FAILED(m_deviceContext->Map(currBuffer->Buffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource),
 			"Failed to map constant buffer.");
 
 		for (auto& it2 : reservedOBData)
 		{
 			size_t bufferSize = it2.size();
 			CopyMemory(static_cast<BYTE*>(mappedResource.pData) + accumulatedByte, it2.data(), bufferSize);
-			RenderPointUV* test = (RenderPointUV * )it2.data();
 			accumulatedByte += bufferSize;
 		}
 		m_deviceContext->Unmap(currBuffer->Buffer.Get(), 0);
@@ -571,9 +636,9 @@ void HCGraphicDX11::RenderObjects(HCGraphicPipeLine* pipeLine)
 												  m_textures[i].TextureView.Get() };
 
 			m_deviceContext->PSSetShaderResources(0, _countof(views), views);
-			m_deviceContext->DrawInstanced(static_cast<UINT>(reservedOBData[i].size()/ dataSize), 1, static_cast<UINT>(currOffset), 0);
+			m_deviceContext->DrawInstanced(static_cast<UINT>(reservedOBData[i].size() / dataSize), 1,  static_cast<UINT>(currOffset), 0);
 
-			currOffset += reservedOBData[i].size();
+			currOffset += reservedOBData[i].size() / dataSize;
 		}
 	}
 }
@@ -715,14 +780,14 @@ void HCGraphicDX11::CreateTextures()
 
 	m_textures.resize(filePathes.size());
 
-	// COM_THROW_IF_FAILED(bufferIndex < 0x0000ffff, "This TextureBuffer is overflow");
-	// COM_THROW_IF_FAILED(TextureIndex < 0x0000ffff, "This Texture is overflow");
+	COM_THROW_IF_FAILED(filePathes.size() < 0xff, "This TextureBuffer is overflow");
 
+	std::vector<SpriteData> spriteDatas;
 	UINT currIndex = 0;
 	for (auto& it : filePathes)
 	{
 		ComPtr<ID3D11Texture2D>					arrayTexture2D;
-		Texture2DArrayData& texture2DArrayData = m_textures[currIndex];
+		Texture2DArrayData&						currTexture2DArrayData = m_textures[currIndex];
 		UINT									arraySize = static_cast<UINT>(it.second.size());
 		UINT									maximumX = 0;
 		UINT									maximumY = 0;
@@ -783,22 +848,47 @@ void HCGraphicDX11::CreateTextures()
 			texArrayViewDesc.Texture2DArray.MipLevels = 1;
 			texArrayViewDesc.Texture2DArray.MostDetailedMip = 0;
 
-			m_device->CreateShaderResourceView(arrayTexture2D.Get(), &texArrayViewDesc, texture2DArrayData.TextureView.GetAddressOf());
+			m_device->CreateShaderResourceView(arrayTexture2D.Get(), &texArrayViewDesc, currTexture2DArrayData.TextureView.GetAddressOf());
 		}
 
+		UINT locationDataIndexCount = 0;
 		for (size_t i = 0; i < it.second.size(); i++)
 		{
 			//TODO : Fill texture to maxSizeTexture in step by step 
+			TextureArrayInTextureData locationData;
 			UINT currTextureSizeX = textureDesces[i].Width;
 			UINT currTextureSizeY = textureDesces[i].Height;
-			TextureInTextureData locationData;
-
+			std::wstring textureName = StringHelper::GetFileNameFromPath(it.second[i]);
+			DirectX::XMFLOAT2 currTextureRatio = { static_cast<float>(currTextureSizeX) / maximumX, static_cast<float>(currTextureSizeY) / maximumY };
+			
 			locationData.Index = static_cast<UINT>(i);
-			locationData.StartUV = { 0.0f,0.0f };
-			locationData.EndUV = { static_cast<float>(currTextureSizeX) / maximumX, static_cast<float>(currTextureSizeY) / maximumY };
+			currTexture2DArrayData.TextureIndex[it.first + L"/" + StringHelper::GetFileNameFromPath(it.second[i])] = locationDataIndexCount;
 
-			texture2DArrayData.TextureIndex[it.first + L"/" + StringHelper::GetFileNameFromPath(it.second[i])] = i;
-			texture2DArrayData.TextureDatas.push_back(locationData);
+			std::wstring postString = std::wstring(textureName.c_str(), HC::GO.GRAPHIC.SpriteTextureSuffix.length());
+			if (postString == HC::GO.GRAPHIC.SpriteTextureSuffix)
+			{
+				spriteDatas.clear();
+				GetSpriteData(it.second[i], &spriteDatas);
+
+				locationData.NumSprite = spriteDatas.size();
+
+				for (auto& it2:spriteDatas)
+				{
+					locationData.StartUV = { it2.StartUV.x * currTextureRatio.x,  it2.StartUV.y * currTextureRatio.y };
+					locationData.EndUV = { it2.EndUV.x * currTextureRatio.x,  it2.EndUV.y * currTextureRatio.y };
+
+					currTexture2DArrayData.TextureDatas.push_back(locationData);
+					locationDataIndexCount++;
+				}
+			}
+			else
+			{
+				locationData.StartUV = { 0.0f,0.0f };
+				locationData.EndUV = currTextureRatio;
+
+				currTexture2DArrayData.TextureDatas.push_back(locationData);
+				locationDataIndexCount++;
+			}
 
 			D3D11_BOX srcBox = {};
 			srcBox.left = 0;
@@ -812,18 +902,20 @@ void HCGraphicDX11::CreateTextures()
 				currFolderTextures[i].Get(), 0, &srcBox);
 		}
 
+		COM_THROW_IF_FAILED(currTexture2DArrayData.TextureDatas.size() < 0xfffff, "This TextureIndex is overflow");
+
 		{
 			ComPtr<ID3D11Buffer> textureInfoBuffer;
 
 			D3D11_BUFFER_DESC bufferDesc = {};
-			bufferDesc.ByteWidth = arraySize * sizeof(TextureInTextureData);
+			bufferDesc.ByteWidth = currTexture2DArrayData.TextureDatas.size() * sizeof(TextureArrayInTextureData);
 			bufferDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
 			bufferDesc.Usage = D3D11_USAGE_DEFAULT;
-			bufferDesc.StructureByteStride = sizeof(TextureInTextureData);
+			bufferDesc.StructureByteStride = sizeof(TextureArrayInTextureData);
 			bufferDesc.MiscFlags = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
 
 			D3D11_SUBRESOURCE_DATA data;
-			data.pSysMem = texture2DArrayData.TextureDatas.data();
+			data.pSysMem = currTexture2DArrayData.TextureDatas.data();
 			data.SysMemPitch = bufferDesc.ByteWidth;
 			data.SysMemSlicePitch = data.SysMemPitch;
 
@@ -833,14 +925,14 @@ void HCGraphicDX11::CreateTextures()
 			bufferViewDesc.Format = DXGI_FORMAT_UNKNOWN;
 			bufferViewDesc.ViewDimension = D3D11_SRV_DIMENSION_BUFFER;
 			bufferViewDesc.Buffer.ElementOffset = 0;
-			bufferViewDesc.Buffer.ElementWidth = sizeof(TextureInTextureData);
-			bufferViewDesc.Buffer.NumElements = arraySize;
+			bufferViewDesc.Buffer.ElementWidth = sizeof(TextureArrayInTextureData);
+			bufferViewDesc.Buffer.NumElements = currTexture2DArrayData.TextureDatas.size();
 
-			m_device->CreateShaderResourceView(textureInfoBuffer.Get(), &bufferViewDesc, texture2DArrayData.TextureInfoView.GetAddressOf());
+			m_device->CreateShaderResourceView(textureInfoBuffer.Get(), &bufferViewDesc, currTexture2DArrayData.TextureInfoView.GetAddressOf());
 		}
-
-		m_deviceContext->Flush();
 	}
+
+	m_deviceContext->Flush();
 }
 
 void HCGraphicDX11::CreateGraphicPipeLineBaseSettings()
@@ -914,4 +1006,74 @@ void HCGraphicDX11::CreateInputLayout(size_t inputLayoutHash, const std::vector<
 		"fail to create inputlayout");
 
 	m_inputLayout[inputLayoutHash] = layout;
+}
+
+D3D11_USAGE HCGraphicDX11::GetResourceUsage(const HC::GRAPHIC_RESOURCE_DESC& desc)
+{
+
+	return D3D11_USAGE();
+}
+
+UINT HCGraphicDX11::GetResourceBindFlags(const HC::GRAPHIC_RESOURCE_DESC& desc)
+{
+}
+
+void HCGraphicDX11::GetSpriteData(const std::wstring& texturePath, std::vector<SpriteData>* out)
+{
+	std::wstring textureName = StringHelper::GetFileNameFromPath(texturePath);
+	std::unique_ptr<Xml::XMLDocument> document(new XmlDocument);
+
+	document->LoadFile((std::string(StringHelper::WideToString(texturePath), texturePath.find_last_of(L'.', 0)) + ".xml").c_str());
+
+	if (document->Error())
+	{
+		//don't has SpriteData.xml
+		//ex)) sp_5x5_textureName
+
+		size_t gridInfoTextStartIndex = HC::GO.GRAPHIC.SpriteTextureSuffix.length();
+		size_t gridInfoTextEndIndex = textureName.find_first_of(L'_', HC::GO.GRAPHIC.SpriteTextureSuffix.length());
+		size_t gridInfoSplitIndex= textureName.find_first_of(L'x');
+
+		COM_THROW_IF_FAILED((gridInfoTextEndIndex != std::wstring::npos) && (gridInfoSplitIndex != std::wstring::npos),
+			textureName + L"this Texture name has not sprtie grid info");
+		
+		int sizeX = _wtoi(std::wstring(textureName.c_str() + gridInfoTextStartIndex, gridInfoSplitIndex - gridInfoTextStartIndex).c_str());
+		int sizeY = _wtoi(std::wstring(textureName.c_str() + gridInfoSplitIndex + 1, gridInfoTextEndIndex - (gridInfoSplitIndex + 1)).c_str());
+		float offsetX = 1.0f / sizeX;
+		float offsetY = 1.0f / sizeY;
+
+		SpriteData spData;
+		for (int y = 0; y < sizeY; y++)
+		{
+			spData.StartUV.y = y * offsetY;
+			spData.EndUV.y = (y + 1) * offsetY;
+
+			for (int x = 0; x < sizeX; x++)
+			{
+				spData.StartUV.x = x * offsetX;
+				spData.EndUV.x = (x + 1) * offsetX;
+
+				out->push_back(spData);
+			}
+		}
+	}
+	else
+	{
+		XmlElement* list;
+		XmlElement* element;
+
+		list = document->FirstChildElement("Sprites");
+		element = list->FirstChildElement();
+
+		SpriteData spData;
+		for (; element != nullptr; element = element->NextSiblingElement())
+		{
+			spData.StartUV.x = element->FloatAttribute("StartUV_X");
+			spData.StartUV.y = element->FloatAttribute("StartUV_Y");
+			spData.EndUV.x = element->FloatAttribute("EndUV_X");
+			spData.EndUV.y = element->FloatAttribute("EndUV_Y");
+
+			out->push_back(spData);
+		}
+	}
 }

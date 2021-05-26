@@ -50,7 +50,7 @@ Texture2DArray gMainTextures : register(t1);
 float4 GetTextureSample(SamplerState samp, int index, float2 uv)
 {
     float4 result = { 0, 0, 0, 0 };
-    int currIndex = index & 0x0000ffff;
+    int currIndex = index & 0x000fffff;
     TextureInfo currTextureInfo = gMainTextureInfos[currIndex];
     
     float2 targetUV = currTextureInfo.StartUV;

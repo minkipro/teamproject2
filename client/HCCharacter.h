@@ -8,12 +8,14 @@ namespace HC
 	class Character : public HC::SceneObject
 	{
 	public:
-		Character();
+		Character(const wchar_t* textureName);
 		virtual ~Character() override;
 		virtual void Update() override;
 
-	private:
-		RenderPointUV m_renderPointUV;
+	public:
+		RenderPoint m_renderPoint;
+		int m_spriteNum;
 		CharacterController* m_characterController;
+		
 	};
 }

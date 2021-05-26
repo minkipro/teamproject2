@@ -38,9 +38,18 @@
     <Filter Include="Common\Devices\Graphics_Base\UI">
       <UniqueIdentifier>{33dd55ac-0a55-4b0e-a244-10b1a00e857b}</UniqueIdentifier>
     </Filter>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
+    <Filter Include="Common\Externel">
+      <UniqueIdentifier>{7aacc62a-0500-408a-8794-344e2a145618}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common\Externel\Xml">
+      <UniqueIdentifier>{4a82e0f2-97bb-4e9a-af4a-cb0516ed82d7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common\Devices\Physics">
+      <UniqueIdentifier>{d8d02539-ede7-4889-b748-bdd4be720627}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common\TCP_IP_Socket">
+      <UniqueIdentifier>{6f28d303-7bea-439c-96c9-d61fa4f8c473}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Common\Source\Util\StringHelper.cpp">
@@ -88,7 +97,7 @@
     <ClCompile Include="HCCharacter.cpp">
       <Filter>Client\Scene\SceneObject</Filter>
     </ClCompile>
-    <ClCompile Include="HCCharacterController.cpp">
+    <ClCompile Include="HCCharacterControllerByKeyboard.cpp">
       <Filter>Client\Scene</Filter>
     </ClCompile>
     <ClCompile Include="HCTileMap.cpp">
@@ -96,6 +105,27 @@
     </ClCompile>
     <ClCompile Include="..\Common\Source\Graphics\HCCameraManager.cpp">
       <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Common\Source\Xml\Xml.cpp">
+      <Filter>Common\Externel\Xml</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Common\Source\Device\HCPhysics.cpp">
+      <Filter>Common\Devices\Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Common\UI\UIButton.cpp">
+      <Filter>Common\Devices\Graphics_Base\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Common\UI\UIObject.cpp">
+      <Filter>Common\Devices\Graphics_Base\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Common\UI\UIPanel.cpp">
+      <Filter>Common\Devices\Graphics_Base\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Common\UI\UIParam.cpp">
+      <Filter>Common\Devices\Graphics_Base\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Common\Source\TCPSocket\SocketCommunication.cpp">
+      <Filter>Common\TCP_IP_Socket</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -122,9 +152,6 @@
     </ClInclude>
     <ClInclude Include="..\Common\Source\Device\HCMouse.h">
       <Filter>Common\Devices</Filter>
-    </ClInclude>
-    <ClInclude Include="HCSharedPointerMG.h">
-      <Filter>Common\Util</Filter>
     </ClInclude>
     <ClInclude Include="..\Common\Source\Graphics\HCGraphic.h">
       <Filter>Common\Devices\Graphics_Base</Filter>
@@ -165,7 +192,7 @@
     <ClInclude Include="..\Common\Source\Graphics\HCInputDataSamples.h">
       <Filter>Common\Devices\Graphics_Base</Filter>
     </ClInclude>
-    <ClInclude Include="HCCharacterController.h">
+    <ClInclude Include="HCCharacterControllerByKeyboard.h">
       <Filter>Client\Scene</Filter>
     </ClInclude>
     <ClInclude Include="HCTileMap.h">
@@ -173,6 +200,30 @@
     </ClInclude>
     <ClInclude Include="..\Common\Source\Graphics\HCCameraManager.h">
       <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\Source\Xml\Xml.h">
+      <Filter>Common\Externel\Xml</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\Source\Device\HCPhysics.h">
+      <Filter>Common\Devices\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\UI\UIButton.h">
+      <Filter>Common\Devices\Graphics_Base\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\UI\UIObject.h">
+      <Filter>Common\Devices\Graphics_Base\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\UI\UIPanel.h">
+      <Filter>Common\Devices\Graphics_Base\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\UI\UIParam.h">
+      <Filter>Common\Devices\Graphics_Base\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="HCCharacterController.h">
+      <Filter>Client\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\Source\TCPSocket\SocketCommunication.h">
+      <Filter>Common\TCP_IP_Socket</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -182,8 +233,8 @@
     <FxCompile Include="..\Common\Shader\PointToPlaneSahder.hlsl">
       <Filter>리소스 파일</Filter>
     </FxCompile>
-    <FxCompile Include="..\Common\Shader\PointToUVPlane.hlsl">
-      <Filter>리소스 파일</Filter>
-    </FxCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
 </Project>

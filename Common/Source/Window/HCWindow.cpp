@@ -80,5 +80,14 @@ LRESULT HCWindow::WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		return 0;
 	}
 
+	switch (uMsg)
+	{
+	case WM_SYSKEYDOWN:
+	case WM_SYSKEYUP:
+	{
+		uMsg = 0;//system키를 인게임중에 막기(keystate는 위에서 변경)
+	}
+	}
+
 	return DefWindowProc(hwnd, uMsg, wParam, lParam);
 }

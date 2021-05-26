@@ -1,10 +1,11 @@
 #include "stdafx.h"
-
+#include "HCCameraManager.h"
 HC::CameraManager HC::CameraManager::instance;
 HC::CameraManager::CameraManager()
 {
 	m_mainCamera = nullptr;
 	m_viewMatrix = DirectX::XMMatrixIdentity();
+	CreateCamera();
 }
 HC::Camera* HC::CameraManager::CreateCamera()
 {
@@ -19,11 +20,26 @@ void HC::CameraManager::Update()
 {
 	auto keyboard = HCDEVICE(HCKeyboard);
 	auto state = keyboard->GetLastState();
-	/*if (state.IsKeyDown(DirectX::Keyboard::Keys::Up))
+	auto timer = HCDEVICE(HCTimer);
+	if (state.IsKeyDown(DirectX::Keyboard::Keys::Up))
 	{
-		m_mainCamera->position.y -= 100.0f*
-	}*/
-	m_viewMatrix = DirectX::XMMatrixScaling(m_mainCamera->scale.x, m_mainCamera->scale.y, 1.0f)*DirectX::XMMatrixRotationZ(m_mainCamera->rot)*DirectX::XMMatrixTranslation(m_mainCamera->position.x, m_mainCamera->position.y, 0.0f);
+		m_mainCamera->position.y -= 100.0f * timer->GetDeltatime();
+	}
+	if (state.IsKeyDown(DirectX::Keyboard::Keys::Down))
+	{
+		m_mainCamera->position.y += 100.0f * timer->GetDeltatime();
+	}
+	if (state.IsKeyDown(DirectX::Keyboard::Keys::Left))
+	{
+		m_mainCamera->position.x -= 100.0f * timer->GetDeltatime();
+	}
+	if (state.IsKeyDown(DirectX::Keyboard::Keys::Right))
+	{
+		m_mainCamera->position.x += 100.0f * timer->GetDeltatime();
+	}
+
+	DirectX::XMMATRIX trans = DirectX::XMMatrixTranslation(-m_mainCamera->position.x, -m_mainCamera->position.y, 0.0f);
+	m_viewMatrix = DirectX::XMMatrixScaling(m_mainCamera->scale.x, m_mainCamera->scale.y, 1.0f)*DirectX::XMMatrixRotationZ(m_mainCamera->rot)* trans;
 }
 
 

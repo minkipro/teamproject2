@@ -4,3 +4,15 @@
 #include <DirectXMath.h>
 #include "COMException.h"
 #include "Engine.h"
+
+inline unsigned int SizeTTransUINT(size_t size)
+{
+	assert(UINT_MAX > size);
+	return static_cast<unsigned int>(size);
+}
+
+inline int SizeTTransINT(size_t size)
+{
+	assert(INT_MAX > size);
+	return static_cast<int>(size);
+}

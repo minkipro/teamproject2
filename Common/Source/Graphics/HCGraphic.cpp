@@ -6,12 +6,6 @@ std::vector<HCInputLayoutElement> RenderPoint::InputLayout = {
 				{"RENDERSIZE",0,DXGI_FORMAT_R32G32_FLOAT},
 				{"TEXCOORD",0,DXGI_FORMAT_R32G32B32A32_FLOAT},
 				{"TEXINDEX",0,DXGI_FORMAT_R32_SINT} };
-std::vector<HCInputLayoutElement> RenderPointUV::InputLayout = {
-				{"POSITION",0,DXGI_FORMAT_R32G32B32_FLOAT},
-				{"RENDERSIZE",0,DXGI_FORMAT_R32G32_FLOAT},
-				{"TEXCOORD",0,DXGI_FORMAT_R32G32B32A32_FLOAT},
-				{"UV",0,DXGI_FORMAT_R32G32B32A32_FLOAT},
-				{"TEXINDEX",0,DXGI_FORMAT_R32_SINT} };
 
 void HCGraphic::ReserveRender(const std::string& pipeLineName, const void* object, int textureIndex)
 {
@@ -77,7 +71,7 @@ void HCGraphic::NumberingGraphicPipeLineSlot(size_t slot, const std::string& pip
 
 void HCGraphicPipeLine::RenderReserveObject(const void* inputData, int textureIndex)
 {
-	size_t textureBufferIndex = (textureIndex > -1) ? (textureIndex>>16) : 0;
+	size_t textureBufferIndex = (textureIndex > -1) ? (textureIndex>>20) : 0;
 
 	if (textureBufferIndex >= m_renderReservedObjectsByTexture.size())
 	{

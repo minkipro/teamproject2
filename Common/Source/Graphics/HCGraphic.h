@@ -46,7 +46,7 @@ namespace HC
 		GRAPHIC_RESOURCE_FLAGS	Flags;
 		DXGI_FORMAT				Format;
 		POINT					Size;
-		UINT					Stride;
+		UINT					Stride = 0;
 	};
 
 	enum class PRIMITIVE_TOPOLOGY
@@ -73,25 +73,11 @@ struct RenderPoint
 {
 	static std::vector<HCInputLayoutElement> InputLayout;
 
-	DirectX::XMFLOAT3	Position;
-	DirectX::XMFLOAT2	Size;
-	DirectX::XMFLOAT4	Color;
+	DirectX::XMFLOAT3	Position = { 0,0,0 };
+	DirectX::XMFLOAT2	Size = { 0,0 };
+	DirectX::XMFLOAT4	Color = { 0,0,0,1 };
 	int					TextureIndex = -1;
 };
-
-
-
-struct RenderPointUV
-{
-	static std::vector<HCInputLayoutElement> InputLayout;
-
-	DirectX::XMFLOAT3	Position;
-	DirectX::XMFLOAT2	Size;
-	DirectX::XMFLOAT4	Color;
-	DirectX::XMFLOAT4	Uv;
-	int					TextureIndex = -1;
-};
-
 
 class IHCShader
 {
@@ -190,19 +176,18 @@ public:
 	virtual void GetFontNames(std::vector<std::wstring>& out) = 0;
 	virtual void SetFont(unsigned int index) = 0;
 	virtual void SetFont(std::wstring fileName) = 0;
-	virtual void SetText(const IHCFont::TextData& textData) = 0;//삭제 필요
-	virtual std::vector<IHCFont::TextData>* GetText() = 0;
+	virtual size_t AddText(const IHCFont::TextData& textData) = 0;//삭제 필요
+	virtual size_t AddText() = 0;
+	virtual void SetText(int index, const wchar_t* text) = 0;
 	virtual void Render() = 0;
 protected:
 
 };
 
-struct HCRenderInfo
+struct TextureData
 {
-	IHCVertexBuffer*	VertexBuffer = nullptr;
-	int					TextureIndex = -1;
-	int					MaterialIndex = -1;
-
+	int textureIndex = -1;
+	int spriteNum = -1;
 };
 
 class HCGraphicPipeLine
@@ -237,6 +222,10 @@ public:
 	void										ClearReservedObjects();
 
 	template<typename T> void					SelectInputSample();
+	void										SetVertexBuffer(void* vertexBuffer)
+	{
+		m_vertexBuffer = vertexBuffer;
+	}
 	
 
 public:
@@ -294,7 +283,7 @@ public: //pure virtual method
 	virtual void		GetCB(const std::string& bufferName, IHCCBuffer** out) = 0;
 	virtual void		GetShader(const std::string& shaderName, IHCShader** out) = 0;
 
-	virtual int			GetTextureIndex(const std::wstring& textureName) const = 0;
+	virtual TextureData	GetTextureIndex(const std::wstring& textureName) const = 0;
 
 public: //Optional virtual function
 	virtual LRESULT		WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) { return LRESULT(0); }

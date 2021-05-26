@@ -79,9 +79,28 @@ void HCFont::SetFont(std::wstring fileName)
 	m_currentFont = m_spriteFonts[fileName].get();
 }
 
-void HCFont::SetText(const IHCFont::TextData& textData)
+size_t HCFont::AddText(const IHCFont::TextData& textData)
 {
 	m_texts.push_back(textData);
+	return m_texts.size() - 1;
+}
+
+size_t HCFont::AddText()
+{
+	IHCFont::TextData tempData = { L"test2", DirectX::XMFLOAT2(0.0f, 10.0f), DirectX::XMFLOAT3(0.5f, 0.5f, 0.5f), DirectX::XMFLOAT2(1.0f, 1.0f) };
+
+	TextData textData;
+	textData.Position = { 0.0f, m_texts.size() * 10.0f };
+	textData.Color = DirectX::XMFLOAT3(0.5f, 0.5f, 0.5f);
+	textData.Scale = DirectX::XMFLOAT2(1.0f, 1.0f);
+	m_texts.push_back(textData);
+	return m_texts.size() - 1;
+}
+
+void HCFont::SetText(int index, const wchar_t* text)
+{
+	COM_THROW_IF_FAILED(index < m_texts.size(), "m_text의 크기가 index보다 크거나 같습니다.");
+	m_texts[index].Text = text;
 }
 
 void HCFont::Render()

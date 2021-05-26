@@ -60,12 +60,16 @@ float4 PS(VertexOut input) : SV_TARGET
     
     if (input.TexIndex >= 0)
     {
-        result = GetTextureSample(gsamPointWrap, input.TexIndex, input.Color.xy);
+        result = GetTextureSample(gsamPointClamp, input.TexIndex, input.Color.xy);
     }
     else
     {
         result = input.Color;
     }
-    
+    if (result.a !=1)
+    {
+        clip(-1);
+    }
+
     return result;
 }

@@ -1,9 +1,33 @@
 #include "stdafx.h"
-#include "HCCharacterController.h"
+#include "HCCharacterControllerByKeyboard.h"
 
-HC::CharacterController::CharacterController(DirectX::XMFLOAT3* position, DirectX::XMFLOAT4* uv, int indexSizeX, int indexSizeY, std::vector<DirectX::XMUINT2> animationIndex[])
+HC::CharacterControllerByKeyboard::CharacterControllerByKeyboard(DirectX::XMFLOAT3* position, int* textureIndex, int spriteNum, std::vector<int> animationIndex[])
 {
-	auto mouse = HCDEVICE(HCMouse);
+	m_state = CharacterState::IDLE;
+	m_prevState = CharacterState::IDLE;
+	m_continuos = true;
+	m_isThereInput = false;
+	m_position = position;
+	m_textureIndex = textureIndex;
+	m_originTextureIndex = *m_textureIndex;
+	m_deltaTime = 0.0f;
+	m_animationIndexChangeTime = 0.3f;
+	m_currentAnimationIndex = 0;
+
+	for (unsigned char i = 0; i < (unsigned char)CharacterMoveState::COUNT; i++)
+	{
+		m_characterMoveState[i] = false;
+	}
+
+	for (unsigned char i = 0; i < (unsigned char)CharacterState::COUNT; i++)
+	{
+		size_t animationIndexNum = animationIndex[i].size();
+		for (size_t j = 0; j < animationIndexNum; j++)
+		{
+			m_animationIndex[i].push_back(animationIndex[i][j]);
+		}
+	}
+
 	m_keyMapping[(unsigned char)BehaviorState::UP] = { true, DirectX::Keyboard::W };
 	m_keyMapping[(unsigned char)BehaviorState::DOWN] = { true, DirectX::Keyboard::S };
 	m_keyMapping[(unsigned char)BehaviorState::LEFT] = { true, DirectX::Keyboard::A };
@@ -12,28 +36,8 @@ HC::CharacterController::CharacterController(DirectX::XMFLOAT3* position, Direct
 	m_keyMapping[(unsigned char)BehaviorState::B] = { false, HCMouse::MouseButton::RBUTTON };
 	m_keyMapping[(unsigned char)BehaviorState::C] = { true, DirectX::Keyboard::None };
 	m_keyMapping[(unsigned char)BehaviorState::D] = { true, DirectX::Keyboard::None };
-	m_state = CharacterState::IDLE;
-	m_prevState = CharacterState::IDLE;
-	m_continuos = true;
-	m_isThereInput = false;
-	m_position = position;
-	m_uv = uv;
-	m_deltaTime = 0.0f;
-	m_animationIndexChangeTime = 0.3f;
-	m_currentAnimationIndex = 0;
-	float significantError = 0.02f;
-	for (unsigned char i = 0; i < (unsigned char)CharacterState::COUNT; i++)
-	{
-		size_t animationIndexNum = animationIndex[i].size();
-		for (size_t j = 0; j < animationIndexNum; j++)
-		{
-			float startX = ((float)animationIndex[i][j].x+ significantError) / indexSizeX;
-			float endX = ((float)animationIndex[i][j].x + 1.0f- significantError) / indexSizeX;
-			float startY = (float)(animationIndex[i][j].y+ significantError) / indexSizeY;
-			float endY = (float)(animationIndex[i][j].y + 1.0f- significantError) / indexSizeY;
-			m_animationIndex[i].push_back(DirectX::XMFLOAT4(startX, startY, endX, endY));
-		}
-	}
+	
+	
 	auto timer = HCDEVICE(HCTimer);
 	for (unsigned char i = (unsigned char)BehaviorState::UP; i <= (unsigned char)BehaviorState::RIGHT; i++)
 	{
@@ -51,21 +55,17 @@ HC::CharacterController::CharacterController(DirectX::XMFLOAT3* position, Direct
 			m_buttonState[1] = true;//test
 		});
 
-	auto graphic = HCDEVICE(HCGraphic);
-	auto texts = graphic->GetFont()->GetText();
-	IHCFont::TextData tempData = { L"test2", DirectX::XMFLOAT2(0.0f, 10.0f), DirectX::XMFLOAT3(0.5f, 0.5f, 0.5f), DirectX::XMFLOAT2(1.0f, 1.0f) };
-	texts->push_back(tempData);
-	m_textIndex = texts->size() - 1;
 
-	for (unsigned char i = 0; i < (unsigned char)CharacterMoveState::COUNT; i++)
-	{
-		m_characterMoveState[i] = false;
-	}
+	//debug용 코드
+	auto graphic = HCDEVICE(HCGraphic);
+	IHCFont* font = graphic->GetFont();
+	m_textIndex = font->AddText();
+	//
 
 	m_buttonState[0] = m_buttonState[1] = false;
 }
 
-void HC::CharacterController::Update()
+void HC::CharacterControllerByKeyboard::Update()
 {
 	auto keyboard = HCDEVICE(HCKeyboard);
 	auto mouse = HCDEVICE(HCMouse);
@@ -167,22 +167,21 @@ void HC::CharacterController::Update()
 				m_currentAnimationIndex = 0;
 			}
 
-			*m_uv = m_animationIndex[(unsigned char)m_state][m_currentAnimationIndex];//애니메이션이 없는 경우에는 오류발생
+			*m_textureIndex = m_originTextureIndex + m_animationIndex[(unsigned char)m_state][m_currentAnimationIndex];//애니메이션이 없는 경우에는 오류발생
 		}
 	}
 	else
 	{
 		m_deltaTime = 0.0f;
 		m_currentAnimationIndex = 0;
-		*m_uv = m_animationIndex[(unsigned char)m_state][m_currentAnimationIndex];
+		*m_textureIndex = m_originTextureIndex + m_animationIndex[(unsigned char)m_state][m_currentAnimationIndex];
 	}
 
 	auto graphic = HCDEVICE(HCGraphic);
-	auto texts = graphic->GetFont()->GetText();
+	auto font = graphic->GetFont();
 	std::wstring imtrue = L"true";
 	std::wstring imfalse = L"false";
-	(*texts)[m_textIndex].Text
-		= /*L"m_position->x : " + std::to_wstring(m_position->x)
+	std::wstring outText = /*L"m_position->x : " + std::to_wstring(m_position->x)
 		+ L"m_position->y : " + std::to_wstring(m_position->y)
 		+ L"m_deltaTime : " + std::to_wstring(m_deltaTime)
 		+ *//*L"m_currentAnimationIndex : " + std::to_wstring(m_currentAnimationIndex)
@@ -194,4 +193,5 @@ void HC::CharacterController::Update()
 
 		L" m_buttonState[0] : " + (m_buttonState[0] ? imtrue : imfalse)
 		+ L" m_buttonState[1] : " + (m_buttonState[1] ? imtrue : imfalse);
+	font->SetText(m_textIndex, outText.c_str());
 }

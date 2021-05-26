@@ -4,9 +4,6 @@
     <Filter Include="PCH">
       <UniqueIdentifier>{e6b247f3-b6dc-4e88-a156-4d6a32893329}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Scene">
-      <UniqueIdentifier>{3543d289-40da-44f7-8eef-eec03999b395}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Common">
       <UniqueIdentifier>{78fe693c-a158-47ef-8848-3090f716ffd7}</UniqueIdentifier>
     </Filter>
@@ -34,6 +31,15 @@
     <Filter Include="리소스파일">
       <UniqueIdentifier>{65931e26-fe22-43ae-bedd-7b3ec9b8a039}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Common\Externel">
+      <UniqueIdentifier>{42c6d745-b205-442c-b2c2-71032d20ee4b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common\Externel\Xml">
+      <UniqueIdentifier>{351788bf-a3ce-44d8-a8d2-a7e2d954da59}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Editor\SceneObject">
+      <UniqueIdentifier>{c1350b34-3309-4a0b-99b6-2c355a445c45}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -44,9 +50,6 @@
     </ClCompile>
     <ClCompile Include="..\Common\Source\Util\StringHelper.cpp">
       <Filter>Common\Util</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Common\Source\HCScene.cpp">
-      <Filter>Scene</Filter>
     </ClCompile>
     <ClCompile Include="pngEx.cpp" />
     <ClCompile Include="..\Common\Source\Device\HCKeyboard.cpp">
@@ -85,8 +88,11 @@
     <ClCompile Include="DevScene.cpp">
       <Filter>Editor</Filter>
     </ClCompile>
-    <ClCompile Include="Color.cpp">
-      <Filter>Editor</Filter>
+    <ClCompile Include="..\Common\Source\Xml\Xml.cpp">
+      <Filter>Common\Externel\Xml</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Common\Source\Graphics\HCCameraManager.cpp">
+      <Filter>Common</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -101,12 +107,6 @@
     </ClInclude>
     <ClInclude Include="..\Common\Source\Util\StringHelper.h">
       <Filter>Common\Util</Filter>
-    </ClInclude>
-    <ClInclude Include="..\client\HCSharedPointerMG.h">
-      <Filter>Common\Util</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Common\Source\HCScene.h">
-      <Filter>Scene</Filter>
     </ClInclude>
     <ClInclude Include="..\Common\Source\Device\HCKeyboard.h">
       <Filter>Common\Devices</Filter>
@@ -150,11 +150,17 @@
     <ClInclude Include="stdafx.h">
       <Filter>PCH</Filter>
     </ClInclude>
-    <ClInclude Include="Color.h">
-      <Filter>Editor</Filter>
-    </ClInclude>
     <ClInclude Include="..\Common\Source\Graphics\HCInputDataSamples.h">
       <Filter>Common\Devices\Graphics_Base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\Source\Xml\Xml.h">
+      <Filter>Common\Externel\Xml</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\Source\Graphics\HCCameraManager.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="HCSceneObject.h">
+      <Filter>Editor\SceneObject</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

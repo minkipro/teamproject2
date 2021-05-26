@@ -57,10 +57,20 @@ void SocketCommunication::Update()
 
 void SocketCommunication::GetIp(std::vector<unsigned long>& out)
 {
+
+	int size;
+	sockaddr_in sockAddr;
+
+	size = sizeof(sockAddr);
+	memset(&sockAddr, 0x00, sizeof(sockAddr));
+	int ret2 = getpeername(m_socket, (struct sockaddr*)&sockAddr, &size);
+	char mybuffer[16];
+	strcpy(mybuffer, inet_ntoa(sockAddr.sin_addr));
+
 	char hostname[1024] = { 0, };
 	struct hostent* host_info;
-	DWORD dw;
-	gethostname(hostname, 1024);
+	//gethostname(hostname, 1024);
+	strcpy_s(hostname, 1024,"DESKTOP-Fil2GBD");
 	host_info = gethostbyname(hostname); // gethostbyname function retrieves host information.
   // gethostbyname returns a pointer of type struct hostent.
   //A null pointer is returned if an error occurs. The specific error number can be known by calling WSAGetLastError.
@@ -78,6 +88,61 @@ void SocketCommunication::GetIp(std::vector<unsigned long>& out)
 		std::string str = inet_ntoa(addr);
 		int a = 1;
 	}
+
+	//
+	int nPrivate = -1;
+	std::string strIP;
+	int ret = 0;
+	for (int i = 0; host_info->h_addr_list[i]; i++)
+	{
+		switch (((PUCHAR)host_info->h_addr_list[i])[0])
+		{
+			// 자동 개인 ip 주소 제거
+		case 169:
+			if (((PUCHAR)host_info->h_addr_list[i])[1] == 254)
+				continue;
+			break;
+
+			// 사설 ip 주소인 경우 저장
+		case 10:
+			nPrivate = i;
+			break;
+		case 172:
+			if (((PUCHAR)host_info->h_addr_list[i])[1] > 15 &&
+				(host_info->h_addr_list[i])[1] < 32)
+				nPrivate = i;
+			break;
+		case 192:
+			if (((PUCHAR)host_info->h_addr_list[i])[1] == 168)
+				nPrivate = i;
+			break;
+
+			// 공인 ip 주소인 경우
+		default:
+
+			for (int j = 0; j < 4; j++)
+			{
+				strIP += ((PUCHAR)host_info->h_addr_list[i])[j];
+				if (j != 3)
+					strIP += ".";
+			}
+			ret = 1;
+		}
+	}
+
+	if (nPrivate >= 0)
+	{
+		for (int j = 0; j < 4; j++)
+		{
+			strIP += ((PUCHAR)host_info->h_addr_list[nPrivate])[j];
+			if (j != 3)
+				strIP += ".";
+		}
+		ret = 2;
+	}
+	else
+		ret = 0;
+	int a = 1;
 }
 
 void SocketCommunication::ConnectStart()

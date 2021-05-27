@@ -268,7 +268,7 @@ public: //pure virtual method
 	virtual void		CreateResource(const std::string& resourceName, const HC::GRAPHIC_RESOURCE_DESC& desc, IHCResource** out) = 0;
 	virtual void		CreateCB(const std::string& bufferName, size_t stride, size_t num, std::unique_ptr<IHCCBuffer>& out) = 0;
 	virtual void		CreateShader(const std::string& shaderName, HC::SHADER_TYPE type, const std::wstring& filePath, const std::string& entryPoint, IHCShader** out) = 0;
-	virtual void		CreateFontData(IHCTextData** out) = 0;
+	virtual void		CreateTextData(IHCTextData** out) = 0;
 
 	virtual void		GetGraphicPipeLine(const std::string& pipeLineName, HCGraphicPipeLine** out) = 0;
 	virtual void		GetShaderResource(const std::string& resourceName, IHCResource** out) = 0;

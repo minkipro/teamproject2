@@ -21,10 +21,10 @@ void DX11FontMG::Render()
 	{
 		SpriteFont* spFont = static_cast<SpriteFont*>(it->m_font);
 		XMVECTOR	color = XMLoadFloat4(&it->m_color);
-		XMVECTOR	pos = XMLoadFloat3(&it->m_position);
+		XMVECTOR	pos = XMLoadFloat2(reinterpret_cast<XMFLOAT2*>(&it->m_position));
 		XMVECTOR	scale = XMLoadFloat2(&it->m_scale);
 
-		spFont->DrawString(m_spriteBatch.get(), it->m_text.c_str(), pos, color, 0.0f, XMVectorZero(), scale);
+		spFont->DrawString(m_spriteBatch.get(), it->m_text.c_str(), pos, color, 0.0f, XMVectorZero(), scale, SpriteEffects::SpriteEffects_None, it->m_position.z);
 	}
 	
 	m_spriteBatch->End();
@@ -77,6 +77,8 @@ IHCTextData* DX11FontMG::CreateTextData()
 		newData->m_Index = m_texts.size();
 		m_texts.emplace_back(newData);
 	}
+
+	return newData;
 }
 
 void DX11FontMG::ReleaseFontData(DX11TextData* fontData)

@@ -6,15 +6,19 @@ SocketCommunication* SocketCommunication::instance = nullptr;
 SocketCommunication::SocketCommunication()
 {
 	m_exit = false;
-	
+	m_textRender = nullptr;
+
 	WSADATA wsaData;
 	COM_THROW_IF_FAILED(WSAStartup(MAKEWORD(2, 2), &wsaData) == 0, "윈속 초기화 실패");
 	m_socket = socket(PF_INET, SOCK_STREAM, 0);
 	COM_THROW_IF_FAILED(m_socket != INVALID_SOCKET, "소켓 생성 실패");
 
 	auto graphic = HCDEVICE(HCGraphic);
-	auto font = graphic->GetFont();
-	m_textIndex = font->AddText();
+	graphic->CreateTextData(&m_textRender);
+
+	std::vector<std::wstring> fontNames;
+	m_textRender->GetFontNames(fontNames);
+	m_textRender->SetFont(fontNames.front());
 
 	m_pthread = nullptr;
 }
@@ -45,19 +49,14 @@ void SocketCommunication::Update()
 		ListenStart();
 	}
 
-
-	auto graphic = HCDEVICE(HCGraphic);
-	auto font = graphic->GetFont();
 	std::wstring imtrue = L"true";
 	std::wstring imfalse = L"false";
-	std::wstring outText =
-		L" is m_pthread exist? : " + (m_pthread != nullptr ? imtrue : imfalse);
-	font->SetText(m_textIndex, outText.c_str());
+
+	m_textRender->m_text= L" is m_pthread exist? : " + (m_pthread != nullptr ? imtrue : imfalse);
 }
 
 void SocketCommunication::GetIp(std::vector<unsigned long>& out)
 {
-
 	int size;
 	sockaddr_in sockAddr;
 

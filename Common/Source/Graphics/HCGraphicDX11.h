@@ -42,6 +42,7 @@ public:
 
 	}
 	virtual ~HCGraphicDX11();
+
 	virtual void		Init();
 	virtual void		Update();
 
@@ -49,7 +50,7 @@ public:
 	virtual void		CreateResource(const std::string& resourceName, const HC::GRAPHIC_RESOURCE_DESC& desc, IHCResource** out) override;
 	virtual void		CreateCB(const std::string& bufferName, size_t stride, size_t num, std::unique_ptr<IHCCBuffer>& out) override;
 	virtual void		CreateShader(const std::string& shaderName, HC::SHADER_TYPE type, const std::wstring& filePath, const std::string& entryPoint, IHCShader** out) override;
-	virtual void		CreateFontData(IHCTextData** out) override;
+	virtual void		CreateTextData(IHCTextData** out) override;
 
 	virtual void		GetGraphicPipeLine(const std::string& pipeLineName, HCGraphicPipeLine** out) override;
 	virtual void		GetShaderResource(const std::string& resourceName, IHCResource** out) override;
@@ -92,12 +93,10 @@ private:
 	std::vector<Texture2DArrayData>											m_textures;
 	std::unordered_map<std::wstring, UINT>									m_textureBufferIndex;
 
+	DX11FontMG																m_font;
 
 	bool																	m_resizing = false;
 	bool																	m_minimized = false;
 	bool																	m_maximized = false;
-
-public:
-	DX11FontMG																m_font;
 };
 

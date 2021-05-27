@@ -80,7 +80,7 @@ namespace HC
 		int m_currentAnimationIndex;
 
 		// debug¿ë
-		size_t m_textIndex; 
+		IHCTextData* m_textRender; 
 		bool m_buttonState[2];
 	};
 }

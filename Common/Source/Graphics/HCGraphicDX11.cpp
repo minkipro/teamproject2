@@ -259,9 +259,9 @@ void HCGraphicDX11::CreateShader(const std::string& shaderName, HC::SHADER_TYPE 
 	*out = m_shaders[shaderName].get();
 }
 
-void HCGraphicDX11::CreateFontData(IHCTextData** out)
+void HCGraphicDX11::CreateTextData(IHCTextData** out)
 {
-
+	*out = m_font.CreateTextData();
 }
 
 void HCGraphicDX11::GetGraphicPipeLine(const std::string& pipeLineName, HCGraphicPipeLine** out)

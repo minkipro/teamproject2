@@ -29,7 +29,7 @@ private:
 	SOCKET m_socket;
 	std::atomic<char> m_buffer[1024] = { 0, };
 	bool m_exit;
-	size_t m_textIndex;
+	IHCTextData* m_textRender;
 };
 
 

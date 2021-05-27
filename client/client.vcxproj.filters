@@ -127,6 +127,9 @@
     <ClCompile Include="..\Common\Source\TCPSocket\SocketCommunication.cpp">
       <Filter>Common\TCP_IP_Socket</Filter>
     </ClCompile>
+    <ClCompile Include="..\Common\Source\Graphics\DX11TextData.cpp">
+      <Filter>Common\Devices\Graphics_Dx11</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Common\Source\Util\StringHelper.h">
@@ -224,6 +227,9 @@
     </ClInclude>
     <ClInclude Include="..\Common\Source\TCPSocket\SocketCommunication.h">
       <Filter>Common\TCP_IP_Socket</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\Source\Graphics\DX11TextData.h">
+      <Filter>Common\Devices\Graphics_Dx11</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

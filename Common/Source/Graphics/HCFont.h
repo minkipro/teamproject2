@@ -1,24 +1,29 @@
 #pragma once
 #include "HCGraphic.h"
+#include "DX11TextData.h"
 #include <SpriteFont.h>
-class HCFont : public IHCFont
+
+class DX11FontMG
 {
 public:
+	DX11FontMG() = default;
+	~DX11FontMG() = default;
 
-	HCFont() = default;
-	virtual ~HCFont() = default;
-	virtual void Init(void* device, void* dc) override;
-	virtual size_t GetFontNum() override;
-	virtual void GetFontNames(std::vector<std::wstring>& out) override;
-	virtual void SetFont(unsigned int index) override;
-	virtual void SetFont(std::wstring fileName) override;
-	virtual size_t AddText(const IHCFont::TextData& textData) override;//삭제 필요
-	virtual size_t AddText() override;
-	virtual void SetText(int index, const wchar_t* text) override;
-	virtual void Render() override;
+	void					Init(void* device, void* dc);
+	void					Render();
+
+	DirectX::SpriteFont*	GetFont(const std::wstring& fontName);
+	void					GetFontNames(std::vector<std::wstring>& out);
+
+	IHCTextData*			CreateTextData();
+	void					ReleaseFontData(DX11TextData* fontData);
+
 private:
-	std::unordered_map<std::wstring, std::unique_ptr<DirectX::SpriteFont>> m_spriteFonts;
-	DirectX::SpriteFont* m_currentFont = nullptr;
-	std::unique_ptr<DirectX::SpriteBatch> m_spriteBatch;
-	std::vector<IHCFont::TextData> m_texts;//삭제 필요
+	void					LoadSpriteFonts(void* device);
+
+private:
+	std::unique_ptr<DirectX::SpriteBatch>									m_spriteBatch;
+	std::unordered_map<std::wstring, std::unique_ptr<DirectX::SpriteFont>>	m_spriteFonts;
+	std::vector<std::unique_ptr<DX11TextData>>								m_texts;
+	std::vector<unsigned int>												m_indexBuffer;
 };

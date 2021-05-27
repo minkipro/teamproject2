@@ -55,7 +55,7 @@ public:
 	virtual void	SetTexture(const std::wstring& path, const DirectX::XMFLOAT2& size);
 
 	void			AddChild(UIObject* child);
-	void			SetParent(UIObject* ui);
+	void			SetParent(UIObject* object);
 	void			SetPos(const DirectX::XMFLOAT3& pos);
 	void			SetSize(const DirectX::XMFLOAT2& size);
 	void			SetBenchUV(const DirectX::XMFLOAT2& benchUV) { m_benchUV = benchUV; }

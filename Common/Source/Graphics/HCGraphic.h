@@ -159,29 +159,21 @@ public:
 protected:
 };
 
-class IHCFont
+class IHCTextData
 {
 public:
-	struct TextData
-	{
-		std::wstring Text;
-		DirectX::XMFLOAT2 Position;
-		DirectX::XMFLOAT3 Color;
-		DirectX::XMFLOAT2 Scale;
-	};
-	IHCFont() {}
-	virtual ~IHCFont() = default;
-	virtual void Init(void* device, void* dc) = 0;
-	virtual size_t GetFontNum() = 0;
-	virtual void GetFontNames(std::vector<std::wstring>& out) = 0;
-	virtual void SetFont(unsigned int index) = 0;
-	virtual void SetFont(std::wstring fileName) = 0;
-	virtual size_t AddText(const IHCFont::TextData& textData) = 0;//삭제 필요
-	virtual size_t AddText() = 0;
-	virtual void SetText(int index, const wchar_t* text) = 0;
-	virtual void Render() = 0;
-protected:
+	IHCTextData() = default;
+	virtual ~IHCTextData() = default;
 
+	virtual void Release() = 0;
+	virtual void SetFont(const std::wstring& fontName) = 0;
+	virtual void GetFontNames(std::vector<std::wstring>& out) = 0;
+
+public:
+	std::wstring		m_text;
+	DirectX::XMFLOAT3	m_position = { 0,0,0 };
+	DirectX::XMFLOAT4	m_color = { 0,0,0,1 };
+	DirectX::XMFLOAT2	m_scale = { 1,1 };
 };
 
 struct TextureData
@@ -259,7 +251,6 @@ inline void HCGraphicPipeLine::SelectInputSample()
 	m_InputLayout = &T::InputLayout;
 }
 
-class HCFont;
 class HCGraphic : public IHCDevice
 {
 public: //pure virtual method
@@ -277,6 +268,7 @@ public: //pure virtual method
 	virtual void		CreateResource(const std::string& resourceName, const HC::GRAPHIC_RESOURCE_DESC& desc, IHCResource** out) = 0;
 	virtual void		CreateCB(const std::string& bufferName, size_t stride, size_t num, std::unique_ptr<IHCCBuffer>& out) = 0;
 	virtual void		CreateShader(const std::string& shaderName, HC::SHADER_TYPE type, const std::wstring& filePath, const std::string& entryPoint, IHCShader** out) = 0;
+	virtual void		CreateTextData(IHCTextData** out) = 0;
 
 	virtual void		GetGraphicPipeLine(const std::string& pipeLineName, HCGraphicPipeLine** out) = 0;
 	virtual void		GetShaderResource(const std::string& resourceName, IHCResource** out) = 0;
@@ -295,7 +287,7 @@ public:
 	void				ReserveRender(size_t pipeLineSlot, const void* object, int textureIndex);
 	void				Render();
 	virtual void		RenderFont() {};
-	virtual IHCFont*	GetFont() { return nullptr; };
+
 protected: //pure virtual method
 	virtual void		RenderBegin() = 0;
 	virtual void		RenderEnd() = 0;

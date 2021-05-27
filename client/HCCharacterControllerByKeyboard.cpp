@@ -13,6 +13,7 @@ HC::CharacterControllerByKeyboard::CharacterControllerByKeyboard(DirectX::XMFLOA
 	m_deltaTime = 0.0f;
 	m_animationIndexChangeTime = 0.3f;
 	m_currentAnimationIndex = 0;
+	m_textRender = nullptr;
 
 	for (unsigned char i = 0; i < (unsigned char)CharacterMoveState::COUNT; i++)
 	{
@@ -58,9 +59,12 @@ HC::CharacterControllerByKeyboard::CharacterControllerByKeyboard(DirectX::XMFLOA
 
 	//debug¿ë ÄÚµå
 	auto graphic = HCDEVICE(HCGraphic);
-	IHCFont* font = graphic->GetFont();
-	m_textIndex = font->AddText();
-	//
+	graphic->CreateTextData(&m_textRender);
+
+	std::vector<std::wstring> fontNames;
+	m_textRender->GetFontNames(fontNames);
+	m_textRender->SetFont(fontNames.front());
+	m_textRender->m_position.y += 25;
 
 	m_buttonState[0] = m_buttonState[1] = false;
 }
@@ -178,10 +182,9 @@ void HC::CharacterControllerByKeyboard::Update()
 	}
 
 	auto graphic = HCDEVICE(HCGraphic);
-	auto font = graphic->GetFont();
 	std::wstring imtrue = L"true";
 	std::wstring imfalse = L"false";
-	std::wstring outText = /*L"m_position->x : " + std::to_wstring(m_position->x)
+	m_textRender->m_text=/*L"m_position->x : " + std::to_wstring(m_position->x)
 		+ L"m_position->y : " + std::to_wstring(m_position->y)
 		+ L"m_deltaTime : " + std::to_wstring(m_deltaTime)
 		+ *//*L"m_currentAnimationIndex : " + std::to_wstring(m_currentAnimationIndex)
@@ -193,5 +196,4 @@ void HC::CharacterControllerByKeyboard::Update()
 
 		L" m_buttonState[0] : " + (m_buttonState[0] ? imtrue : imfalse)
 		+ L" m_buttonState[1] : " + (m_buttonState[1] ? imtrue : imfalse);
-	font->SetText(m_textIndex, outText.c_str());
 }

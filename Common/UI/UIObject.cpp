@@ -63,23 +63,16 @@ void UIObject::SetTexture(const std::wstring& path, const DirectX::XMFLOAT2& siz
 
 void UIObject::AddChild(UIObject* child)
 {
-	UIObject* rootUIOb = GetRootUIObject();
-
-
-
-	for (auto& it : m_childs)
-	{
-		COM_THROW_IF_FAILED(it != child || it != m_parent, "this child UIObject is already in this object's tree");
-	}
+	COM_THROW_IF_FAILED(GetRootUIObject()->CheckDependency(child), "this child UIObject is already in this object's tree");
 
 	m_childs.push_back(child);
 }
 
-void UIObject::SetParent(UIObject* ui)
+void UIObject::SetParent(UIObject* object)
 {
-	COM_THROW_IF_FAILED(CheckDependency(ui), "this child UIObject is already in this object's tree");
+	COM_THROW_IF_FAILED(CheckDependency(object), "this UIObject is already in this object's tree");
 
-	m_parent = ui;
+	m_parent = object;
 }
 
 void UIObject::SetPos(const DirectX::XMFLOAT3& pos)

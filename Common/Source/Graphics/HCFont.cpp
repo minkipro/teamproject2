@@ -3,117 +3,86 @@
 #include "Util\StringHelper.h"
 #include "GlobalOption.h"
 
+using namespace DirectX;
 
-void HCFont::Init(void* device, void* dc)
+void DX11FontMG::Init(void* device, void* dc)
 {
+	DX11TextData::s_fontMG = this;
+
 	m_spriteBatch = std::make_unique<DirectX::SpriteBatch>((ID3D11DeviceContext*)dc);
+	LoadSpriteFonts(device);
+}
+
+void DX11FontMG::Render()
+{
+	m_spriteBatch->Begin();
+
+	for (auto& it : m_texts)
+	{
+		SpriteFont* spFont = static_cast<SpriteFont*>(it->m_font);
+		XMVECTOR	color = XMLoadFloat4(&it->m_color);
+		XMVECTOR	pos = XMLoadFloat2(reinterpret_cast<XMFLOAT2*>(&it->m_position));
+		XMVECTOR	scale = XMLoadFloat2(&it->m_scale);
+
+		spFont->DrawString(m_spriteBatch.get(), it->m_text.c_str(), pos, color, 0.0f, XMVectorZero(), scale, SpriteEffects::SpriteEffects_None, it->m_position.z);
+	}
+	
+	m_spriteBatch->End();
+}
+
+DirectX::SpriteFont* DX11FontMG::GetFont(const std::wstring& fontName)
+{
+	auto iter = m_spriteFonts.find(fontName);
+	COM_THROW_IF_FAILED(iter != m_spriteFonts.end(), fontName + L": is not correct fontName");
+
+	return iter->second.get();
+}
+
+void DX11FontMG::GetFontNames(std::vector<std::wstring>& out)
+{
+	for (auto& it : m_spriteFonts)
+	{
+		out.push_back(it.first);
+	}
+}
+
+void DX11FontMG::LoadSpriteFonts(void* device)
+{
 	std::unordered_map<std::wstring, std::vector<std::wstring>> filePathes;
 	StringHelper::SearchAllFileFromDirectory(HC::GO.GRAPHIC.FontFolderPath, filePathes);
 	for (auto it : filePathes)
 	{
 		size_t fileNum = it.second.size();
-		
+
 		for (size_t i = 0; i < fileNum; i++)
 		{
 			m_spriteFonts[it.second[i]] = std::make_unique<DirectX::SpriteFont>((ID3D11Device*)device, it.second[i].c_str());
 		}
 	}
-	if (!m_spriteFonts.empty())
-	{
-		m_currentFont = m_spriteFonts.begin()->second.get();
-	}
 }
 
-size_t HCFont::GetFontNum()
+IHCTextData* DX11FontMG::CreateTextData()
 {
-	return m_spriteFonts.size();
-}
+	auto newData = new DX11TextData;
 
-void HCFont::GetFontNames(std::vector<std::wstring>& out)
-{
-	if (!out.empty())
+	if (m_indexBuffer.size())
 	{
-		COM_THROW_IF_FAILED(false, "out parameter vector is not empty");
-		return;
-	}
-	for (auto it = m_spriteFonts.begin(); it != m_spriteFonts.end(); it++)
-	{
-		out.push_back(it->first);
-	}
-}
+		m_texts[m_indexBuffer.back()] = std::unique_ptr<DX11TextData>(newData);
+		newData->m_Index = m_indexBuffer.back();
 
-void HCFont::SetFont(unsigned int index)
-{
-	if (index >= m_spriteFonts.size())
+		m_indexBuffer.pop_back();
+	}
+	else
 	{
-		COM_THROW_IF_FAILED(false, "font index is larger than size");
-		if (m_spriteFonts.empty())
-		{
-			return;
-		}
-		else
-		{
-			while (index >= m_spriteFonts.size())
-			{
-				index -= m_spriteFonts.size();
-			}
-		}
+		newData->m_Index = m_texts.size();
+		m_texts.emplace_back(newData);
 	}
 
-	auto it = m_spriteFonts.begin();
-	for (int i = 0; i < index; i++)
-	{
-		it++;
-	}
-	m_currentFont = it->second.get();
+	return newData;
 }
 
-void HCFont::SetFont(std::wstring fileName)
+void DX11FontMG::ReleaseFontData(DX11TextData* fontData)
 {
-	auto it = m_spriteFonts.find(fileName);
-	if (it == m_spriteFonts.end())
-	{
-		COM_THROW_IF_FAILED(false, "there is no such font name");
-		return;
-	}
-	m_currentFont = m_spriteFonts[fileName].get();
-}
-
-size_t HCFont::AddText(const IHCFont::TextData& textData)
-{
-	m_texts.push_back(textData);
-	return m_texts.size() - 1;
-}
-
-size_t HCFont::AddText()
-{
-	IHCFont::TextData tempData = { L"test2", DirectX::XMFLOAT2(0.0f, 10.0f), DirectX::XMFLOAT3(0.5f, 0.5f, 0.5f), DirectX::XMFLOAT2(1.0f, 1.0f) };
-
-	TextData textData;
-	textData.Position = { 0.0f, m_texts.size() * 10.0f };
-	textData.Color = DirectX::XMFLOAT3(0.5f, 0.5f, 0.5f);
-	textData.Scale = DirectX::XMFLOAT2(1.0f, 1.0f);
-	m_texts.push_back(textData);
-	return m_texts.size() - 1;
-}
-
-void HCFont::SetText(int index, const wchar_t* text)
-{
-	COM_THROW_IF_FAILED(index < m_texts.size(), "m_text의 크기가 index보다 크거나 같습니다.");
-	m_texts[index].Text = text;
-}
-
-void HCFont::Render()
-{
-	m_spriteBatch->Begin();
-	size_t textNum = m_texts.size();
-	for (size_t i = 0; i < textNum; i++)
-	{
-		DirectX::XMVECTORF32 color = { m_texts[i].Color.x,m_texts[i].Color.y,m_texts[i].Color.z,1.0f };
-		if (m_currentFont)
-		{
-			m_currentFont->DrawString(m_spriteBatch.get(), m_texts[i].Text.c_str(), m_texts[i].Position, color, 0.0f, DirectX::XMFLOAT2(0.0f, 0.0f), m_texts[i].Scale);
-		}
-	}
-	m_spriteBatch->End();
+	m_indexBuffer.push_back(fontData->m_Index);
+	m_texts[fontData->m_Index] = nullptr;
 }

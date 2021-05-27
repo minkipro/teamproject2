@@ -161,6 +161,7 @@
     <ClCompile Include="..\Common\Source\Device\HCMouse.cpp" />
     <ClCompile Include="..\Common\Source\Device\HCPhysics.cpp" />
     <ClCompile Include="..\Common\Source\Device\HCTimer.cpp" />
+    <ClCompile Include="..\Common\Source\Graphics\DX11TextData.cpp" />
     <ClCompile Include="..\Common\Source\Graphics\HCCameraManager.cpp" />
     <ClCompile Include="..\Common\Source\Graphics\HCFont.cpp" />
     <ClCompile Include="..\Common\Source\Graphics\HCGraphic.cpp" />
@@ -205,6 +206,7 @@
     <ClInclude Include="..\Common\Source\Device\HCMouse.h" />
     <ClInclude Include="..\Common\Source\Device\HCPhysics.h" />
     <ClInclude Include="..\Common\Source\Device\HCTimer.h" />
+    <ClInclude Include="..\Common\Source\Graphics\DX11TextData.h" />
     <ClInclude Include="..\Common\Source\Graphics\HCCameraManager.h" />
     <ClInclude Include="..\Common\Source\Graphics\HCFont.h" />
     <ClInclude Include="..\Common\Source\Graphics\HCGraphic.h" />

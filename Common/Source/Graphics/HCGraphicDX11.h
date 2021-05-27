@@ -5,6 +5,7 @@
 #include "HCGraphic.h"
 #include "HCSwapchainDX11.h"
 #include "HCGraphicDX11Resources.h"
+#include "HCFont.h"
 
 using Microsoft::WRL::ComPtr;
 
@@ -41,6 +42,7 @@ public:
 
 	}
 	virtual ~HCGraphicDX11();
+
 	virtual void		Init();
 	virtual void		Update();
 
@@ -48,12 +50,12 @@ public:
 	virtual void		CreateResource(const std::string& resourceName, const HC::GRAPHIC_RESOURCE_DESC& desc, IHCResource** out) override;
 	virtual void		CreateCB(const std::string& bufferName, size_t stride, size_t num, std::unique_ptr<IHCCBuffer>& out) override;
 	virtual void		CreateShader(const std::string& shaderName, HC::SHADER_TYPE type, const std::wstring& filePath, const std::string& entryPoint, IHCShader** out) override;
+	virtual void		CreateTextData(IHCTextData** out) override;
 
 	virtual void		GetGraphicPipeLine(const std::string& pipeLineName, HCGraphicPipeLine** out) override;
 	virtual void		GetShaderResource(const std::string& resourceName, IHCResource** out) override;
 	virtual void		GetCB(const std::string& bufferName, IHCCBuffer** out) override;
 	virtual void		GetShader(const std::string& shaderName, IHCShader** out) override;
-
 	virtual TextureData	GetTextureIndex(const std::wstring& textureName) const override;
 
 	virtual LRESULT		WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) override;
@@ -63,7 +65,6 @@ private:
 	virtual void		SetPipeLineObject(const HCGraphicPipeLine* pipeLine) override;
 	virtual void		RenderObjects(HCGraphicPipeLine* pipeLine) override;
 	virtual void		RenderFont() override;
-	virtual IHCFont*	GetFont() override;
 
 private:
 	void				CreateBaseSamplers();
@@ -92,12 +93,10 @@ private:
 	std::vector<Texture2DArrayData>											m_textures;
 	std::unordered_map<std::wstring, UINT>									m_textureBufferIndex;
 
+	DX11FontMG																m_font;
 
 	bool																	m_resizing = false;
 	bool																	m_minimized = false;
 	bool																	m_maximized = false;
-
-public:
-	std::unique_ptr<IHCFont>												m_font;
 };
 

@@ -21,10 +21,12 @@ void UIParam::SetStringParam(const std::wstring& paramName, const std::vector<st
 
 void UIParam::SetTextHeight(int height)
 {
+
 }
 
 void UIParam::Init()
 {
+
 }
 
 void UIParam::Update()
@@ -39,7 +41,7 @@ void UIParam::Update()
 			m_Font->m_Pos.y = pos.y;
 			m_Font->m_Pos.z = pos.z;*/
 
-			std::wstring text = m_ParamName + L" : ";
+			//std::wstring text = m_ParamName + L" : ";
 
 			switch (m_Type)
 			{
@@ -67,7 +69,7 @@ std::wstring UIParam::GetDataString()
 	{
 	case UIParam::UICONTROLTYPE::ORIGIN_DATA:
 	{
-		switch (m_DataType)
+	/*	switch (m_DataType)
 		{
 		case HC::DATA_TYPE::TYPE_BOOL:
 			result = *(reinterpret_cast<bool*>(m_ParamPtr)) ? L"true" : L"false";
@@ -84,7 +86,7 @@ std::wstring UIParam::GetDataString()
 		default:
 			assert(false);
 			break;
-		}
+		}*/
 	}
 	break;
 	case UIParam::UICONTROLTYPE::ENUM_DATA:

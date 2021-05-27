@@ -29,8 +29,7 @@ void HCGraphicDX11::Init()
 	CreateTextures();
 	CreateGraphicPipeLineBaseSettings();
 
-	m_font = std::make_unique<HCFont>();
-	m_font.get()->Init((void*)m_device.Get(), (void*)m_deviceContext.Get());
+	m_font.Init((void*)m_device.Get(), (void*)m_deviceContext.Get());
 }
 
 void HCGraphicDX11::Update()
@@ -120,15 +119,15 @@ void HCGraphicDX11::CreateResource(const std::string& resourceName, const HC::GR
 		break;
 	}
 
-	D3D11_TEXTURE2D_DESC pixelFuncRenderTargetDesc = {};
-	pixelFuncRenderTargetDesc.Usage = D3D11_USAGE_DEFAULT;
-	pixelFuncRenderTargetDesc.BindFlags = D3D11_BIND_RENDER_TARGET;
-	pixelFuncRenderTargetDesc.pixelFuncRenderTargetDesc.Format = format;
-	pixelFuncRenderTargetDesc.MipLevels = 1;
-	pixelFuncRenderTargetDesc.ArraySize = 1;
-	pixelFuncRenderTargetDesc.SampleDesc.Count = 1;
-	pixelFuncRenderTargetDesc.Width = size.x;
-	pixelFuncRenderTargetDesc.Height = size.y;
+	//D3D11_TEXTURE2D_DESC pixelFuncRenderTargetDesc = {};
+	//pixelFuncRenderTargetDesc.Usage = D3D11_USAGE_DEFAULT;
+	//pixelFuncRenderTargetDesc.BindFlags = D3D11_BIND_RENDER_TARGET;
+	//pixelFuncRenderTargetDesc.pixelFuncRenderTargetDesc.Format = format;
+	//pixelFuncRenderTargetDesc.MipLevels = 1;
+	//pixelFuncRenderTargetDesc.ArraySize = 1;
+	//pixelFuncRenderTargetDesc.SampleDesc.Count = 1;
+	//pixelFuncRenderTargetDesc.Width = size.x;
+	//pixelFuncRenderTargetDesc.Height = size.y;
 
 	//ComPtr<ID3D11Texture2D> pixelFunc;
 	//COM_HRESULT_IF_FAILED(
@@ -258,6 +257,11 @@ void HCGraphicDX11::CreateShader(const std::string& shaderName, HC::SHADER_TYPE 
 	}
 
 	*out = m_shaders[shaderName].get();
+}
+
+void HCGraphicDX11::CreateFontData(IHCTextData** out)
+{
+
 }
 
 void HCGraphicDX11::GetGraphicPipeLine(const std::string& pipeLineName, HCGraphicPipeLine** out)
@@ -646,12 +650,7 @@ void HCGraphicDX11::RenderObjects(HCGraphicPipeLine* pipeLine)
 void HCGraphicDX11::RenderFont()
 {
 	m_deviceContext->GSSetShader(nullptr, nullptr, 0);
-	m_font.get()->Render();
-}
-
-IHCFont* HCGraphicDX11::GetFont()
-{
-	return m_font.get();
+	m_font.Render();
 }
 
 void HCGraphicDX11::CreateBaseSamplers()
@@ -1016,6 +1015,7 @@ D3D11_USAGE HCGraphicDX11::GetResourceUsage(const HC::GRAPHIC_RESOURCE_DESC& des
 
 UINT HCGraphicDX11::GetResourceBindFlags(const HC::GRAPHIC_RESOURCE_DESC& desc)
 {
+	return 1;
 }
 
 void HCGraphicDX11::GetSpriteData(const std::wstring& texturePath, std::vector<SpriteData>* out)

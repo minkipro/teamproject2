@@ -80,7 +80,7 @@ namespace HC
 		int m_currentAnimationIndex;
 
 		// debug¿ë
-		IHCTextData* m_textRender; 
+		std::shared_ptr<IHCTextData> m_textRender; 
 		bool m_buttonState[2];
 	};
 }

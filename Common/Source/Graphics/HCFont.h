@@ -24,6 +24,6 @@ private:
 private:
 	std::unique_ptr<DirectX::SpriteBatch>									m_spriteBatch;
 	std::unordered_map<std::wstring, std::unique_ptr<DirectX::SpriteFont>>	m_spriteFonts;
-	std::vector<std::unique_ptr<DX11TextData>>								m_texts;
+	std::vector<DX11TextData*>												m_texts;
 	std::vector<unsigned int>												m_indexBuffer;
 };

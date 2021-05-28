@@ -59,7 +59,7 @@ HC::CharacterControllerByKeyboard::CharacterControllerByKeyboard(DirectX::XMFLOA
 
 	//debug¿ë ÄÚµå
 	auto graphic = HCDEVICE(HCGraphic);
-	graphic->CreateTextData(&m_textRender);
+	graphic->CreateTextData(m_textRender);
 
 	std::vector<std::wstring> fontNames;
 	m_textRender->GetFontNames(fontNames);

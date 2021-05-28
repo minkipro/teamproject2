@@ -1,21 +1,21 @@
 #include "stdafx.h"
 #include "UIObject.h"
 
-HCGraphicPipeLine* UIObject::s_graphicPipeLine = nullptr;
+std::shared_ptr<HCGraphicPipeLine> UIObject::s_graphicPipeLine = nullptr;
 
 void UIObject::CreateUIRenderPipeLine(HCGraphic* device)
 {
 	if (s_graphicPipeLine == nullptr)
 	{
-		device->CreateGraphicPipeLine("UIRenderPipeLine", &s_graphicPipeLine);
+		device->CreateGraphicPipeLine("UIRenderPipeLine", s_graphicPipeLine);
 
-		IHCShader* vs = nullptr;
-		IHCShader* ps = nullptr;
-		IHCShader* gs = nullptr;
+		std::shared_ptr<IHCShader> vs = nullptr;
+		std::shared_ptr<IHCShader> ps = nullptr;
+		std::shared_ptr<IHCShader> gs = nullptr;
 
-		device->CreateShader("UIVS", HC::SHADER_TYPE::VS, L"./../Common/Shader/PointToPlaneSahder.hlsl", "VS", &vs);
-		device->CreateShader("UIGS", HC::SHADER_TYPE::GS, L"./../Common/Shader/PointToPlaneSahder.hlsl", "GS", &gs);
-		device->CreateShader("UIPS", HC::SHADER_TYPE::PS, L"./../Common/Shader/PointToPlaneSahder.hlsl", "PS", &ps);
+		device->CreateShader("UIVS", HC::SHADER_TYPE::VS, L"./../Common/Shader/PointToPlaneSahder.hlsl", "VS", vs);
+		device->CreateShader("UIGS", HC::SHADER_TYPE::GS, L"./../Common/Shader/PointToPlaneSahder.hlsl", "GS", gs);
+		device->CreateShader("UIPS", HC::SHADER_TYPE::PS, L"./../Common/Shader/PointToPlaneSahder.hlsl", "PS", ps);
 
 		s_graphicPipeLine->m_primitive = HC::PRIMITIVE_TOPOLOGY::POINT;
 		s_graphicPipeLine->SelectInputSample<RenderPoint>();

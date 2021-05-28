@@ -29,7 +29,7 @@ private:
 	SOCKET m_socket;
 	std::atomic<char> m_buffer[1024] = { 0, };
 	bool m_exit;
-	IHCTextData* m_textRender;
+	std::shared_ptr<IHCTextData> m_textRender;
 };
 
 

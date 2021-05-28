@@ -25,19 +25,14 @@ void DevScene::Init()
 {
 	auto graphic = HCDEVICE(HCGraphic);
 
-	IHCResource* texture = nullptr;
-	IHCResource* texture2 = nullptr;
+	std::shared_ptr<IHCShader> vs;
+	std::shared_ptr<IHCShader> gs;
+	std::shared_ptr<IHCShader> ps;
 
-	HCGraphicPipeLine* testPipeLine = nullptr;
-	IHCShader* vs = nullptr;
-	IHCShader* gs = nullptr;
-	IHCShader* ps = nullptr;
-
-
-	graphic->CreateGraphicPipeLine("testPipe", &testPipeLine);
-	graphic->CreateShader("testVS", HC::SHADER_TYPE::VS, L"./../Common/Shader/PointToPlaneSahder.hlsl", "VS", &vs);
-	graphic->CreateShader("testGS", HC::SHADER_TYPE::GS, L"./../Common/Shader/PointToPlaneSahder.hlsl", "GS", &gs);
-	graphic->CreateShader("testPS", HC::SHADER_TYPE::PS, L"./../Common/Shader/PointToPlaneSahder.hlsl", "PS", &ps);
+	graphic->CreateGraphicPipeLine("testPipe", testPipeLine);
+	graphic->CreateShader("testVS", HC::SHADER_TYPE::VS, L"./../Common/Shader/PointToPlaneSahder.hlsl", "VS", vs);
+	graphic->CreateShader("testGS", HC::SHADER_TYPE::GS, L"./../Common/Shader/PointToPlaneSahder.hlsl", "GS", gs);
+	graphic->CreateShader("testPS", HC::SHADER_TYPE::PS, L"./../Common/Shader/PointToPlaneSahder.hlsl", "PS", ps);
 	
 	testPipeLine->m_primitive = HC::PRIMITIVE_TOPOLOGY::POINT;
 	testPipeLine->SelectInputSample<RenderPoint>();
@@ -66,9 +61,8 @@ void DevScene::Init()
 	animationIndex[(int)HC::CharacterControllerByKeyboard::CharacterState::RIGHT].push_back(2 + 2 * 3);
 	character->m_characterController = new HC::CharacterControllerByKeyboard(&character->m_renderPoint.Position, &character->m_renderPoint.TextureIndex, character->m_spriteNum, animationIndex);
 	
-	
-	m_sceneObjects.push_back(character);
 	m_sceneObjects.push_back(new HC::TileMap(128.0f, 128.0f, 100, 100));
+	m_sceneObjects.push_back(character);
 }
 
 void DevScene::Update()
@@ -79,6 +73,18 @@ void DevScene::Update()
 		if (m_sceneObjects[i])
 		{
 			m_sceneObjects[i]->Update();
+		}
+	}
+}
+
+void DevScene::Render()
+{
+	size_t objectNum = m_sceneObjects.size();
+	for (size_t i = 0; i < objectNum; i++)
+	{
+		if (m_sceneObjects[i])
+		{
+			m_sceneObjects[i]->Render(testPipeLine.get());
 		}
 	}
 }

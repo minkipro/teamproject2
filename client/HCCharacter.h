@@ -11,6 +11,7 @@ namespace HC
 		Character(const wchar_t* textureName);
 		virtual ~Character() override;
 		virtual void Update() override;
+		virtual void Render(HCGraphicPipeLine* pipeLine) override;
 
 	public:
 		RenderPoint m_renderPoint;

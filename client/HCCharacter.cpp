@@ -27,12 +27,10 @@ Character::~Character()
 
 void Character::Update()
 {
-	auto graphic = HCDEVICE(HCGraphic);
-
 	m_characterController->Update();
+}
 
-	HCGraphicPipeLine* pipeLine;
-	graphic->GetGraphicPipeLine("testPipe", &pipeLine);
-
+void HC::Character::Render(HCGraphicPipeLine* pipeLine)
+{
 	pipeLine->RenderReserveObject(&m_renderPoint, m_renderPoint.TextureIndex);
 }

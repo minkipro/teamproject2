@@ -53,6 +53,8 @@ int Engine::Run()
 			}
 
 			SocketCommunication::Get()->Update();
+
+			m_scene.Render();
 			m_graphic->Render();
 		}
 	}

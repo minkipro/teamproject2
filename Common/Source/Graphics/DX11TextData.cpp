@@ -4,7 +4,7 @@
 
 DX11FontMG* DX11TextData::s_fontMG = nullptr;
 
-void DX11TextData::Release()
+DX11TextData::~DX11TextData()
 {
 	s_fontMG->ReleaseFontData(this);
 }

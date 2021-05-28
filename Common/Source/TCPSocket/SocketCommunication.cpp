@@ -14,7 +14,7 @@ SocketCommunication::SocketCommunication()
 	COM_THROW_IF_FAILED(m_socket != INVALID_SOCKET, "家南 积己 角菩");
 
 	auto graphic = HCDEVICE(HCGraphic);
-	graphic->CreateTextData(&m_textRender);
+	graphic->CreateTextData(m_textRender);
 
 	std::vector<std::wstring> fontNames;
 	m_textRender->GetFontNames(fontNames);

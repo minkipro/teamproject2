@@ -69,7 +69,8 @@ private:
 	UIObject*		GetRootUIObject();
 
 protected:
-	static HCGraphicPipeLine*	s_graphicPipeLine;
+	static std::shared_ptr<HCGraphicPipeLine>	s_graphicPipeLine;
+
 	UIObject*					m_parent;
 	std::vector<UIObject*>		m_childs;
 	DirectX::XMFLOAT3			m_pos;

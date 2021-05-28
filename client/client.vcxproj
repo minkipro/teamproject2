@@ -180,6 +180,7 @@
     <ClCompile Include="DevScene.cpp" />
     <ClCompile Include="Engine.cpp" />
     <ClCompile Include="HCCharacterControllerByKeyboard.cpp" />
+    <ClCompile Include="HCSceneObject.cpp" />
     <ClCompile Include="HCTileMap.cpp" />
     <ClCompile Include="Main.cpp" />
   </ItemGroup>

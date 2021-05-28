@@ -68,7 +68,7 @@ float4 PS(VertexOut input) : SV_TARGET
     }
     if (result.a !=1)
     {
-        clip(-1);
+        //clip(-1);
     }
 
     return result;

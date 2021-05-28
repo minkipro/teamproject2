@@ -9,9 +9,8 @@ class DX11TextData : public IHCTextData
 
 public:
 	DX11TextData() = default;
-	virtual ~DX11TextData() = default;
+	virtual ~DX11TextData();
 
-	virtual void Release() override;
 	virtual void SetFont(const std::wstring& fontName) override;
 	virtual void GetFontNames(std::vector<std::wstring>& out) override;
 

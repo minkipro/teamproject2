@@ -1,4 +1,6 @@
 #pragma once
+#include "Graphics\HCGraphic.h"
+
 namespace HC
 {
 	class SceneObject
@@ -6,5 +8,6 @@ namespace HC
 	public:
 		virtual ~SceneObject() = 0 {};
 		virtual void Update() = 0;
+		virtual void Render(HCGraphicPipeLine* pipeLine) = 0;
 	};
 }

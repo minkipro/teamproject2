@@ -67,7 +67,7 @@ IHCTextData* DX11FontMG::CreateTextData()
 
 	if (m_indexBuffer.size())
 	{
-		m_texts[m_indexBuffer.back()] = std::unique_ptr<DX11TextData>(newData);
+		m_texts[m_indexBuffer.back()] = newData;
 		newData->m_Index = m_indexBuffer.back();
 
 		m_indexBuffer.pop_back();

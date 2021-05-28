@@ -11,7 +11,10 @@ public:
 
 	virtual void Init() override;
 	virtual void Update() override;
+	virtual void Render() override;
 
 private:
 	std::vector<HC::SceneObject*> m_sceneObjects;
+
+	std::shared_ptr<HCGraphicPipeLine> testPipeLine;
 };

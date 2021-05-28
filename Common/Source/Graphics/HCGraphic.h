@@ -23,30 +23,64 @@ namespace HC
 	enum class GRAPHIC_RESOURCE_TYPE
 	{
 		GRAPHIC_RESOURCE_BUFFER,
-		GRAPHIC_RESOURCE_UPLOAD_BUFFER,
 		GRAPHIC_RESOURCE_TEXTURE1D,
 		GRAPHIC_RESOURCE_TEXTURE2D,
 		GRAPHIC_RESOURCE_TEXTURE3D,
 	};
 
+	enum class GRAPHIC_RESOURCE_CPU_TYPE
+	{
+		GRAPHIC_RESOURCE_CPU_DYNAMIC,
+		GRAPHIC_RESOURCE_TEXTURE1D,
+		GRAPHIC_RESOURCE_TEXTURE2D,
+		GRAPHIC_RESOURCE_TEXTURE3D,
+	};
+
+	enum GRAPHIC_RESOURCE_BIND_FLAGS
+	{
+		GRAPHIC_RESOURCE_BIND_NONE = 0,
+		GRAPHIC_RESOURCE_BIND_RENDERTARGET = 1,
+		GRAPHIC_RESOURCE_BIND_DEPTH_STENCIL = 1 << 1,
+		GRAPHIC_RESOURCE_BIND_STREAM_OUTPUT = 1 << 2,
+		GRAPHIC_RESOURCE_BIND_VERTEX_BUFFER = 1 << 3,
+		GRAPHIC_RESOURCE_BIND_INDEX_BUFFER = 1 << 4,
+		GRAPHIC_RESOURCE_BIND_SHADERRESOURCE_VS = 1 << 5,
+		GRAPHIC_RESOURCE_BIND_SHADERRESOURCE_GS = 1 << 6,
+		GRAPHIC_RESOURCE_BIND_SHADERRESOURCE_HS = 1 << 7,
+		GRAPHIC_RESOURCE_BIND_SHADERRESOURCE_DS = 1 << 8,
+		GRAPHIC_RESOURCE_BIND_SHADERRESOURCE_PS = 1 << 9,
+		GRAPHIC_RESOURCE_BIND_UNORDERED_ACCESS = 1 << 10,
+	};
+
 	enum GRAPHIC_RESOURCE_FLAGS
 	{
 		GRAPHIC_RESOURCE_FLAG_NONE = 0,
-		GRAPHIC_RESOURCE_FLAG_RENDERTARGET = 1,
-		GRAPHIC_RESOURCE_FLAG_SHADERRESOURCE_VS = 1 << 1,
-		GRAPHIC_RESOURCE_FLAG_SHADERRESOURCE_HS = 1 << 2,
-		GRAPHIC_RESOURCE_FLAG_SHADERRESOURCE_DS = 1 << 3,
-		GRAPHIC_RESOURCE_FLAG_SHADERRESOURCE_PS = 1 << 4,
-		GRAPHIC_RESOURCE_FLAG_ONLY_READBACK = 1 << 5,
+		GRAPHIC_RESOURCE_FLAG_ONLY_READBACK = 1 << 1,
+	};
+
+	struct GRAPHIC_RESOURCE_BUFFER
+	{
+		UINT					Size = 0;
+		UINT					Stride = 0;
+	};
+
+	struct GRAPHIC_RESOURCE_TEXTURE
+	{
+		DXGI_FORMAT				Format;
+		DirectX::XMUINT3		Size = { 0,0,0 };
+		UINT					ArrayNum = 0;
 	};
 
 	struct GRAPHIC_RESOURCE_DESC
 	{
 		GRAPHIC_RESOURCE_TYPE	Type;
 		GRAPHIC_RESOURCE_FLAGS	Flags;
-		DXGI_FORMAT				Format;
-		POINT					Size;
-		UINT					Stride = 0;
+
+		union
+		{
+			GRAPHIC_RESOURCE_TEXTURE Texture;
+			GRAPHIC_RESOURCE_BUFFER	 Buffer;
+		};
 	};
 
 	enum class PRIMITIVE_TOPOLOGY
@@ -165,7 +199,6 @@ public:
 	IHCTextData() = default;
 	virtual ~IHCTextData() = default;
 
-	virtual void Release() = 0;
 	virtual void SetFont(const std::wstring& fontName) = 0;
 	virtual void GetFontNames(std::vector<std::wstring>& out) = 0;
 
@@ -209,7 +242,7 @@ public:
 	size_t										GetInputLayoutHash() const { return m_InputHash; }
 	UINT										GetInputDataSize() const { return m_InputDataSize; }
 
-	void										SetShader(HC::SHADER_TYPE type, IHCShader* shader) { m_shaders[static_cast<unsigned int>(type)] = shader; }
+	void										SetShader(HC::SHADER_TYPE type, std::shared_ptr<IHCShader> shader) { m_shaders[static_cast<unsigned int>(type)] = shader; }
 	void										RenderReserveObject(const void* inputData, int textureIndex);
 	void										ClearReservedObjects();
 
@@ -221,14 +254,17 @@ public:
 	
 
 public:
-	IHCShader*												m_shaders[static_cast<unsigned int>(HC::SHADER_TYPE::COUNT)] = {};
-	std::vector<IHCCBuffer*>								m_CBuffers;
+	std::shared_ptr<IHCShader>								m_shaders[static_cast<unsigned int>(HC::SHADER_TYPE::COUNT)] = {};
+	std::vector<std::shared_ptr<IHCCBuffer>>				m_cbBuffers;
+	std::vector<std::shared_ptr<IHCResource>>				m_shaderResources;
+	std::vector<std::shared_ptr<IHCResource>>				m_renderTargets;
+	std::shared_ptr<IHCResource>							m_depthStencil;
 
 	HC::PRIMITIVE_TOPOLOGY									m_primitive = HC::PRIMITIVE_TOPOLOGY::POINT;
 
-	IHCRasterizer*											m_rasterizer = nullptr;
-	IHCDepthStencilState*									m_depthStencilState = nullptr;
-	IHCBlendState*											m_blendState = nullptr;
+	std::shared_ptr<IHCRasterizer>							m_rasterizer;
+	std::shared_ptr<IHCDepthStencilState>					m_depthStencilState;
+	std::shared_ptr<IHCBlendState>							m_blendState;
 
 private:
 	std::string												m_pipeLineName;
@@ -264,23 +300,17 @@ public: //pure virtual method
 	virtual void		Init() = 0;
 	virtual void		Update() = 0;
 
-	virtual void		CreateGraphicPipeLine(const std::string& pipeLineName, HCGraphicPipeLine** out) = 0;
-	virtual void		CreateResource(const std::string& resourceName, const HC::GRAPHIC_RESOURCE_DESC& desc, IHCResource** out) = 0;
-	virtual void		CreateCB(const std::string& bufferName, size_t stride, size_t num, std::unique_ptr<IHCCBuffer>& out) = 0;
-	virtual void		CreateShader(const std::string& shaderName, HC::SHADER_TYPE type, const std::wstring& filePath, const std::string& entryPoint, IHCShader** out) = 0;
-	virtual void		CreateTextData(IHCTextData** out) = 0;
-
-	virtual void		GetGraphicPipeLine(const std::string& pipeLineName, HCGraphicPipeLine** out) = 0;
-	virtual void		GetShaderResource(const std::string& resourceName, IHCResource** out) = 0;
-	virtual void		GetCB(const std::string& bufferName, IHCCBuffer** out) = 0;
-	virtual void		GetShader(const std::string& shaderName, IHCShader** out) = 0;
+	virtual void		CreateGraphicPipeLine(const std::string& pipeLineName, std::shared_ptr<HCGraphicPipeLine>& out) = 0;
+	virtual void		CreateResource(const std::string& resourceName, const HC::GRAPHIC_RESOURCE_DESC& desc, std::shared_ptr<IHCResource>& out) = 0;
+	virtual void		CreateCB(const std::string& bufferName, size_t stride, size_t num, std::shared_ptr<IHCCBuffer>& out) = 0;
+	virtual void		CreateShader(const std::string& shaderName, HC::SHADER_TYPE type, const std::wstring& filePath, const std::string& entryPoint, std::shared_ptr<IHCShader>& out) = 0;
+	virtual void		CreateTextData(std::shared_ptr<IHCTextData>& out) = 0;
 
 	virtual TextureData	GetTextureIndex(const std::wstring& textureName) const = 0;
 
 public: //Optional virtual function
 	virtual LRESULT		WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) { return LRESULT(0); }
-	virtual void		NumberingGraphicPipeLineSlot(size_t slot, HCGraphicPipeLine* pipeLine);
-	virtual void		NumberingGraphicPipeLineSlot(size_t slot, const std::string& pipelineName);
+	virtual void		NumberingGraphicPipeLineSlot(size_t slot, std::shared_ptr<HCGraphicPipeLine> pipeLine);
 
 public:
 	void				ReserveRender(const std::string& pipeLineName, const void* object, int textureIndex);
@@ -299,7 +329,6 @@ private:
 
 protected:
 	HWND																m_windowHandle;
-	std::unordered_map<std::string, std::unique_ptr<HCGraphicPipeLine>>	m_PipeLines;
-	std::vector<HCGraphicPipeLine*>										m_PipeLineSlots;
+	std::vector<std::shared_ptr<HCGraphicPipeLine>>						m_pipeLineSlots;
 };
 

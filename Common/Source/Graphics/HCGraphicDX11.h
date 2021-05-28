@@ -46,16 +46,12 @@ public:
 	virtual void		Init();
 	virtual void		Update();
 
-	virtual void		CreateGraphicPipeLine(const std::string& pipeLineName, HCGraphicPipeLine** out) override;
-	virtual void		CreateResource(const std::string& resourceName, const HC::GRAPHIC_RESOURCE_DESC& desc, IHCResource** out) override;
-	virtual void		CreateCB(const std::string& bufferName, size_t stride, size_t num, std::unique_ptr<IHCCBuffer>& out) override;
-	virtual void		CreateShader(const std::string& shaderName, HC::SHADER_TYPE type, const std::wstring& filePath, const std::string& entryPoint, IHCShader** out) override;
-	virtual void		CreateTextData(IHCTextData** out) override;
+	virtual void		CreateGraphicPipeLine(const std::string& pipeLineName, std::shared_ptr<HCGraphicPipeLine>& out) override;
+	virtual void		CreateResource(const std::string& resourceName, const HC::GRAPHIC_RESOURCE_DESC& desc, std::shared_ptr<IHCResource>& out) override;
+	virtual void		CreateCB(const std::string& bufferName, size_t stride, size_t num, std::shared_ptr<IHCCBuffer>& out) override;
+	virtual void		CreateShader(const std::string& shaderName, HC::SHADER_TYPE type, const std::wstring& filePath, const std::string& entryPoint, std::shared_ptr<IHCShader>& out) override;
+	virtual void		CreateTextData(std::shared_ptr<IHCTextData>& out) override;
 
-	virtual void		GetGraphicPipeLine(const std::string& pipeLineName, HCGraphicPipeLine** out) override;
-	virtual void		GetShaderResource(const std::string& resourceName, IHCResource** out) override;
-	virtual void		GetCB(const std::string& bufferName, IHCCBuffer** out) override;
-	virtual void		GetShader(const std::string& shaderName, IHCShader** out) override;
 	virtual TextureData	GetTextureIndex(const std::wstring& textureName) const override;
 
 	virtual LRESULT		WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) override;
@@ -72,9 +68,11 @@ private:
 	void				CreateGraphicPipeLineBaseSettings();
 	void				CreateInputLayout(size_t inputLayoutHash, const std::vector<HCInputLayoutElement>* inputLayoutEle, HCDX11Shader* vs);
 
-	D3D11_USAGE			GetResourceUsage(const HC::GRAPHIC_RESOURCE_DESC& desc);
-	UINT				GetResourceBindFlags(const HC::GRAPHIC_RESOURCE_DESC& desc);
-	void				GetSpriteData(const std::wstring& texturePath, std::vector<SpriteData>* out);
+	D3D11_USAGE					GetResourceUsage(const HC::GRAPHIC_RESOURCE_DESC& desc);
+	D3D11_CPU_ACCESS_FLAG		GetResourceCpuAcessFlags(const HC::GRAPHIC_RESOURCE_DESC& desc);
+	D3D11_RESOURCE_MISC_FLAG	GetResourceMiscFlags(const HC::GRAPHIC_RESOURCE_DESC& desc);
+	UINT						GetResourceBindFlags(const HC::GRAPHIC_RESOURCE_DESC& desc);
+	void						GetSpriteData(const std::wstring& texturePath, std::vector<SpriteData>* out);
 
 private:
 	std::unique_ptr<HCSwapchainDX11>										m_swapchain;
@@ -89,7 +87,6 @@ private:
 	std::vector<ComPtr<ID3D11SamplerState>>									m_samplers;
 
 	std::unordered_map<size_t, ComPtr<ID3D11InputLayout>>					m_inputLayout;
-	std::unordered_map<std::string, std::unique_ptr<IHCShader>>				m_shaders;
 	std::vector<Texture2DArrayData>											m_textures;
 	std::unordered_map<std::wstring, UINT>									m_textureBufferIndex;
 

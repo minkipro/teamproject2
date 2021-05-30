@@ -29,23 +29,22 @@ void DevScene::Init()
 	std::shared_ptr<IHCShader> gs;
 	std::shared_ptr<IHCShader> ps;
 
-	graphic->CreateGraphicPipeLine("testPipe", testPipeLine);
-	graphic->CreateShader("testVS", HC::SHADER_TYPE::VS, L"./../Common/Shader/PointToPlaneSahder.hlsl", "VS", vs);
-	graphic->CreateShader("testGS", HC::SHADER_TYPE::GS, L"./../Common/Shader/PointToPlaneSahder.hlsl", "GS", gs);
-	graphic->CreateShader("testPS", HC::SHADER_TYPE::PS, L"./../Common/Shader/PointToPlaneSahder.hlsl", "PS", ps);
+	testPipeLine = std::make_shared<HCGraphicPipeLine>();
+	graphic->CreateShader("testVS", HC::SHADER_TYPE::HCSHADER_VS, L"./../Common/Shader/PointToPlaneSahder.hlsl", "VS", vs);
+	graphic->CreateShader("testGS", HC::SHADER_TYPE::HCSHADER_GS, L"./../Common/Shader/PointToPlaneSahder.hlsl", "GS", gs);
+	graphic->CreateShader("testPS", HC::SHADER_TYPE::HCSHADER_PS, L"./../Common/Shader/PointToPlaneSahder.hlsl", "PS", ps);
 	
 	testPipeLine->m_primitive = HC::PRIMITIVE_TOPOLOGY::POINT;
-	testPipeLine->SelectInputSample<RenderPoint>();
 
-	testPipeLine->SetShader(HC::SHADER_TYPE::VS, vs);
-	testPipeLine->SetShader(HC::SHADER_TYPE::GS, gs);
-	testPipeLine->SetShader(HC::SHADER_TYPE::PS, ps);
+	testPipeLine->SetShader(HC::SHADER_TYPE::HCSHADER_VS, vs);
+	testPipeLine->SetShader(HC::SHADER_TYPE::HCSHADER_GS, gs);
+	testPipeLine->SetShader(HC::SHADER_TYPE::HCSHADER_PS, ps);
 
 	graphic->NumberingGraphicPipeLineSlot(0, testPipeLine);
 
 	HC::Character* character = new HC::Character(L"Texture/PIPOYA FREE RPG Character Sprites NEKONIN/sp_3x4_pipo-nekonin001.png");
 
-	std::vector<int> animationIndex[(int)HC::CharacterControllerByKeyboard::CharacterState::COUNT];
+	std::vector<int> animationIndex[(int)HC::CharacterControllerByKeyboard::CharacterState::HCSHADER_COUNT];
 	animationIndex[(int)HC::CharacterControllerByKeyboard::CharacterState::IDLE].push_back(1 + 0 * 3);
 	animationIndex[(int)HC::CharacterControllerByKeyboard::CharacterState::UP].push_back(0 + 3 * 3);
 	animationIndex[(int)HC::CharacterControllerByKeyboard::CharacterState::UP].push_back(1 + 3 * 3);

@@ -15,12 +15,12 @@ HC::CharacterControllerByKeyboard::CharacterControllerByKeyboard(DirectX::XMFLOA
 	m_currentAnimationIndex = 0;
 	m_textRender = nullptr;
 
-	for (unsigned char i = 0; i < (unsigned char)CharacterMoveState::COUNT; i++)
+	for (unsigned char i = 0; i < (unsigned char)CharacterMoveState::HCSHADER_COUNT; i++)
 	{
 		m_characterMoveState[i] = false;
 	}
 
-	for (unsigned char i = 0; i < (unsigned char)CharacterState::COUNT; i++)
+	for (unsigned char i = 0; i < (unsigned char)CharacterState::HCSHADER_COUNT; i++)
 	{
 		size_t animationIndexNum = animationIndex[i].size();
 		for (size_t j = 0; j < animationIndexNum; j++)
@@ -76,7 +76,7 @@ void HC::CharacterControllerByKeyboard::Update()
 	auto timer = HCDEVICE(HCTimer);
 	auto state = keyboard->GetLastState();
 
-	static std::function<bool(unsigned char key)> keyStateConditionalFunction[2][(int)KeyState::COUNT];//0 : 키보드, 1 : 마우스
+	static std::function<bool(unsigned char key)> keyStateConditionalFunction[2][(int)KeyState::HCSHADER_COUNT];//0 : 키보드, 1 : 마우스
 	keyStateConditionalFunction[0][(unsigned char)KeyState::ONCE] = [keyboard](unsigned char key) {return keyboard->IsKeyPressed((DirectX::Keyboard::Keys)key); };
 	keyStateConditionalFunction[0][(unsigned char)KeyState::PRESSED] = [state](unsigned char key) {return state.IsKeyDown((DirectX::Keyboard::Keys)key); };
 	keyStateConditionalFunction[0][(unsigned char)KeyState::RELEASED] = [keyboard](unsigned char key) {return keyboard->IsKeyReleased((DirectX::Keyboard::Keys)key); };
@@ -85,15 +85,15 @@ void HC::CharacterControllerByKeyboard::Update()
 	keyStateConditionalFunction[1][(unsigned char)KeyState::RELEASED] = [mouse](unsigned char key) {return mouse->GetButtonState((HCMouse::MouseButton)key) == DirectX::Mouse::ButtonStateTracker::ButtonState::RELEASED; };
 	m_isThereInput = false;
 	m_buttonState[0] = m_buttonState[1] = false;//test
-	for (unsigned char i = 0; i < (unsigned char)CharacterMoveState::COUNT; i++)
+	for (unsigned char i = 0; i < (unsigned char)CharacterMoveState::HCSHADER_COUNT; i++)
 	{
 		m_characterMoveState[i] = false;
 	}
 
-	for (unsigned char i = 0; i < (unsigned char)BehaviorState::COUNT; i++)
+	for (unsigned char i = 0; i < (unsigned char)BehaviorState::HCSHADER_COUNT; i++)
 	{
 		int isKeyboard = m_keyMapping[i].isKeyboard ? 0 : 1;
-		for (unsigned char k = 0; k < (unsigned char)KeyState::COUNT; k++)
+		for (unsigned char k = 0; k < (unsigned char)KeyState::HCSHADER_COUNT; k++)
 		{
 			if (keyStateConditionalFunction[isKeyboard][k](m_keyMapping[i].data))
 			{
@@ -114,7 +114,7 @@ void HC::CharacterControllerByKeyboard::Update()
 	{
 		m_characterMoveState[(unsigned char)CharacterMoveState::UP] = m_characterMoveState[(unsigned char)CharacterMoveState::DOWN] = false;
 	}
-	static std::function<void()> moveFunctions[(unsigned char)CharacterMoveState::COUNT];
+	static std::function<void()> moveFunctions[(unsigned char)CharacterMoveState::HCSHADER_COUNT];
 	moveFunctions[(unsigned char)CharacterMoveState::UP] = [this, timer]()
 	{
 		m_continuos = m_prevState == CharacterState::UP;
@@ -144,7 +144,7 @@ void HC::CharacterControllerByKeyboard::Update()
 		m_position->x += 50.0f * timer->GetDeltatime();
 	};
 
-	for (unsigned char i = 0; i < (unsigned char)CharacterMoveState::COUNT; i++)
+	for (unsigned char i = 0; i < (unsigned char)CharacterMoveState::HCSHADER_COUNT; i++)
 	{
 		if (m_characterMoveState[i])
 		{

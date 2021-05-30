@@ -129,6 +129,7 @@
       <LanguageStandard>Default</LanguageStandard>
       <AdditionalIncludeDirectories>./;./../Common/Source;./../Common/Source/Includes;$(MSBuildThisFileDirectory)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeader>Create</PrecompiledHeader>
+      <DisableSpecificWarnings>26812;%(DisableSpecificWarnings)</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -167,6 +168,7 @@
     <ClCompile Include="..\Common\Source\Graphics\HCGraphic.cpp" />
     <ClCompile Include="..\Common\Source\Graphics\HCGraphicDX11.cpp" />
     <ClCompile Include="..\Common\Source\Graphics\HCGraphicDX11Resources.cpp" />
+    <ClCompile Include="..\Common\Source\Graphics\HCInputDataSamples.cpp" />
     <ClCompile Include="..\Common\Source\Graphics\HCSwapchainDX11.cpp" />
     <ClCompile Include="..\Common\Source\TCPSocket\SocketCommunication.cpp" />
     <ClCompile Include="..\Common\Source\Util\StringHelper.cpp" />

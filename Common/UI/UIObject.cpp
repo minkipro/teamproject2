@@ -7,22 +7,22 @@ void UIObject::CreateUIRenderPipeLine(HCGraphic* device)
 {
 	if (s_graphicPipeLine == nullptr)
 	{
-		device->CreateGraphicPipeLine("UIRenderPipeLine", s_graphicPipeLine);
+		s_graphicPipeLine = std::make_shared<HCGraphicPipeLine>();
 
 		std::shared_ptr<IHCShader> vs = nullptr;
 		std::shared_ptr<IHCShader> ps = nullptr;
 		std::shared_ptr<IHCShader> gs = nullptr;
 
-		device->CreateShader("UIVS", HC::SHADER_TYPE::VS, L"./../Common/Shader/PointToPlaneSahder.hlsl", "VS", vs);
-		device->CreateShader("UIGS", HC::SHADER_TYPE::GS, L"./../Common/Shader/PointToPlaneSahder.hlsl", "GS", gs);
-		device->CreateShader("UIPS", HC::SHADER_TYPE::PS, L"./../Common/Shader/PointToPlaneSahder.hlsl", "PS", ps);
+		device->CreateShader("UIVS", HC::SHADER_TYPE::HCSHADER_VS, L"./../Common/Shader/PointToPlaneSahder.hlsl", "VS", vs);
+		device->CreateShader("UIGS", HC::SHADER_TYPE::HCSHADER_GS, L"./../Common/Shader/PointToPlaneSahder.hlsl", "GS", gs);
+		device->CreateShader("UIPS", HC::SHADER_TYPE::HCSHADER_PS, L"./../Common/Shader/PointToPlaneSahder.hlsl", "PS", ps);
 
 		s_graphicPipeLine->m_primitive = HC::PRIMITIVE_TOPOLOGY::POINT;
-		s_graphicPipeLine->SelectInputSample<RenderPoint>();
+		s_graphicPipeLine->SelectRenderInfo<HCPointRenderInfo>();
 
-		s_graphicPipeLine->SetShader(HC::SHADER_TYPE::VS, vs);
-		s_graphicPipeLine->SetShader(HC::SHADER_TYPE::GS, gs);
-		s_graphicPipeLine->SetShader(HC::SHADER_TYPE::PS, ps);
+		s_graphicPipeLine->SetShader(HC::SHADER_TYPE::HCSHADER_VS, vs);
+		s_graphicPipeLine->SetShader(HC::SHADER_TYPE::HCSHADER_GS, gs);
+		s_graphicPipeLine->SetShader(HC::SHADER_TYPE::HCSHADER_PS, ps);
 
 		device->NumberingGraphicPipeLineSlot(5, s_graphicPipeLine);
 	}
@@ -43,6 +43,11 @@ void UIObject::Update()
 	}
 }
 
+void UIObject::Render()
+{
+
+}
+
 void UIObject::UIOn()
 {
 
@@ -55,7 +60,7 @@ void UIObject::UIOff()
 void UIObject::SetTexture(const std::wstring& path, const DirectX::XMFLOAT2& size)
 {
 	auto device = HCDEVICE(HCGraphic);
-	TextureData texData = device->GetTextureIndex(path);
+	HCTextureData texData = device->GetTextureIndex(path);
 
 	m_renderPoint.TextureIndex = texData.textureIndex;
 	m_renderPoint.Size = size;

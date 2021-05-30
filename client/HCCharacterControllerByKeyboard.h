@@ -15,7 +15,7 @@ namespace HC
 			RIGHT, //여기까지 위치는 변경하면 안됨
 			IDLE,
 			A,
-			COUNT
+			HCSHADER_COUNT
 		};
 
 		enum class CharacterMoveState : unsigned char// 캐릭터 움직임 상태
@@ -24,7 +24,7 @@ namespace HC
 			DOWN = 1,
 			LEFT = 2,
 			RIGHT = 3,
-			COUNT
+			HCSHADER_COUNT
 		};
 
 		enum class BehaviorState : unsigned char// 입력에 따른 행동만 정리
@@ -37,7 +37,7 @@ namespace HC
 			B,
 			C,
 			D,
-			COUNT
+			HCSHADER_COUNT
 		};
 
 		struct Keys // 키 매핑 상태
@@ -51,7 +51,7 @@ namespace HC
 			ONCE = 0,
 			PRESSED,
 			RELEASED,
-			COUNT
+			HCSHADER_COUNT
 		};
 		
 	public:
@@ -60,21 +60,21 @@ namespace HC
 		virtual void Update() override;
 
 	private:
-		Keys m_keyMapping[(unsigned char)BehaviorState::COUNT];
-		std::vector<std::function<void()>> m_behaviorStateFunction[(unsigned char)BehaviorState::COUNT][(unsigned char)KeyState::COUNT];
+		Keys m_keyMapping[(unsigned char)BehaviorState::HCSHADER_COUNT];
+		std::vector<std::function<void()>> m_behaviorStateFunction[(unsigned char)BehaviorState::HCSHADER_COUNT][(unsigned char)KeyState::HCSHADER_COUNT];
 
 		//상태
 		CharacterState m_state;
 		CharacterState m_prevState;
 		bool m_isThereInput;//인풋이 있는지 없는지
 		bool m_continuos;//기존 상태와 일치하면 true 아니면 false
-		bool m_characterMoveState[(unsigned char)CharacterMoveState::COUNT];
+		bool m_characterMoveState[(unsigned char)CharacterMoveState::HCSHADER_COUNT];
 
 		//animation관련 변수
 		DirectX::XMFLOAT3* m_position;
 		int* m_textureIndex;
 		int m_originTextureIndex;
-		std::vector<int> m_animationIndex[(unsigned char)CharacterState::COUNT];
+		std::vector<int> m_animationIndex[(unsigned char)CharacterState::HCSHADER_COUNT];
 		float m_deltaTime;//애니메이션을 바꾸기위해 누적되는 시간
 		float m_animationIndexChangeTime;
 		int m_currentAnimationIndex;

@@ -14,7 +14,7 @@ namespace HC
 		virtual void Render(HCGraphicPipeLine* pipeLine) override;
 
 	public:
-		RenderPoint m_renderPoint;
+		HCPointRenderInfo m_renderPoint;
 		int m_spriteNum;
 		CharacterController* m_characterController;
 		

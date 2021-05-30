@@ -9,7 +9,7 @@ Character::Character(const wchar_t* textureName)
 
 	m_renderPoint.Size = { 128,128 };
 	m_renderPoint.Position = { 100,100, 0.2f };
-	TextureData textureData = graphic->GetTextureIndex(textureName);
+	HCTextureData textureData = graphic->GetTextureIndex(textureName);
 	m_renderPoint.TextureIndex = textureData.textureIndex;
 	m_spriteNum = textureData.spriteNum;
 
@@ -32,5 +32,5 @@ void Character::Update()
 
 void HC::Character::Render(HCGraphicPipeLine* pipeLine)
 {
-	pipeLine->RenderReserveObject(&m_renderPoint, m_renderPoint.TextureIndex);
+	pipeLine->ReserveRenderInfo(&m_renderPoint);
 }

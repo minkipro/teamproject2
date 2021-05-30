@@ -1,28 +1,13 @@
 #pragma pack_matrix( row_major )
 
-struct PointVertexIn
-{
-    float3 PosL : POSITION;
-    float2 Size : RENDERSIZE;
-    float4 Color : TEXCOORD;
-    int TexIndex : TEXINDEX;
-};
-
-struct VertexOut
-{
-    float4 PosH : SV_POSITION;
-    float4 Color : TEXCOORD0;
-    nointerpolation int TexIndex : TEXINDEX0;
-};
-
 struct TextureInfo
 {
     float2 StartUV;
     float2 EndUV;
-    uint   TextureIndex;
     uint   Pad0;
     uint   Pad1;
     uint   Pad2;
+    uint   Pad3;
 };
 
 SamplerState gsamPointWrap : register(s0);
@@ -33,31 +18,18 @@ SamplerState gsamAnisotropicWrap : register(s4);
 SamplerState gsamAnisotropicClamp : register(s5);
 SamplerComparisonState gsamShadow : register(s6);
 
-cbuffer cbPass : register(b0)
-{
-    float4x4 gView;
-    float4x4 gProj;
-    float4x4 gViewProj;
-    float4x4 gOrthoMatrix;
-    float2 gMousePos;
-    uint2 gRenderTargetSize;
-};
+StructuredBuffer<TextureInfo> TextureInfos : register(t20);
 
-StructuredBuffer<TextureInfo> gMainTextureInfos : register(t0);
-Texture2DArray gMainTextures : register(t1);
-
-
-float4 GetTextureSample(SamplerState samp, int index, float2 uv)
+float4 GetTextureSample(SamplerState samp, Texture2D texture, int storedTextureIndex, float2 uv)
 {
     float4 result = { 0, 0, 0, 0 };
-    int currIndex = index & 0x000fffff;
-    TextureInfo currTextureInfo = gMainTextureInfos[currIndex];
+    TextureInfo currTextureInfo = TextureInfos[storedTextureIndex];
     
     float2 targetUV = currTextureInfo.StartUV;
-    float2 scale = currTextureInfo.EndUV - targetUV;
+    float2 scale = currTextureInfo.EndUV - currTextureInfo.StartUV;
     targetUV = targetUV + (uv * scale);
     
-    result = gMainTextures.Sample(samp, float3(targetUV, currTextureInfo.TextureIndex));
+    result = texture.Sample(samp, targetUV);
     
     return result;
 }

@@ -1,16 +1,52 @@
 #include "BaseRoot.hlsli"
 
+struct PointVertexIn
+{
+    uint RenderInfoIndex : RENDERINFOINDEX;
+};
+
+struct VertexOut
+{
+    float4 PosH : SV_POSITION;
+    float4 Color : TEXCOORD0;
+    nointerpolation int TexInfoIndex : TEXINDEX0;
+};
+
+struct RenderInfo
+{               
+    float3 PosL;
+    float2 Size;
+    float4 Color;
+    int textureIndex;
+    int pad0;
+    int pad1;
+};
+
+cbuffer cbPass : register(b0)
+{
+    float4x4 gView;
+    float4x4 gProj;
+    float4x4 gViewProj;
+    float4x4 gOrthoMatrix;
+    float2 gMousePos;
+    uint2 gRenderTargetSize;
+};
+
+Texture2D gMainTexture : register(t0);
+StructuredBuffer<RenderInfo> gRenderInfos : register(t1);
+
 //created for when to use orthographic matrix
 void CreatePanel(PointVertexIn vin, inout TriangleStream<VertexOut> output)
 {
     VertexOut vertices[4];
-
+    RenderInfo renderInfo = gRenderInfos[vin.RenderInfoIndex];
+    
     [unroll(4)]
     for (int k = 0; k < 4; k++)
     {
-        vertices[k].TexIndex = vin.TexIndex;
-        vertices[k].Color = vin.Color;
-        vertices[k].PosH = float4(vin.PosL, 1);
+        vertices[k].TexInfoIndex = renderInfo.textureIndex;
+        vertices[k].Color = renderInfo.Color;
+        vertices[k].PosH = float4(renderInfo.PosL, 1);
     }
 
     /*
@@ -18,10 +54,10 @@ void CreatePanel(PointVertexIn vin, inout TriangleStream<VertexOut> output)
     |    |
     0 คั 2
     */
-    vertices[0].PosH.xy += float2(0, vin.Size.y);
+    vertices[0].PosH.xy += float2(0, renderInfo.Size.y);
     vertices[1].PosH.xy += float2(0, 0);
-    vertices[2].PosH.xy += float2(vin.Size.x, vin.Size.y);
-    vertices[3].PosH.xy += float2(vin.Size.x, 0);
+    vertices[2].PosH.xy += float2(renderInfo.Size.x, renderInfo.Size.y);
+    vertices[3].PosH.xy += float2(renderInfo.Size.x, 0);
 
     vertices[0].Color.xy = float2(0, 1.0f);
     vertices[1].Color.xy = float2(0, 0);
@@ -43,8 +79,9 @@ void CreatePanel(PointVertexIn vin, inout TriangleStream<VertexOut> output)
     output.Append(vertices[3]);
 }
 
-PointVertexIn VS(PointVertexIn input)
+PointVertexIn VS(PointVertexIn input, uint id:SV_InstanceID)
 {
+    input.RenderInfoIndex = id;
 	return input;
 }
 
@@ -58,9 +95,9 @@ float4 PS(VertexOut input) : SV_TARGET
 {
 	float4 result = {0,0,0,1};
     
-    if (input.TexIndex >= 0)
+    if (input.TexInfoIndex >= 0)
     {
-        result = GetTextureSample(gsamPointClamp, input.TexIndex, input.Color.xy);
+        result = GetTextureSample(gsamPointClamp, gMainTexture, input.TexInfoIndex, input.Color.xy);
     }
     else
     {

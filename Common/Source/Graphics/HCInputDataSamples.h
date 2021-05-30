@@ -15,3 +15,8 @@ struct HCInputLayoutElement
 	DXGI_FORMAT Format;
 };
 
+struct HCOnePointExtToRect
+{
+	static std::vector<HCInputLayoutElement> InputLayout;
+	UINT noneUsed = 0;
+};

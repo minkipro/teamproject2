@@ -19,5 +19,5 @@ void UIPanel::Update()
 {
 	UIObject::Update();
 
-	s_graphicPipeLine->RenderReserveObject(&m_renderPoint, m_renderPoint.TextureIndex);
+	s_graphicPipeLine->ReserveRenderInfo(&m_renderPoint, m_renderPoint.TextureIndex);
 }

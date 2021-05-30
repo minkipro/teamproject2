@@ -11,28 +11,21 @@ using Microsoft::WRL::ComPtr;
 
 class HCGraphicDX11 final : public HCGraphic
 {
-	struct TextureArrayInTextureData
+	struct TextureSpriteData
 	{
 		DirectX::XMFLOAT2 StartUV = {};
 		DirectX::XMFLOAT2 EndUV = {};
-		UINT Index = 0;
-		int	 NumSprite = -1;
-		UINT Pad1 = 0;
-		UINT Pad2 = 0;
+		UINT TextureIndex = 0;
+		UINT Pad1;
+		UINT Pad2;
+		UINT Pad3;
 	};
 
-	struct SpriteData
-	{
-		DirectX::XMFLOAT2 StartUV;
-		DirectX::XMFLOAT2 EndUV;
-	};
-
-	struct Texture2DArrayData
+	struct TextureResourceData
 	{
 		ComPtr<ID3D11ShaderResourceView>						TextureView;
-		ComPtr<ID3D11ShaderResourceView>						TextureInfoView;
-		std::vector<TextureArrayInTextureData>					TextureDatas;
-		std::unordered_map<std::wstring, UINT>					TextureIndex;
+		D3D11_SHADER_RESOURCE_VIEW_DESC							TextureDesc;
+		UINT													SpriteNum = 0;
 	};
 
 public:
@@ -43,52 +36,66 @@ public:
 	}
 	virtual ~HCGraphicDX11();
 
-	virtual void		Init();
-	virtual void		Update();
+	virtual void			Init();
+	virtual void			Update();
 
-	virtual void		CreateGraphicPipeLine(const std::string& pipeLineName, std::shared_ptr<HCGraphicPipeLine>& out) override;
-	virtual void		CreateResource(const std::string& resourceName, const HC::GRAPHIC_RESOURCE_DESC& desc, std::shared_ptr<IHCResource>& out) override;
-	virtual void		CreateCB(const std::string& bufferName, size_t stride, size_t num, std::shared_ptr<IHCCBuffer>& out) override;
-	virtual void		CreateShader(const std::string& shaderName, HC::SHADER_TYPE type, const std::wstring& filePath, const std::string& entryPoint, std::shared_ptr<IHCShader>& out) override;
-	virtual void		CreateTextData(std::shared_ptr<IHCTextData>& out) override;
+	virtual void			CreateResource(const std::string& resourceName, const HC::GRAPHIC_RESOURCE_DESC& desc, std::shared_ptr<IHCResource>& out) override;
+	virtual void			CreateShader(const std::string& shaderName, HC::SHADER_TYPE type, const std::wstring& filePath, const std::string& entryPoint, std::shared_ptr<IHCShader>& out) override;
+	virtual void			CreateTextData(std::shared_ptr<IHCTextData>& out) override;
 
-	virtual TextureData	GetTextureIndex(const std::wstring& textureName) const override;
+	virtual void			CopyResource(std::shared_ptr<IHCResource> dest, std::shared_ptr<IHCResource> src) override;
 
-	virtual LRESULT		WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) override;
+	virtual void			RenderBegin() override;
+	virtual void			RenderEnd() override;
+
+	virtual void			SetPipeLineObject(const HCGraphicPipeLine* pipeLine) override;
+	virtual void			SetTexture(UINT textureIndex, UINT shaderResourceSlot) override;
+	virtual void			SetShaderResource(std::shared_ptr<IHCResource> resource, UINT shaderResourceSlot) override;
+	virtual void			SetShaderResources(const std::vector<std::shared_ptr<IHCResource>>& resources, UINT shaderResourceStartSlot) override;
+	virtual void			SetConstantBuffer(std::shared_ptr<IHCResource> buffer, UINT constantBufferSlot) override;
+	virtual void			SetConstantBuffers(const std::vector<std::shared_ptr<IHCResource>>& buffers, UINT constantBufferStartSlot) override;
+
+	virtual void			Draw(const HCMesh* mesh) override;
+	virtual void			DrawInsatance(const HCMesh* mesh, UINT numInstance, UINT InstanceOffset = 0) override;
+	virtual void			DrawIndexed(const HCMesh* mesh) override;
+	virtual void			DrawIndexedInsatance(const HCMesh* mesh, UINT numInstance, UINT InstanceOffset = 0) override;
+	virtual void			DrawFont() override;
+
+	virtual HCTextureData	GetTextureIndex(const std::wstring& textureName) const override;
+
+	virtual LRESULT			WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) override;
+
 private:
-	virtual void		RenderBegin() override;
-	virtual void		RenderEnd() override;
-	virtual void		SetPipeLineObject(const HCGraphicPipeLine* pipeLine) override;
-	virtual void		RenderObjects(HCGraphicPipeLine* pipeLine) override;
-	virtual void		RenderFont() override;
-
-private:
-	void				CreateBaseSamplers();
-	void				CreateTextures();
-	void				CreateGraphicPipeLineBaseSettings();
-	void				CreateInputLayout(size_t inputLayoutHash, const std::vector<HCInputLayoutElement>* inputLayoutEle, HCDX11Shader* vs);
+	void						CreateBaseSamplers();
+	void						CreateTextures();
+	void						CreateGraphicPipeLineBaseSettings();
+	void						CreateInputLayout(size_t inputLayoutHash, const std::vector<HCInputLayoutElement>* inputLayoutEle, HCDX11Shader* vs);
 
 	D3D11_USAGE					GetResourceUsage(const HC::GRAPHIC_RESOURCE_DESC& desc);
 	D3D11_CPU_ACCESS_FLAG		GetResourceCpuAcessFlags(const HC::GRAPHIC_RESOURCE_DESC& desc);
 	D3D11_RESOURCE_MISC_FLAG	GetResourceMiscFlags(const HC::GRAPHIC_RESOURCE_DESC& desc);
-	UINT						GetResourceBindFlags(const HC::GRAPHIC_RESOURCE_DESC& desc);
-	void						GetSpriteData(const std::wstring& texturePath, std::vector<SpriteData>* out);
+	D3D11_BIND_FLAG				GetResourceBindFlags(const HC::GRAPHIC_RESOURCE_DESC& desc);
+	void						GetSpriteData(const std::wstring& texturePath, std::vector<TextureSpriteData>* out);
 
 private:
 	std::unique_ptr<HCSwapchainDX11>										m_swapchain;
 	ComPtr<ID3D11Device>													m_device;
 	ComPtr<ID3D11DeviceContext>												m_deviceContext;
 
-	std::unique_ptr<IHCCBuffer>												m_mainPassCB;
-
 	ComPtr<ID3D11RasterizerState>											m_baseRasterizer;
 	ComPtr<ID3D11DepthStencilState>											m_baseDepthStencilState;
 	ComPtr<ID3D11BlendState>												m_baseBlendState;
 	std::vector<ComPtr<ID3D11SamplerState>>									m_samplers;
 
-	std::unordered_map<size_t, ComPtr<ID3D11InputLayout>>					m_inputLayout;
-	std::vector<Texture2DArrayData>											m_textures;
-	std::unordered_map<std::wstring, UINT>									m_textureBufferIndex;
+	std::unordered_map<size_t, ComPtr<ID3D11InputLayout>>					m_vertexLayout;
+
+	std::vector<HCMesh>														m_meshes;
+	std::vector<TextureSpriteData>											m_allSpriteDatas;
+	ComPtr<ID3D11ShaderResourceView>										m_textureInfoView;
+	std::vector<TextureResourceData>										m_textures;
+	std::unordered_map<std::wstring, UINT>									m_textureIndex;
+
+	const HCGraphicPipeLine*												m_currPipeLine = nullptr;
 
 	DX11FontMG																m_font;
 

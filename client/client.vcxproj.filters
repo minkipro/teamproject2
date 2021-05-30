@@ -130,7 +130,12 @@
     <ClCompile Include="..\Common\Source\Graphics\DX11TextData.cpp">
       <Filter>Common\Devices\Graphics_Dx11</Filter>
     </ClCompile>
-    <ClCompile Include="HCSceneObject.cpp" />
+    <ClCompile Include="..\Common\Source\Graphics\HCInputDataSamples.cpp">
+      <Filter>Common\Devices\Graphics_Base</Filter>
+    </ClCompile>
+    <ClCompile Include="HCSceneObject.cpp">
+      <Filter>Client\Scene\SceneObject</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Common\Source\Util\StringHelper.h">

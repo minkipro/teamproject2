@@ -12,7 +12,7 @@ public:
 		RBUTTON,
 		BUTTON1,
 		BUTTON2,
-		COUNT
+		HCSHADER_COUNT
 	};
 	HCMouse() = default;
 	virtual ~HCMouse() = default;

@@ -5,7 +5,7 @@ TileMap::TileMap(float sizeX, float sizeY, int xNum, int yNum)
 {
 	auto graphic = HCDEVICE(HCGraphic);
 
-	TextureData textureData = graphic->GetTextureIndex(L"Texture/Pipoya RPG Tileset 16x16/sp_8x249_[Base]BaseChip_pipo.png");
+	HCTextureData textureData = graphic->GetTextureIndex(L"Texture/Pipoya RPG Tileset 16x16/sp_8x249_[Base]BaseChip_pipo.png");
 	m_spriteNum = textureData.spriteNum;
 	m_renderPoint.resize(xNum);
 	for (int i = 0; i < xNum; i++)
@@ -45,7 +45,7 @@ void HC::TileMap::Render(HCGraphicPipeLine* pipeLine)
 	{
 		for (size_t j = 0; j < ySize; j++)
 		{
-			pipeLine->RenderReserveObject(&m_renderPoint[i][j], m_renderPoint[i][j].TextureIndex);
+			pipeLine->ReserveRenderInfo(&m_renderPoint[i][j]);
 		}
 	}
 }

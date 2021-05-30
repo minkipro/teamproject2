@@ -13,7 +13,7 @@ namespace HC
 		virtual void Render(HCGraphicPipeLine* pipeLine) override;
 
 	private:
-		std::vector<std::vector<RenderPoint>> m_renderPoint;
+		std::vector<std::vector<HCPointRenderInfo>> m_renderPoint;
 		int m_spriteNum;
 	};
 }

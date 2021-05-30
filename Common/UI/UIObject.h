@@ -49,6 +49,7 @@ public:
 
 	virtual void	Init() = 0;
 	virtual void	Update();
+	virtual void	Render();
 
 	virtual void	UIOn();
 	virtual void	UIOff();
@@ -74,7 +75,7 @@ protected:
 	UIObject*					m_parent;
 	std::vector<UIObject*>		m_childs;
 	DirectX::XMFLOAT3			m_pos;
-	RenderPoint					m_renderPoint;
+	HCPointRenderInfo			m_renderPoint;
 	HCColliderData				m_ColliderData;
 	DirectX::XMFLOAT2			m_benchUV;
 	bool						m_isOn;

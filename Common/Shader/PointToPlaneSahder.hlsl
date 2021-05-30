@@ -2,14 +2,15 @@
 
 struct PointVertexIn
 {
-    uint RenderInfoIndex : RENDERINFOINDEX;
+    uint4 RenderInfoIndex : RENDERINFOINDEX;
 };
 
 struct VertexOut
 {
     float4 PosH : SV_POSITION;
     float4 Color : TEXCOORD0;
-    nointerpolation int TexInfoIndex : TEXINDEX0;
+    nointerpolation int TextureIndex : TEXINDEX0;
+    nointerpolation uint SpriteIndex : TEXINDEX1;
 };
 
 struct RenderInfo
@@ -18,7 +19,7 @@ struct RenderInfo
     float2 Size;
     float4 Color;
     int textureIndex;
-    int pad0;
+    uint spriteIndex;
     int pad1;
 };
 
@@ -39,12 +40,13 @@ StructuredBuffer<RenderInfo> gRenderInfos : register(t1);
 void CreatePanel(PointVertexIn vin, inout TriangleStream<VertexOut> output)
 {
     VertexOut vertices[4];
-    RenderInfo renderInfo = gRenderInfos[vin.RenderInfoIndex];
+    RenderInfo renderInfo = gRenderInfos[vin.RenderInfoIndex.x];
     
     [unroll(4)]
     for (int k = 0; k < 4; k++)
     {
-        vertices[k].TexInfoIndex = renderInfo.textureIndex;
+        vertices[k].TextureIndex = renderInfo.textureIndex;
+        vertices[k].SpriteIndex = renderInfo.spriteIndex;
         vertices[k].Color = renderInfo.Color;
         vertices[k].PosH = float4(renderInfo.PosL, 1);
     }
@@ -81,7 +83,7 @@ void CreatePanel(PointVertexIn vin, inout TriangleStream<VertexOut> output)
 
 PointVertexIn VS(PointVertexIn input, uint id:SV_InstanceID)
 {
-    input.RenderInfoIndex = id;
+    input.RenderInfoIndex.x = id;
 	return input;
 }
 
@@ -95,17 +97,13 @@ float4 PS(VertexOut input) : SV_TARGET
 {
 	float4 result = {0,0,0,1};
     
-    if (input.TexInfoIndex >= 0)
+    if (input.TextureIndex >= 0)
     {
-        result = GetTextureSample(gsamPointClamp, gMainTexture, input.TexInfoIndex, input.Color.xy);
+        result = gMainTexture.Sample(gsamPointClamp, GetRealUV(input.TextureIndex + input.SpriteIndex, input.Color.xy));
     }
     else
     {
         result = input.Color;
-    }
-    if (result.a !=1)
-    {
-        //clip(-1);
     }
 
     return result;

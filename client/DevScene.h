@@ -14,7 +14,8 @@ public:
 	virtual void Render() override;
 
 private:
-	std::vector<HC::SceneObject*> m_sceneObjects;
-
-	std::shared_ptr<HCGraphicPipeLine> testPipeLine;
+	std::vector<HC::SceneObject*>		m_sceneObjects;
+	std::shared_ptr<HCGraphicPipeLine>	m_testPipeLine;
+	HC::MainPass						m_mainPass;
+	std::shared_ptr<IHCResource>		m_mainPassCB;
 };

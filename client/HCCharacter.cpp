@@ -7,10 +7,10 @@ Character::Character(const wchar_t* textureName)
 {
 	auto graphic = HCDEVICE(HCGraphic);
 
-	m_renderPoint.Size = { 128,128 };
-	m_renderPoint.Position = { 100,100, 0.2f };
+	m_renderInfos.Size = { 128,128 };
+	m_renderInfos.Position = { 100,100, 0.2f };
 	HCTextureData textureData = graphic->GetTextureIndex(textureName);
-	m_renderPoint.TextureIndex = textureData.textureIndex;
+	m_renderInfos.TextureIndex = textureData.textureIndex;
 	m_spriteNum = textureData.spriteNum;
 
 	m_characterController = nullptr;
@@ -30,7 +30,6 @@ void Character::Update()
 	m_characterController->Update();
 }
 
-void HC::Character::Render(HCGraphicPipeLine* pipeLine)
+void HC::Character::Render()
 {
-	pipeLine->ReserveRenderInfo(&m_renderPoint);
 }

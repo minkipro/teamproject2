@@ -8,6 +8,6 @@ namespace HC
 	public:
 		virtual ~SceneObject() = 0 {};
 		virtual void Update() = 0;
-		virtual void Render(HCGraphicPipeLine* pipeLine) = 0;
+		virtual void Render() = 0;
 	};
 }

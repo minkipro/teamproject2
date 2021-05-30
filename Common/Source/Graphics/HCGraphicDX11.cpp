@@ -38,13 +38,13 @@ void HCGraphicDX11::Update()
 	
 }
 
-void HCGraphicDX11::CreateResource(const std::string& resourceName, const HC::GRAPHIC_RESOURCE_DESC& desc, std::shared_ptr<IHCResource>& out)
+void HCGraphicDX11::CreateResource(const HC::GRAPHIC_RESOURCE_DESC& desc, std::shared_ptr<IHCResource>& out)
 {
 	out = nullptr;
 
 	HC::GRAPHIC_RESOURCE_DESC				resultDesc = desc;
-	ID3D11Resource*							result = nullptr;
-	ID3D11View*								resultView = nullptr;
+	ComPtr<ID3D11Resource>					result;
+	ComPtr<ID3D11View>						resultView;
 	std::unique_ptr<D3D11_SUBRESOURCE_DATA>	subResource = nullptr;
 	
 	switch (resultDesc.Type)
@@ -54,7 +54,7 @@ void HCGraphicDX11::CreateResource(const std::string& resourceName, const HC::GR
 		COM_THROW_IF_FAILED(resultDesc.Stride % 16 == 0, "constantBuffer should be a magnification of 16 bytes");
 
 		resultDesc.UsageType = HC::GRAPHIC_RESOURCE_USAGE_TYPE::GRAPHIC_RESOURCE_USAGE_DYNAMIC;
-		resultDesc.BindFlags = static_cast<HC::GRAPHIC_RESOURCE_BIND_FLAGS>((resultDesc.BindFlags & HC::GRAPHIC_RESOURCE_BIND_SHADERRESOURCE_ALL) | HC::GRAPHIC_RESOURCE_BIND_FLAGS::GRAPHIC_RESOURCE_BIND_CONSTANT_BUFFER);
+		resultDesc.BindFlags = HC::GRAPHIC_RESOURCE_BIND_FLAGS::GRAPHIC_RESOURCE_BIND_CONSTANT_BUFFER;
 		resultDesc.Flags = HC::GRAPHIC_RESOURCE_FLAG_NONE;
 
 		D3D11_BUFFER_DESC bufferDesc = {};
@@ -65,27 +65,19 @@ void HCGraphicDX11::CreateResource(const std::string& resourceName, const HC::GR
 		bufferDesc.ByteWidth = resultDesc.Stride;
 		bufferDesc.StructureByteStride = 0;
 
-		COM_HRESULT_IF_FAILED(m_device->CreateBuffer(&bufferDesc, subResource.get(), reinterpret_cast<ID3D11Buffer**>(&result)), "Failed to create buffer.");
+		COM_HRESULT_IF_FAILED(m_device->CreateBuffer(&bufferDesc, subResource.get(), reinterpret_cast<ID3D11Buffer**>(result.GetAddressOf())), "Failed to create buffer.");
 	}
 	break;
-	case HC::GRAPHIC_RESOURCE_TYPE::GRAPHIC_RESOURCE_STRUCTURED_BUFFER:
+	case HC::GRAPHIC_RESOURCE_TYPE::GRAPHIC_RESOURCE_BUFFER:
 	{
-		COM_THROW_IF_FAILED(resultDesc.Stride % 16 == 0, "structuredSize should be a magnification of 16 bytes");
-
 		D3D11_BUFFER_DESC				bufferDesc = {};
-		D3D11_SHADER_RESOURCE_VIEW_DESC viewDesc = {};
 
 		bufferDesc.Usage = GetResourceUsage(resultDesc);
 		bufferDesc.BindFlags = GetResourceBindFlags(resultDesc);
 		bufferDesc.CPUAccessFlags = GetResourceCpuAcessFlags(resultDesc);
-		bufferDesc.MiscFlags = GetResourceMiscFlags(resultDesc) | D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
+		bufferDesc.MiscFlags = GetResourceMiscFlags(resultDesc);
 		bufferDesc.ByteWidth = resultDesc.Stride * resultDesc.Buffer.StrideNum;
 		bufferDesc.StructureByteStride = resultDesc.Stride;
-
-		viewDesc.Format = DXGI_FORMAT_UNKNOWN;
-		viewDesc.ViewDimension = D3D11_SRV_DIMENSION_BUFFER;
-		viewDesc.Buffer.ElementOffset = 0;
-		viewDesc.Buffer.NumElements = resultDesc.Buffer.StrideNum;
 
 		if (resultDesc.DefaultData)
 		{
@@ -95,8 +87,20 @@ void HCGraphicDX11::CreateResource(const std::string& resourceName, const HC::GR
 			subResource->SysMemSlicePitch = 0;
 		}
 
-		COM_HRESULT_IF_FAILED(m_device->CreateBuffer(&bufferDesc, subResource.get(), reinterpret_cast<ID3D11Buffer**>(&result)), "Failed to create buffer.");
-		COM_HRESULT_IF_FAILED(m_device->CreateShaderResourceView(result, &viewDesc, reinterpret_cast<ID3D11ShaderResourceView**>(&resultView)), "Failed to create buffer view.");
+		COM_HRESULT_IF_FAILED(m_device->CreateBuffer(&bufferDesc, subResource.get(), reinterpret_cast<ID3D11Buffer**>(result.GetAddressOf())), "Failed to create buffer.");
+
+		if (resultDesc.Flags & HC::GRAPHIC_RESOURCE_FLAG_STRUCTURED_BUFFER)
+		{
+			COM_THROW_IF_FAILED(resultDesc.Stride % 16 == 0, "structuredSize should be a magnification of 16 bytes");
+
+			D3D11_SHADER_RESOURCE_VIEW_DESC viewDesc = {};
+			viewDesc.Format = DXGI_FORMAT_UNKNOWN;
+			viewDesc.ViewDimension = D3D11_SRV_DIMENSION_BUFFER;
+			viewDesc.Buffer.ElementOffset = 0;
+			viewDesc.Buffer.NumElements = resultDesc.Buffer.StrideNum;
+
+			COM_HRESULT_IF_FAILED(m_device->CreateShaderResourceView(result.Get(), &viewDesc, reinterpret_cast<ID3D11ShaderResourceView**>(resultView.GetAddressOf())), "Failed to create buffer view.");
+		}
 	}
 	break;
 	case HC::GRAPHIC_RESOURCE_TYPE::GRAPHIC_RESOURCE_TEXTURE2D:
@@ -125,7 +129,7 @@ void HCGraphicDX11::CreateResource(const std::string& resourceName, const HC::GR
 			subResource->SysMemSlicePitch = 0;
 		}
 
-		COM_HRESULT_IF_FAILED(m_device->CreateTexture2D(&texture2dDesc, subResource.get(), reinterpret_cast<ID3D11Texture2D**>(&result)), "Failed to create texture.");
+		COM_HRESULT_IF_FAILED(m_device->CreateTexture2D(&texture2dDesc, subResource.get(), reinterpret_cast<ID3D11Texture2D**>(result.GetAddressOf())), "Failed to create texture.");
 
 		if (texture2dDesc.ArraySize > 1)
 		{
@@ -141,7 +145,7 @@ void HCGraphicDX11::CreateResource(const std::string& resourceName, const HC::GR
 			viewDesc.Texture2D.MostDetailedMip = 0;
 		}
 
-		COM_HRESULT_IF_FAILED(m_device->CreateShaderResourceView(result, &viewDesc, reinterpret_cast<ID3D11ShaderResourceView**>(&resultView)), "Failed to create texture.");
+		COM_HRESULT_IF_FAILED(m_device->CreateShaderResourceView(result.Get(), &viewDesc, reinterpret_cast<ID3D11ShaderResourceView**>(resultView.GetAddressOf())), "Failed to create texture.");
 	}
 	break;
 	default:
@@ -149,10 +153,10 @@ void HCGraphicDX11::CreateResource(const std::string& resourceName, const HC::GR
 		break;
 	}
 
-	out = std::make_shared<HCDX11Resource>(std::shared_ptr<ID3D11Resource>(result), std::shared_ptr<ID3D11View>(resultView), resultDesc);
+	out = std::make_shared<HCDX11Resource>(result.Get(), resultView.Get(), resultDesc);
 }
 
-void HCGraphicDX11::CreateShader(const std::string& shaderName, HC::SHADER_TYPE type, const std::wstring& filePath, const std::string& entryPoint, std::shared_ptr<IHCShader>& out)
+void HCGraphicDX11::CreateShader(HC::SHADER_TYPE type, const std::wstring& filePath, const std::string& entryPoint, std::shared_ptr<IHCShader>& out)
 {
 	out = nullptr;
 	std::string target;
@@ -270,11 +274,15 @@ void HCGraphicDX11::CopyResource(std::shared_ptr<IHCResource> dest, const std::s
 void HCGraphicDX11::RenderBegin()
 {
 	m_swapchain->PresentRenderTargetSetting(m_deviceContext.Get(), DirectX::Colors::Aqua);
+
+	ID3D11ShaderResourceView* textureInfoView = m_textureInfoView.Get();
+	m_deviceContext->PSSetShaderResources(20, 1, &textureInfoView);
 }
 
 void HCGraphicDX11::RenderEnd()
 {
 	m_swapchain->Present();
+	m_currPipeLine = nullptr;
 }
 
 void HCGraphicDX11::SetPipeLineObject(const HCGraphicPipeLine* pipeLine)
@@ -349,6 +357,15 @@ void HCGraphicDX11::SetPipeLineObject(const HCGraphicPipeLine* pipeLine)
 	else
 	{
 		m_deviceContext->RSSetState(m_baseRasterizer.Get());
+	}
+
+	if (pipeLine->m_renderTargets.size())
+	{
+
+	}
+	else
+	{
+
 	}
 
 	if (pipeLine->m_depthStencilState)
@@ -518,15 +535,9 @@ void HCGraphicDX11::DrawFont()
 HCTextureData HCGraphicDX11::GetTextureIndex(const std::wstring& textureName) const
 {
 	HCTextureData result;
-	std::wstring directory = StringHelper::GetDirectoryFromPath(textureName);
 
-	if (directory.length() == 0)
-	{
-		directory = StringHelper::GetFileNameFromPath(HC::GO.GRAPHIC.TextureFolderPath);
-	}
-
-	auto indexBufferIter = m_textureIndex.find(directory);
-	COM_THROW_IF_FAILED(indexBufferIter != m_textureIndex.end(), "This TextureBuffer is not loaded");
+	auto indexBufferIter = m_textureIndex.find(textureName);
+	COM_THROW_IF_FAILED(indexBufferIter != m_textureIndex.end(), "This texture is not loaded");
 
 	result.textureIndex = indexBufferIter->second;
 	result.spriteNum = m_textures[result.textureIndex].SpriteNum;
@@ -744,11 +755,11 @@ void HCGraphicDX11::CreateTextures()
 	{
 		for (auto& it2 : it.second)
 		{
-			m_textureIndex[it2] = currIndex;
-
 			std::wstring textureName = StringHelper::GetFileNameFromPath(it2);
 			TextureResourceData currTextureData;
 			TextureSpriteData locationData;
+
+			m_textureIndex[it.first + L"/" + textureName] = currIndex;
 			locationData.TextureIndex = currTextureIndex++;
 
 			COM_HRESULT_IF_FAILED(DirectX::CreateWICTextureFromFile(m_device.Get(), it2.c_str(), nullptr, currTextureData.TextureView.GetAddressOf()),
@@ -799,7 +810,7 @@ void HCGraphicDX11::CreateTextures()
 		D3D11_SUBRESOURCE_DATA data;
 		data.pSysMem = m_allSpriteDatas.data();
 		data.SysMemPitch = bufferDesc.ByteWidth;
-		data.SysMemSlicePitch = data.SysMemPitch;
+		data.SysMemSlicePitch = 0;
 
 		m_device->CreateBuffer(&bufferDesc, &data, textureInfoBuffer.GetAddressOf());
 
@@ -844,9 +855,6 @@ void HCGraphicDX11::CreateGraphicPipeLineBaseSettings()
 
 	COM_HRESULT_IF_FAILED(m_device->CreateBlendState(&blendDesc, m_baseBlendState.GetAddressOf()),
 		"Failed to create blend state.");
-
-	ID3D11ShaderResourceView* textureInfoView = m_textureInfoView.Get();
-	m_deviceContext->PSSetShaderResources(20, 1, &textureInfoView);
 }
 
 void HCGraphicDX11::CreateInputLayout(size_t inputLayoutHash, const std::vector<HCInputLayoutElement>* inputLayoutEle, HCDX11Shader* vs)
@@ -908,7 +916,15 @@ D3D11_CPU_ACCESS_FLAG HCGraphicDX11::GetResourceCpuAcessFlags(const HC::GRAPHIC_
 
 D3D11_RESOURCE_MISC_FLAG HCGraphicDX11::GetResourceMiscFlags(const HC::GRAPHIC_RESOURCE_DESC& desc)
 {
-	return D3D11_RESOURCE_MISC_FLAG(0);
+	UINT result = 0;
+	HC::GRAPHIC_RESOURCE_FLAGS currFlag = desc.Flags;
+
+	if (currFlag & HC::GRAPHIC_RESOURCE_FLAG_STRUCTURED_BUFFER)
+	{
+		result |= D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
+	}
+
+	return D3D11_RESOURCE_MISC_FLAG(result);
 }
 
 D3D11_BIND_FLAG HCGraphicDX11::GetResourceBindFlags(const HC::GRAPHIC_RESOURCE_DESC& desc)

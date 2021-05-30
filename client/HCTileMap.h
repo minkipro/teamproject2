@@ -7,14 +7,16 @@ namespace HC
 	class TileMap : public HC::SceneObject
 	{
 	public:
-		TileMap(float sizeX, float sizeY, int xNum, int yNum);
+		TileMap(float sizeX, float sizeY, UINT xNum, UINT yNum);
 		virtual ~TileMap() override;
 		virtual void Update() override;
-		virtual void Render(HCGraphicPipeLine* pipeLine) override;
+		virtual void Render() override;
 
 	private:
-		std::vector<std::vector<HCPointRenderInfo>> m_renderPoint;
-		int m_spriteNum;
+		std::shared_ptr<IHCResource>	m_renderInfoBuffer;
+		const HCMesh*					m_mesh = nullptr;
+		UINT							m_tileNum;
+		HCTextureData					m_textureData;
 	};
 }
 

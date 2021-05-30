@@ -3,6 +3,7 @@
 #include "Window/HCWindow.h"
 #include "Graphics/HCGraphicDX11.h"
 #include "TCPSocket/SocketCommunication.h"
+#include "Graphics\HCMeshManager.h"
 
 Engine* Engine::m_engine = nullptr;
 
@@ -25,11 +26,12 @@ void Engine::Init(HINSTANCE hInstance)
 		m_window->RegisterProc(it.get());
 	}
 	
+	CreateBaseMeshs();
+
 	m_scene.Init();
 
 	std::vector<unsigned long> ips;
 	SocketCommunication::Get()->GetIp(ips);
-	int a = 1;
 }
 
 int Engine::Run()
@@ -54,10 +56,34 @@ int Engine::Run()
 
 			SocketCommunication::Get()->Update();
 
+			m_graphic->RenderBegin();
 			m_scene.Render();
-			m_graphic->Render();
+			m_graphic->DrawFont();
+			m_graphic->RenderEnd();
 		}
 	}
 	delete SocketCommunication::Get();
 	return (int)msg.wParam;
+}
+
+void Engine::CreateBaseMeshs()
+{
+	HCMesh onePointExtToRect;
+	HC::GRAPHIC_RESOURCE_DESC onePointExtToRectDesc;
+	HCOnePointExtToRect temp;
+
+	onePointExtToRect.VertexCount = 1;
+	onePointExtToRect.Primitive = HC::PRIMITIVE_TOPOLOGY::POINT;
+	
+	onePointExtToRectDesc.Type = HC::GRAPHIC_RESOURCE_TYPE::GRAPHIC_RESOURCE_BUFFER;
+	onePointExtToRectDesc.UsageType = HC::GRAPHIC_RESOURCE_USAGE_TYPE::GRAPHIC_RESOURCE_USAGE_DEFAULT;
+	onePointExtToRectDesc.BindFlags = HC::GRAPHIC_RESOURCE_BIND_VERTEX_BUFFER;
+	onePointExtToRectDesc.Flags = HC::GRAPHIC_RESOURCE_FLAG_NONE;
+	onePointExtToRectDesc.Stride = sizeof(HCOnePointExtToRect);
+	onePointExtToRectDesc.Buffer.StrideNum = 1;
+	onePointExtToRectDesc.DefaultData = &temp;
+
+	m_graphic->CreateResource(onePointExtToRectDesc, onePointExtToRect.VertexBuffer);
+
+	HCMeshManager::Get()->SetMesh(typeid(HCOnePointExtToRect).name(), onePointExtToRect);
 }

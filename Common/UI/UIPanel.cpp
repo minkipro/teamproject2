@@ -7,7 +7,7 @@ void UIPanel::Init()
 
 void UIPanel::SetBackGroundColor(const DirectX::XMFLOAT4 color)
 {
-	m_renderPoint.Color = color;
+	m_renderInfos.Color = color;
 }
 
 void UIPanel::SetName(const std::wstring& name)
@@ -18,6 +18,4 @@ void UIPanel::SetName(const std::wstring& name)
 void UIPanel::Update()
 {
 	UIObject::Update();
-
-	s_graphicPipeLine->ReserveRenderInfo(&m_renderPoint, m_renderPoint.TextureIndex);
 }

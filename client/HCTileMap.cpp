@@ -1,26 +1,40 @@
 #include "stdafx.h"
 #include "HCTileMap.h"
+#include "Graphics\HCMeshManager.h"
+
 using namespace HC;
-TileMap::TileMap(float sizeX, float sizeY, int xNum, int yNum)
+TileMap::TileMap(float sizeX, float sizeY, UINT xNum, UINT yNum)
+	: m_tileNum(xNum* yNum)
 {
 	auto graphic = HCDEVICE(HCGraphic);
 
-	HCTextureData textureData = graphic->GetTextureIndex(L"Texture/Pipoya RPG Tileset 16x16/sp_8x249_[Base]BaseChip_pipo.png");
-	m_spriteNum = textureData.spriteNum;
-	m_renderPoint.resize(xNum);
-	for (int i = 0; i < xNum; i++)
+	m_mesh = HCMeshManager::Get()->GetMesh(typeid(HCOnePointExtToRect).name());
+	m_textureData = graphic->GetTextureIndex(L"Texture/character3-3.png");
+
+	HC::GRAPHIC_RESOURCE_DESC renderInfoBufferDesc;
+	std::vector<HCPointRenderInfo>	renderInfos;
+
+	renderInfoBufferDesc.Type = HC::GRAPHIC_RESOURCE_TYPE::GRAPHIC_RESOURCE_BUFFER;
+	renderInfoBufferDesc.UsageType = HC::GRAPHIC_RESOURCE_USAGE_TYPE::GRAPHIC_RESOURCE_USAGE_DEFAULT;
+	renderInfoBufferDesc.BindFlags = HC::GRAPHIC_RESOURCE_BIND_SHADERRESOURCE_ALL;
+	renderInfoBufferDesc.Flags = HC::GRAPHIC_RESOURCE_FLAG_STRUCTURED_BUFFER;
+	renderInfoBufferDesc.Stride = sizeof(HCPointRenderInfo);
+	renderInfoBufferDesc.Buffer.StrideNum = m_tileNum;
+
+	renderInfos.resize(m_tileNum);
+	for (UINT i = 0; i < m_tileNum; i++)
 	{
-		m_renderPoint[i].resize(yNum);
-		for (int j = 0; j < yNum; j++)
-		{
-			m_renderPoint[i][j].Size = { sizeX,sizeY };
-			m_renderPoint[i][j].Position = { i * 128.0f, j * 128.0f , 0.6f };
-			
-			
-			m_renderPoint[i][j].TextureIndex = textureData.textureIndex + (i + j * 100) % m_spriteNum;
-			
-		}
+		UINT indexX = i % xNum;
+		UINT indexY = i / yNum;
+
+		renderInfos[i].Size = { sizeX,sizeY };
+		renderInfos[i].Position = { indexX * sizeX, indexY * sizeY , 0.6f };
+		renderInfos[i].TextureIndex = m_textureData.textureIndex;
+		renderInfos[i].SpriteIndex = i % m_textureData.spriteNum;
 	}
+
+	renderInfoBufferDesc.DefaultData = renderInfos.data();
+	graphic->CreateResource(renderInfoBufferDesc, m_renderInfoBuffer);
 }
 
 TileMap::~TileMap()
@@ -31,21 +45,12 @@ void TileMap::Update()
 {
 }
 
-void HC::TileMap::Render(HCGraphicPipeLine* pipeLine)
+void HC::TileMap::Render()
 {
-	size_t xSize = m_renderPoint.size();
-	if (xSize == 0)
-	{
-		COM_THROW_IF_FAILED(false, "tileMap is empty");
-		return;
-	}
-	size_t ySize = m_renderPoint[0].size();
+	auto graphic = HCDEVICE(HCGraphic);
 
-	for (size_t i = 0; i < xSize; i++)
-	{
-		for (size_t j = 0; j < ySize; j++)
-		{
-			pipeLine->ReserveRenderInfo(&m_renderPoint[i][j]);
-		}
-	}
+	graphic->SetTexture(m_textureData.textureIndex, 0);
+	graphic->SetShaderResource(m_renderInfoBuffer, 1);
+
+	graphic->DrawInsatance(m_mesh, m_tileNum);
 }

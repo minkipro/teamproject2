@@ -1,11 +1,9 @@
 #pragma once
 #include "HCDevice.h"
 #include <unordered_map>
-#include <map>
 #include <vector>
 #include <memory>
 #include <dxgiformat.h>
-#include <functional>
 #include "GameObject.h"
 #include "HCInputDataSamples.h"
 
@@ -23,8 +21,8 @@ namespace HC
 
 	enum class GRAPHIC_RESOURCE_TYPE
 	{
+		GRAPHIC_RESOURCE_BUFFER,
 		GRAPHIC_RESOURCE_CONSTANT_BUFFER,
-		GRAPHIC_RESOURCE_STRUCTURED_BUFFER,
 		GRAPHIC_RESOURCE_TEXTURE1D,
 		GRAPHIC_RESOURCE_TEXTURE2D,
 		GRAPHIC_RESOURCE_TEXTURE3D,
@@ -60,6 +58,7 @@ namespace HC
 	enum GRAPHIC_RESOURCE_FLAGS
 	{
 		GRAPHIC_RESOURCE_FLAG_NONE = 0,
+		GRAPHIC_RESOURCE_FLAG_STRUCTURED_BUFFER = 1,
 	};
 
 	struct GRAPHIC_RESOURCE_BUFFER
@@ -139,18 +138,19 @@ public:
 	}
 	virtual ~IHCResource() = default;
 
+	const HC::GRAPHIC_RESOURCE_DESC&	GetDesc() { return m_desc; }
 	virtual void*						GetResource() = 0;
 	virtual void*						GetResourceView() = 0;
-	const HC::GRAPHIC_RESOURCE_DESC&	GetDesc() { return m_desc; }
 
 	virtual void						Map() = 0;
 	virtual void						UnMap() = 0;
+	virtual void						CpuDataCopyToGpu(void* data) = 0;
 	virtual void						CpuDataCopyToGpu(void* data, size_t byteSize, size_t byteOffset) = 0;
 	virtual void						CpuDataCopyToGpu(void* data, size_t offsetSrtide) = 0;
 	virtual void						GpuDataCopyToCpu(const RECT& rect, std::vector<std::vector<BYTE>>& out) = 0;
 
 protected:
-	HC::GRAPHIC_RESOURCE_DESC	m_desc;
+	HC::GRAPHIC_RESOURCE_DESC m_desc;
 };
 
 class IHCRasterizer
@@ -201,16 +201,6 @@ struct HCTextureData
 	int textureIndex = -1;
 	int spriteNum = -1;
 };
-
-//struct HCPointRenderInfo
-//{
-//	DirectX::XMFLOAT3	Position = { 0,0,0 };
-//	DirectX::XMFLOAT2	Size = { 0,0 };
-//	DirectX::XMFLOAT4	Color = { 0,0,0,1 };
-//	int					SpriteIndex = -1;
-//	UINT				Pad0 = 0;
-//	UINT				Pad1 = 0;
-//};
 
 struct HCMesh
 {
@@ -264,8 +254,8 @@ public: //pure virtual method
 	virtual void			Init() = 0;
 	virtual void			Update() = 0;
 
-	virtual void			CreateResource(const std::string& resourceName, const HC::GRAPHIC_RESOURCE_DESC& desc, std::shared_ptr<IHCResource>& out) = 0;
-	virtual void			CreateShader(const std::string& shaderName, HC::SHADER_TYPE type, const std::wstring& filePath, const std::string& entryPoint, std::shared_ptr<IHCShader>& out) = 0;
+	virtual void			CreateResource(const HC::GRAPHIC_RESOURCE_DESC& desc, std::shared_ptr<IHCResource>& out) = 0;
+	virtual void			CreateShader(HC::SHADER_TYPE type, const std::wstring& filePath, const std::string& entryPoint, std::shared_ptr<IHCShader>& out) = 0;
 	virtual void			CreateTextData(std::shared_ptr<IHCTextData>& out) = 0;
 
 	virtual void			CopyResource(std::shared_ptr<IHCResource> dest, std::shared_ptr<IHCResource> src) = 0;

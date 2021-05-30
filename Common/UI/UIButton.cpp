@@ -14,7 +14,6 @@ void UIButton::Update()
 
 		if (!m_isOnlyFontMode)
 		{
-			s_graphicPipeLine->ReserveRenderInfo(&m_renderPoint, m_renderPoint.TextureIndex);
 		}
 	}
 }

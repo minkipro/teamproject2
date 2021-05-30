@@ -20,16 +20,12 @@ SamplerComparisonState gsamShadow : register(s6);
 
 StructuredBuffer<TextureInfo> TextureInfos : register(t20);
 
-float4 GetTextureSample(SamplerState samp, Texture2D texture, int storedTextureIndex, float2 uv)
+float2 GetRealUV(int textureIndexPlusSpriteIndex, float2 uv)
 {
-    float4 result = { 0, 0, 0, 0 };
-    TextureInfo currTextureInfo = TextureInfos[storedTextureIndex];
-    
+    TextureInfo currTextureInfo = TextureInfos[textureIndexPlusSpriteIndex];
     float2 targetUV = currTextureInfo.StartUV;
     float2 scale = currTextureInfo.EndUV - currTextureInfo.StartUV;
     targetUV = targetUV + (uv * scale);
     
-    result = texture.Sample(samp, targetUV);
-    
-    return result;
+    return targetUV;
 }

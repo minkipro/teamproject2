@@ -17,9 +17,6 @@
     <Filter Include="Common\Devices">
       <UniqueIdentifier>{43623ced-2c56-4931-8bf0-c11cb97923a0}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Common\Devices\Graphics_Base">
-      <UniqueIdentifier>{c5a16727-f26f-4033-9860-cb9eaff4a160}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Common\Devices\Graphics_Dx11">
       <UniqueIdentifier>{a1864d5f-1f18-4bc2-af0b-19aa90ccd2b0}</UniqueIdentifier>
     </Filter>
@@ -35,9 +32,6 @@
     <Filter Include="Client\Scene\SceneObject">
       <UniqueIdentifier>{894dd467-29ef-42f4-a25c-03fe1324a86d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Common\Devices\Graphics_Base\UI">
-      <UniqueIdentifier>{33dd55ac-0a55-4b0e-a244-10b1a00e857b}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Common\Externel">
       <UniqueIdentifier>{7aacc62a-0500-408a-8794-344e2a145618}</UniqueIdentifier>
     </Filter>
@@ -49,6 +43,12 @@
     </Filter>
     <Filter Include="Common\TCP_IP_Socket">
       <UniqueIdentifier>{6f28d303-7bea-439c-96c9-d61fa4f8c473}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common\Graphics_Base">
+      <UniqueIdentifier>{c5a16727-f26f-4033-9860-cb9eaff4a160}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common\Graphics_Base\UI">
+      <UniqueIdentifier>{33dd55ac-0a55-4b0e-a244-10b1a00e857b}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -66,9 +66,6 @@
     </ClCompile>
     <ClCompile Include="..\Common\Source\Device\HCMouse.cpp">
       <Filter>Common\Devices</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Common\Source\Graphics\HCGraphic.cpp">
-      <Filter>Common\Devices\Graphics_Base</Filter>
     </ClCompile>
     <ClCompile Include="..\Common\Source\Graphics\HCGraphicDX11.cpp">
       <Filter>Common\Devices\Graphics_Dx11</Filter>
@@ -103,26 +100,20 @@
     <ClCompile Include="HCTileMap.cpp">
       <Filter>Client\Scene\SceneObject</Filter>
     </ClCompile>
-    <ClCompile Include="..\Common\Source\Graphics\HCCameraManager.cpp">
-      <Filter>Common</Filter>
-    </ClCompile>
     <ClCompile Include="..\Common\Source\Xml\Xml.cpp">
       <Filter>Common\Externel\Xml</Filter>
     </ClCompile>
-    <ClCompile Include="..\Common\Source\Device\HCPhysics.cpp">
-      <Filter>Common\Devices\Physics</Filter>
-    </ClCompile>
     <ClCompile Include="..\Common\UI\UIButton.cpp">
-      <Filter>Common\Devices\Graphics_Base\UI</Filter>
+      <Filter>Common\Graphics_Base\UI</Filter>
     </ClCompile>
     <ClCompile Include="..\Common\UI\UIObject.cpp">
-      <Filter>Common\Devices\Graphics_Base\UI</Filter>
+      <Filter>Common\Graphics_Base\UI</Filter>
     </ClCompile>
     <ClCompile Include="..\Common\UI\UIPanel.cpp">
-      <Filter>Common\Devices\Graphics_Base\UI</Filter>
+      <Filter>Common\Graphics_Base\UI</Filter>
     </ClCompile>
     <ClCompile Include="..\Common\UI\UIParam.cpp">
-      <Filter>Common\Devices\Graphics_Base\UI</Filter>
+      <Filter>Common\Graphics_Base\UI</Filter>
     </ClCompile>
     <ClCompile Include="..\Common\Source\TCPSocket\SocketCommunication.cpp">
       <Filter>Common\TCP_IP_Socket</Filter>
@@ -131,10 +122,22 @@
       <Filter>Common\Devices\Graphics_Dx11</Filter>
     </ClCompile>
     <ClCompile Include="..\Common\Source\Graphics\HCInputDataSamples.cpp">
-      <Filter>Common\Devices\Graphics_Base</Filter>
+      <Filter>Common\Graphics_Base</Filter>
     </ClCompile>
     <ClCompile Include="HCSceneObject.cpp">
       <Filter>Client\Scene\SceneObject</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Common\Source\Device\HCPhysics.cpp">
+      <Filter>Common\Devices</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Common\Source\Graphics\HCGraphic.cpp">
+      <Filter>Common\Devices</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Common\Source\Graphics\HCCameraManager.cpp">
+      <Filter>Common\Graphics_Base</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Common\Source\Graphics\HCMeshManager.cpp">
+      <Filter>Common\Graphics_Base</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -161,9 +164,6 @@
     </ClInclude>
     <ClInclude Include="..\Common\Source\Device\HCMouse.h">
       <Filter>Common\Devices</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Common\Source\Graphics\HCGraphic.h">
-      <Filter>Common\Devices\Graphics_Base</Filter>
     </ClInclude>
     <ClInclude Include="..\Common\Source\Graphics\HCGraphicDX11.h">
       <Filter>Common\Devices\Graphics_Dx11</Filter>
@@ -199,7 +199,7 @@
       <Filter>Client\Scene\SceneObject</Filter>
     </ClInclude>
     <ClInclude Include="..\Common\Source\Graphics\HCInputDataSamples.h">
-      <Filter>Common\Devices\Graphics_Base</Filter>
+      <Filter>Common\Graphics_Base</Filter>
     </ClInclude>
     <ClInclude Include="HCCharacterControllerByKeyboard.h">
       <Filter>Client\Scene</Filter>
@@ -207,26 +207,20 @@
     <ClInclude Include="HCTileMap.h">
       <Filter>Client\Scene\SceneObject</Filter>
     </ClInclude>
-    <ClInclude Include="..\Common\Source\Graphics\HCCameraManager.h">
-      <Filter>Common</Filter>
-    </ClInclude>
     <ClInclude Include="..\Common\Source\Xml\Xml.h">
       <Filter>Common\Externel\Xml</Filter>
     </ClInclude>
-    <ClInclude Include="..\Common\Source\Device\HCPhysics.h">
-      <Filter>Common\Devices\Physics</Filter>
-    </ClInclude>
     <ClInclude Include="..\Common\UI\UIButton.h">
-      <Filter>Common\Devices\Graphics_Base\UI</Filter>
+      <Filter>Common\Graphics_Base\UI</Filter>
     </ClInclude>
     <ClInclude Include="..\Common\UI\UIObject.h">
-      <Filter>Common\Devices\Graphics_Base\UI</Filter>
+      <Filter>Common\Graphics_Base\UI</Filter>
     </ClInclude>
     <ClInclude Include="..\Common\UI\UIPanel.h">
-      <Filter>Common\Devices\Graphics_Base\UI</Filter>
+      <Filter>Common\Graphics_Base\UI</Filter>
     </ClInclude>
     <ClInclude Include="..\Common\UI\UIParam.h">
-      <Filter>Common\Devices\Graphics_Base\UI</Filter>
+      <Filter>Common\Graphics_Base\UI</Filter>
     </ClInclude>
     <ClInclude Include="HCCharacterController.h">
       <Filter>Client\Scene</Filter>
@@ -236,6 +230,21 @@
     </ClInclude>
     <ClInclude Include="..\Common\Source\Graphics\DX11TextData.h">
       <Filter>Common\Devices\Graphics_Dx11</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\Source\Device\HCPhysics.h">
+      <Filter>Common\Devices</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\Source\Graphics\HCGraphic.h">
+      <Filter>Common\Devices</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\Source\Graphics\HCMeshManager.h">
+      <Filter>Common\Graphics_Base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\Source\Graphics\HCRenderInfos.h">
+      <Filter>Common\Graphics_Base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\Source\Graphics\HCCameraManager.h">
+      <Filter>Common\Graphics_Base</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

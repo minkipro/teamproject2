@@ -1,6 +1,7 @@
 #pragma once
 #include "Graphics\HCGraphic.h"
 #include "Device\HCPhysics.h"
+#include "Graphics\HCRenderInfos.h"
 
 namespace HC
 {
@@ -63,7 +64,7 @@ public:
 
 	void			AddFunc(HCColFunc func);
 
-	const DirectX::XMFLOAT2&	GetSize() { return m_renderPoint.Size; }
+	const DirectX::XMFLOAT2&	GetSize() { return m_renderInfos.Size; }
 
 private:
 	bool			CheckDependency(UIObject* object);
@@ -75,7 +76,7 @@ protected:
 	UIObject*					m_parent;
 	std::vector<UIObject*>		m_childs;
 	DirectX::XMFLOAT3			m_pos;
-	HCPointRenderInfo			m_renderPoint;
+	HCPointRenderInfo			m_renderInfos;
 	HCColliderData				m_ColliderData;
 	DirectX::XMFLOAT2			m_benchUV;
 	bool						m_isOn;

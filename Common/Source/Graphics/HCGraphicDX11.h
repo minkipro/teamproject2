@@ -25,7 +25,7 @@ class HCGraphicDX11 final : public HCGraphic
 	{
 		ComPtr<ID3D11ShaderResourceView>						TextureView;
 		D3D11_SHADER_RESOURCE_VIEW_DESC							TextureDesc;
-		UINT													SpriteNum = 0;
+		UINT													SpriteNum = 1;
 	};
 
 public:
@@ -39,8 +39,8 @@ public:
 	virtual void			Init();
 	virtual void			Update();
 
-	virtual void			CreateResource(const std::string& resourceName, const HC::GRAPHIC_RESOURCE_DESC& desc, std::shared_ptr<IHCResource>& out) override;
-	virtual void			CreateShader(const std::string& shaderName, HC::SHADER_TYPE type, const std::wstring& filePath, const std::string& entryPoint, std::shared_ptr<IHCShader>& out) override;
+	virtual void			CreateResource(const HC::GRAPHIC_RESOURCE_DESC& desc, std::shared_ptr<IHCResource>& out) override;
+	virtual void			CreateShader(HC::SHADER_TYPE type, const std::wstring& filePath, const std::string& entryPoint, std::shared_ptr<IHCShader>& out) override;
 	virtual void			CreateTextData(std::shared_ptr<IHCTextData>& out) override;
 
 	virtual void			CopyResource(std::shared_ptr<IHCResource> dest, std::shared_ptr<IHCResource> src) override;

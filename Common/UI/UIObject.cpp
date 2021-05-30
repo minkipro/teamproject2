@@ -13,7 +13,7 @@ void UIObject::CreateUIRenderPipeLine(HCGraphic* device)
 		std::shared_ptr<IHCShader> ps = nullptr;
 		std::shared_ptr<IHCShader> gs = nullptr;
 
-		device->CreateShader("UIVS", HC::SHADER_TYPE::HCSHADER_VS, L"./../Common/Shader/PointToPlaneSahder.hlsl", "VS", vs);
+		/*device->CreateShader("UIVS", HC::SHADER_TYPE::HCSHADER_VS, L"./../Common/Shader/PointToPlaneSahder.hlsl", "VS", vs);
 		device->CreateShader("UIGS", HC::SHADER_TYPE::HCSHADER_GS, L"./../Common/Shader/PointToPlaneSahder.hlsl", "GS", gs);
 		device->CreateShader("UIPS", HC::SHADER_TYPE::HCSHADER_PS, L"./../Common/Shader/PointToPlaneSahder.hlsl", "PS", ps);
 
@@ -24,7 +24,7 @@ void UIObject::CreateUIRenderPipeLine(HCGraphic* device)
 		s_graphicPipeLine->SetShader(HC::SHADER_TYPE::HCSHADER_GS, gs);
 		s_graphicPipeLine->SetShader(HC::SHADER_TYPE::HCSHADER_PS, ps);
 
-		device->NumberingGraphicPipeLineSlot(5, s_graphicPipeLine);
+		device->NumberingGraphicPipeLineSlot(5, s_graphicPipeLine);*/
 	}
 }
 
@@ -32,9 +32,9 @@ void UIObject::Update()
 {
 	if (m_parent)
 	{
-		m_renderPoint.Position.x = m_parent->m_pos.x + (m_pos.x - m_renderPoint.Size.x * m_benchUV.x);
-		m_renderPoint.Position.y = m_parent->m_pos.y + (m_pos.y - m_renderPoint.Size.y * m_benchUV.y);
-		m_renderPoint.Position.z = m_parent->m_pos.z + m_pos.z;
+		m_renderInfos.Position.x = m_parent->m_pos.x + (m_pos.x - m_renderInfos.Size.x * m_benchUV.x);
+		m_renderInfos.Position.y = m_parent->m_pos.y + (m_pos.y - m_renderInfos.Size.y * m_benchUV.y);
+		m_renderInfos.Position.z = m_parent->m_pos.z + m_pos.z;
 	}
 
 	for (auto& it : m_childs)
@@ -62,8 +62,8 @@ void UIObject::SetTexture(const std::wstring& path, const DirectX::XMFLOAT2& siz
 	auto device = HCDEVICE(HCGraphic);
 	HCTextureData texData = device->GetTextureIndex(path);
 
-	m_renderPoint.TextureIndex = texData.textureIndex;
-	m_renderPoint.Size = size;
+	m_renderInfos.TextureIndex = texData.textureIndex;
+	m_renderInfos.Size = size;
 }
 
 void UIObject::AddChild(UIObject* child)
@@ -82,12 +82,12 @@ void UIObject::SetParent(UIObject* object)
 
 void UIObject::SetPos(const DirectX::XMFLOAT3& pos)
 {
-	m_renderPoint.Position = pos;
+	m_renderInfos.Position = pos;
 }
 
 void UIObject::SetSize(const DirectX::XMFLOAT2& size)
 {
-	m_renderPoint.Size = size;
+	m_renderInfos.Size = size;
 }
 
 void UIObject::AddFunc(HCColFunc func)

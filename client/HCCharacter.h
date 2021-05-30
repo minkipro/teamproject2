@@ -11,10 +11,10 @@ namespace HC
 		Character(const wchar_t* textureName);
 		virtual ~Character() override;
 		virtual void Update() override;
-		virtual void Render(HCGraphicPipeLine* pipeLine) override;
+		virtual void Render() override;
 
 	public:
-		HCPointRenderInfo m_renderPoint;
+		HCPointRenderInfo m_renderInfos;
 		int m_spriteNum;
 		CharacterController* m_characterController;
 		

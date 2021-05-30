@@ -30,6 +30,9 @@ public:
 	template<typename T> T* GetDevice();
 
 private:
+	void			CreateBaseMeshs();
+
+private:
 	static Engine*								m_engine;
 
 	DevScene									m_scene;

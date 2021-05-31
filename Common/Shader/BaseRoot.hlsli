@@ -14,14 +14,4 @@ SamplerState gsamAnisotropicWrap : register(s4);
 SamplerState gsamAnisotropicClamp : register(s5);
 SamplerComparisonState gsamShadow : register(s6);
 
-StructuredBuffer<SpriteInfo> TextureInfos : register(t20);
-
-float2 GetSpriteUV(int spriteIndex, float2 uv)
-{
-    SpriteInfo currTextureInfo = TextureInfos[spriteIndex];
-    float2 targetUV = currTextureInfo.StartUV;
-    float2 scale = currTextureInfo.EndUV - currTextureInfo.StartUV;
-    targetUV = targetUV + (uv * scale);
-    
-    return targetUV;
-}
+StructuredBuffer<SpriteInfo> gSpriteInfos : register(t20);

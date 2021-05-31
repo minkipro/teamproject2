@@ -47,7 +47,7 @@ VertexOut VS(VertexIn input, uint id : SV_InstanceID)
     vertex.SpriteIndex = renderInfo.spriteIndex;
     
     vertex.Color = renderInfo.Color;
-    vertex.UV = input.Pos.xy;
+    vertex.UV = GetSpriteUV(renderInfo.spriteIndex, float2(input.Pos.x, 1-input.Pos.y));
     
     vertex.PosH = float4(input.Pos, 1);
     vertex.PosH.xy *= renderInfo.Size;
@@ -65,7 +65,7 @@ float4 PS(VertexOut input) : SV_TARGET
     
     if (input.TextureIndex >= 0)
     {
-        result = gMainTexture.Sample(gsamPointClamp, GetSpriteUV(input.SpriteIndex, input.UV));
+        result = gMainTexture.Sample(gsamPointClamp, input.UV);
     }
     else
     {

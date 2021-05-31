@@ -20,10 +20,10 @@ namespace HC
 		CameraManager();
 		Camera* CreateCamera();
 		void Update();
-		const DirectX::XMMATRIX& GetMatrix() const { return m_viewMatrix; };
+		DirectX::XMMATRIX XM_CALLCONV GetMatrix();
 	private:
-		DirectX::XMMATRIX m_viewMatrix;
-		std::vector<std::unique_ptr<Camera>> m_cameras;
+		DirectX::XMFLOAT4X4						m_viewMatrix;
+		std::vector<std::unique_ptr<Camera>>	m_cameras;
 		Camera* m_mainCamera;
 	};
 }

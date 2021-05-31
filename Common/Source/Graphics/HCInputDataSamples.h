@@ -15,11 +15,10 @@ struct HCInputLayoutElement
 	DXGI_FORMAT Format;
 };
 
-struct HCPositionVertex
+struct HCOnePointExtToRect
 {
 	static std::vector<HCInputLayoutElement> InputLayout;
-	DirectX::XMFLOAT3	Position = {};
-	int					Pad = 0;
+	DirectX::XMUINT4 noneUsed = {};
 };
 
 struct HCPointRenderInfo
@@ -27,7 +26,7 @@ struct HCPointRenderInfo
 	DirectX::XMFLOAT3	Position = { 0,0,0 };
 	DirectX::XMFLOAT2	Size = { 0,0 };
 	DirectX::XMFLOAT4	Color = { 0,0,0,1 };
-	int					TextureIndex = -1;
-	UINT				SpriteIndex = 0;
-	UINT				Pad1 = 0;
+	int					SpriteInfoIndex = -1;
+	int					Pad0 = 0;
+	int					Pad1 = 0;
 };

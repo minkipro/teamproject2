@@ -2,21 +2,18 @@
 #include "HCSceneObject.h"
 #include "Graphics/HCInputDataSamples.h"
 
-namespace HC
+class HCCharacter : public HCSceneObject
 {
-	class CharacterController;
-	class Character : public HC::SceneObject
-	{
-	public:
-		Character(const wchar_t* textureName);
-		virtual ~Character() override;
-		virtual void Update() override;
-		virtual void Render() override;
+public:
+	HCCharacter();
+	virtual ~HCCharacter() override;
 
-	public:
-		HCPointRenderInfo m_renderInfos;
-		int m_spriteNum;
-		CharacterController* m_characterController;
-		
-	};
-}
+	virtual void Init() override;
+	virtual void Update() override;
+	virtual void Render() override;
+
+private:
+	HCTextureData			m_textureData;
+	HCPointRenderInfo		m_renderInfos;
+};
+

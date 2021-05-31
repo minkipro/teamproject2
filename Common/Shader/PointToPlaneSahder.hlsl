@@ -9,8 +9,8 @@ struct VertexOut
 {
     float4 PosH : SV_POSITION;
     float4 Color : TEXCOORD0;
-    nointerpolation int TextureIndex : TEXINDEX0;
-    nointerpolation uint SpriteIndex : TEXINDEX1;
+    float2 UV : TEXCOORD1;
+    nointerpolation int IsTexVertex : TEXCOORD2;
 };
 
 struct RenderInfo
@@ -18,8 +18,8 @@ struct RenderInfo
     float3 PosL;
     float2 Size;
     float4 Color;
-    int textureIndex;
-    uint spriteIndex;
+    int SpriteInfoIndex;
+    int pad0;
     int pad1;
 };
 
@@ -45,17 +45,34 @@ void CreatePanel(PointVertexIn vin, inout TriangleStream<VertexOut> output)
     [unroll(4)]
     for (int k = 0; k < 4; k++)
     {
-        vertices[k].TextureIndex = renderInfo.textureIndex;
-        vertices[k].SpriteIndex = renderInfo.spriteIndex;
         vertices[k].Color = renderInfo.Color;
         vertices[k].PosH = float4(renderInfo.PosL, 1);
+        vertices[k].IsTexVertex = renderInfo.SpriteInfoIndex;
     }
-
+    
     /*
     1 คั 3
     |    |
     0 คั 2
     */
+    
+    if (renderInfo.SpriteInfoIndex > -1)
+    {
+        SpriteInfo spInfo = gSpriteInfos[renderInfo.SpriteInfoIndex];
+          
+        vertices[0].UV = float2(spInfo.StartUV.x, spInfo.EndUV.y);
+        vertices[1].UV = spInfo.StartUV;
+        vertices[2].UV = spInfo.EndUV;
+        vertices[3].UV = float2(spInfo.EndUV.x, spInfo.StartUV.y);
+    }
+    else
+    {
+        vertices[0].UV = float2(0, 1.0f);
+        vertices[1].UV = float2(0, 0);
+        vertices[2].UV = float2(1.0f, 1.0f);
+        vertices[3].UV = float2(1.0f, 0);
+    }
+    
     vertices[0].PosH.xy += float2(0, renderInfo.Size.y);
     vertices[1].PosH.xy += float2(0, 0);
     vertices[2].PosH.xy += float2(renderInfo.Size.x, renderInfo.Size.y);
@@ -97,9 +114,9 @@ float4 PS(VertexOut input) : SV_TARGET
 {
 	float4 result = {0,0,0,1};
     
-    if (input.TextureIndex >= 0)
+    if (input.IsTexVertex >= 0)
     {
-        result = gMainTexture.Sample(gsamPointClamp, GetSpriteUV(input.SpriteIndex, input.Color.xy));
+        result = gMainTexture.Sample(gsamPointClamp, input.UV);
     }
     else
     {

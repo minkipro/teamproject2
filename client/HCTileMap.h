@@ -2,21 +2,23 @@
 #include "HCSceneObject.h"
 #include "Graphics/HCInputDataSamples.h"
 
-namespace HC
+class HCTileMap : public HCSceneObject
 {
-	class TileMap : public HC::SceneObject
-	{
-	public:
-		TileMap(float sizeX, float sizeY, UINT xNum, UINT yNum);
-		virtual ~TileMap() override;
-		virtual void Update() override;
-		virtual void Render() override;
+public:
+	HCTileMap(float sizeX, float sizeY, UINT xNum, UINT yNum);
+	virtual ~HCTileMap() override;
 
-	private:
-		std::shared_ptr<IHCResource>	m_renderInfoBuffer;
-		const HCMesh*					m_mesh = nullptr;
-		UINT							m_tileNum;
-		HCTextureData					m_textureData;
-	};
-}
+	virtual void Init() override;
+	virtual void Update() override;
+	virtual void Render() override;
+
+private:
+	std::shared_ptr<IHCResource>	m_renderInfoBuffer;
+	const HCMesh*					m_mesh = nullptr;
+	float							m_sizeX;
+	float							m_sizeY;
+	UINT							m_numX;
+	UINT							m_numY;
+	HCTextureData					m_textureData;
+};
 

@@ -273,10 +273,12 @@ void HCGraphicDX11::CopyResource(std::shared_ptr<IHCResource> dest, const std::s
 
 void HCGraphicDX11::RenderBegin()
 {
-	m_swapchain->PresentRenderTargetSetting(m_deviceContext.Get(), DirectX::Colors::Aqua);
+	m_swapchain->PresentRenderTargetSetting(m_deviceContext.Get(), DirectX::Colors::Black);
 
 	ID3D11ShaderResourceView* textureInfoView = m_textureInfoView.Get();
 	m_deviceContext->PSSetShaderResources(20, 1, &textureInfoView);
+	m_deviceContext->VSSetShaderResources(20, 1, &textureInfoView);
+	m_deviceContext->GSSetShaderResources(20, 1, &textureInfoView);
 }
 
 void HCGraphicDX11::RenderEnd()
@@ -836,7 +838,7 @@ void HCGraphicDX11::CreateGraphicPipeLineBaseSettings()
 	CD3D11_RASTERIZER_DESC rasterizerDesc(D3D11_DEFAULT);
 	COM_HRESULT_IF_FAILED(m_device->CreateRasterizerState(&rasterizerDesc, m_baseRasterizer.GetAddressOf()),
 		"Failed to create rasterizer state.");
-
+	
 	D3D11_RENDER_TARGET_BLEND_DESC rtbd = { 0 };
 	rtbd.BlendEnable = true;
 	rtbd.SrcBlend = D3D11_BLEND::D3D11_BLEND_SRC_ALPHA;

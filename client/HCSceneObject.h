@@ -1,13 +1,11 @@
 #pragma once
 #include "Graphics\HCGraphic.h"
 
-namespace HC
+class HCSceneObject
 {
-	class SceneObject
-	{
-	public:
-		virtual ~SceneObject() = 0 {};
-		virtual void Update() = 0;
-		virtual void Render() = 0;
-	};
-}
+public:
+	virtual ~HCSceneObject() = 0 {};
+	virtual void Init() = 0;
+	virtual void Update() = 0;
+	virtual void Render() = 0;
+};

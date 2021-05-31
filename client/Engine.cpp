@@ -75,31 +75,25 @@ int Engine::Run()
 
 void Engine::CreateBaseMeshs()
 {
-	HCMesh normalRect;
+	HCMesh onePointMesh;
 	HC::GRAPHIC_RESOURCE_DESC onePointExtToRectDesc;
-	std::vector<HCPositionVertex> temp(6);
 
-	temp[0].Position = { 0.0f,0.0f,0.0f };
-	temp[1].Position = { 1.0f,0.0f,0.0f };
-	temp[2].Position = { 0.0f,1.0f,0.0f };
-	temp[3].Position = { 0.0f,1.0f,0.0f };
-	temp[4].Position = { 1.0f,0.0f,0.0f };
-	temp[5].Position = { 1.0f,1.0f,0.0f };
+	HCOnePointExtToRect temp;
 
-	normalRect.VertexCount = temp.size();
-	normalRect.Primitive = HC::PRIMITIVE_TOPOLOGY::TRIANGLELIST;
+	onePointMesh.VertexCount = 1;
+	onePointMesh.Primitive = HC::PRIMITIVE_TOPOLOGY::POINT;
 
 	onePointExtToRectDesc.Type = HC::GRAPHIC_RESOURCE_TYPE::GRAPHIC_RESOURCE_BUFFER;
 	onePointExtToRectDesc.UsageType = HC::GRAPHIC_RESOURCE_USAGE_TYPE::GRAPHIC_RESOURCE_USAGE_DEFAULT;
 	onePointExtToRectDesc.BindFlags = HC::GRAPHIC_RESOURCE_BIND_VERTEX_BUFFER;
 	onePointExtToRectDesc.Flags = HC::GRAPHIC_RESOURCE_FLAG_NONE;
-	onePointExtToRectDesc.Stride = sizeof(HCPositionVertex);
-	onePointExtToRectDesc.Buffer.StrideNum = temp.size();
-	onePointExtToRectDesc.DefaultData = temp.data();
+	onePointExtToRectDesc.Stride = sizeof(HCOnePointExtToRect);
+	onePointExtToRectDesc.Buffer.StrideNum = 1;
+	onePointExtToRectDesc.DefaultData = &temp;
 
-	m_graphic->CreateResource(onePointExtToRectDesc, normalRect.VertexBuffer);
+	m_graphic->CreateResource(onePointExtToRectDesc, onePointMesh.VertexBuffer);
 
-	HCMeshManager::Get()->SetMesh("NormalRect", normalRect);
+	HCMeshManager::Get()->SetMesh(typeid(HCOnePointExtToRect).name(), onePointMesh);
 }
 
 void Engine::CalculateFrame()

@@ -62,7 +62,6 @@ void UIObject::SetTexture(const std::wstring& path, const DirectX::XMFLOAT2& siz
 	auto device = HCDEVICE(HCGraphic);
 	HCTextureData texData = device->GetTextureIndex(path);
 
-	m_renderInfos.TextureIndex = texData.textureIndex;
 	m_renderInfos.Size = size;
 }
 

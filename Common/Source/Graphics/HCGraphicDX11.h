@@ -15,10 +15,6 @@ class HCGraphicDX11 final : public HCGraphic
 	{
 		DirectX::XMFLOAT2 StartUV = {};
 		DirectX::XMFLOAT2 EndUV = {};
-		UINT TextureIndex = 0;
-		UINT Pad1;
-		UINT Pad2;
-		UINT Pad3;
 	};
 
 	struct TextureResourceData
@@ -26,6 +22,7 @@ class HCGraphicDX11 final : public HCGraphic
 		ComPtr<ID3D11ShaderResourceView>						TextureView;
 		D3D11_SHADER_RESOURCE_VIEW_DESC							TextureDesc;
 		UINT													SpriteNum = 1;
+		UINT													SpriteInfoStartIndex = 0;
 	};
 
 public:

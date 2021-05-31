@@ -31,6 +31,7 @@ public:
 
 private:
 	void			CreateBaseMeshs();
+	void			CalculateFrame();
 
 private:
 	static Engine*								m_engine;
@@ -40,6 +41,10 @@ private:
 	std::unordered_map<std::string, IHCDevice*>	m_deviceMap;
 	std::unique_ptr<HCWindow>					m_window;
 	HCGraphic*									m_graphic;
+	HCTimer*									m_timer;
+	HCMouse*									m_mouse;
+	HCKeyboard*									m_keyboard;
+	HCKoreanInput*								m_koreanInput;
 };
 
 template<typename T, typename ...Types>

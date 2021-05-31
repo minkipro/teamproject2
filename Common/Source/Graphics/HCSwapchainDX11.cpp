@@ -14,8 +14,8 @@ void HCSwapchainDX11::Init(UINT numSwapBuffer, HWND wnd, ID3D11Device** deviceOu
 	scd.BufferDesc.RefreshRate.Numerator = 60;
 	scd.BufferDesc.RefreshRate.Denominator = 1;
 	scd.BufferDesc.Format = m_presentBufferFormat;
-	scd.BufferDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UPPER_FIELD_FIRST;
-	scd.BufferDesc.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
+	scd.BufferDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_PROGRESSIVE;
+	scd.BufferDesc.Scaling = DXGI_MODE_SCALING_CENTERED;
 
 	scd.SampleDesc.Count = 1;
 	scd.SampleDesc.Quality = 0;
@@ -25,7 +25,7 @@ void HCSwapchainDX11::Init(UINT numSwapBuffer, HWND wnd, ID3D11Device** deviceOu
 	scd.OutputWindow = wnd;
 	scd.Windowed = TRUE;
 	scd.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
-	scd.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
+	scd.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH | DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING;
 
 	COM_HRESULT_IF_FAILED(D3D11CreateDeviceAndSwapChain(nullptr,
 		D3D_DRIVER_TYPE_HARDWARE,

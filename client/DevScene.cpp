@@ -36,13 +36,12 @@ void DevScene::Init()
 
 	m_testPipeLine = std::make_shared<HCGraphicPipeLine>();
 
-	m_testPipeLine->SetVertexType(typeid(HCOnePointExtToRect).hash_code(), sizeof(HCOnePointExtToRect), &HCOnePointExtToRect::InputLayout);
+	m_testPipeLine->SetVertexType(typeid(HCPositionVertex).hash_code(), sizeof(HCPositionVertex), &HCPositionVertex::InputLayout);
 
-	graphic->CreateShader(HC::SHADER_TYPE::HCSHADER_VS, L"./../Common/Shader/PointToPlaneSahder.hlsl", "VS", m_testPipeLine->m_shaders[HC::SHADER_TYPE::HCSHADER_VS]);
-	graphic->CreateShader(HC::SHADER_TYPE::HCSHADER_GS, L"./../Common/Shader/PointToPlaneSahder.hlsl", "GS", m_testPipeLine->m_shaders[HC::SHADER_TYPE::HCSHADER_GS]);
-	graphic->CreateShader(HC::SHADER_TYPE::HCSHADER_PS, L"./../Common/Shader/PointToPlaneSahder.hlsl", "PS", m_testPipeLine->m_shaders[HC::SHADER_TYPE::HCSHADER_PS]);
+	graphic->CreateShader(HC::SHADER_TYPE::HCSHADER_VS, L"./../Common/Shader/Normal2DShader.hlsl", "VS", m_testPipeLine->m_shaders[HC::SHADER_TYPE::HCSHADER_VS]);
+	graphic->CreateShader(HC::SHADER_TYPE::HCSHADER_PS, L"./../Common/Shader/Normal2DShader.hlsl", "PS", m_testPipeLine->m_shaders[HC::SHADER_TYPE::HCSHADER_PS]);
 
-	m_testPipeLine->m_primitive = HC::PRIMITIVE_TOPOLOGY::POINT;
+	m_testPipeLine->m_primitive = HC::PRIMITIVE_TOPOLOGY::TRIANGLELIST;
 
 	/*HC::Character* character = new HC::Character(L"Texture/PIPOYA FREE RPG Character Sprites NEKONIN/sp_3x4_pipo-nekonin001.png");
 
@@ -64,19 +63,20 @@ void DevScene::Init()
 	
 	m_sceneObjects.push_back(character);*/
 
-	m_sceneObjects.push_back(new HC::TileMap(100.0f, 100.0f, 2, 2));
-}
+	m_sceneObjects.push_back(new HC::TileMap(50.0f, 50.0f, 100, 100));
 
-void DevScene::Update()
-{
 	DirectX::XMMATRIX orthoP = DirectX::XMMatrixOrthographicOffCenterLH(
 		-static_cast<float>(HC::GO.WIN.WindowsizeX) * 0.5f, static_cast<float>(HC::GO.WIN.WindowsizeX) * 0.5f,
 		static_cast<float>(HC::GO.WIN.WindowsizeY) * 0.5f, -static_cast<float>(HC::GO.WIN.WindowsizeY) * 0.5f,
 		0, 1.0f);
 
+	DirectX::XMStoreFloat4x4(&m_mainPass.OrthoMatrix, orthoP);
+}
+
+void DevScene::Update()
+{
 	HC::CameraManager* cameraManager = HC::CameraManager::Get();
 	cameraManager->Update();
-	DirectX::XMStoreFloat4x4(&m_mainPass.OrthoMatrix, orthoP);
 	DirectX::XMStoreFloat4x4(&m_mainPass.ViewMatrix, cameraManager->GetMatrix());
 
 	m_mainPassCB->Map();

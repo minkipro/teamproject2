@@ -198,8 +198,9 @@ public:
 
 struct HCTextureData
 {
-	int textureIndex = -1;
-	int spriteNum = -1;
+	UINT textureIndex = 0;
+	UINT spriteStartIndex = 0;
+	UINT spriteNum = 1;
 };
 
 struct HCMesh

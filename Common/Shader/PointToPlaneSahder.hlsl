@@ -99,7 +99,7 @@ float4 PS(VertexOut input) : SV_TARGET
     
     if (input.TextureIndex >= 0)
     {
-        result = gMainTexture.Sample(gsamPointClamp, GetRealUV(input.TextureIndex + input.SpriteIndex, input.Color.xy));
+        result = gMainTexture.Sample(gsamPointClamp, GetSpriteUV(input.SpriteIndex, input.Color.xy));
     }
     else
     {

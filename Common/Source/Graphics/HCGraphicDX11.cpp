@@ -391,7 +391,7 @@ void HCGraphicDX11::SetTexture(UINT textureIndex, UINT shaderResourceSlot)
 {
 	COM_THROW_IF_FAILED(shaderResourceSlot < 20, "max shaderResourceSlot is 19");
 
-	ID3D11ShaderResourceView* view = m_textures[m_allSpriteDatas[textureIndex].TextureIndex].TextureView.Get();
+	ID3D11ShaderResourceView* view = m_textures[textureIndex].TextureView.Get();
 	m_deviceContext->VSSetShaderResources(shaderResourceSlot, 1, &view);
 	m_deviceContext->DSSetShaderResources(shaderResourceSlot, 1, &view);
 	m_deviceContext->HSSetShaderResources(shaderResourceSlot, 1, &view);
@@ -539,8 +539,11 @@ HCTextureData HCGraphicDX11::GetTextureIndex(const std::wstring& textureName) co
 	auto indexBufferIter = m_textureIndex.find(textureName);
 	COM_THROW_IF_FAILED(indexBufferIter != m_textureIndex.end(), "This texture is not loaded");
 
+	auto& currTexture = m_textures[indexBufferIter->second];
+
 	result.textureIndex = indexBufferIter->second;
-	result.spriteNum = m_textures[result.textureIndex].SpriteNum;
+	result.spriteNum = currTexture.SpriteNum;
+	result.spriteStartIndex = currTexture.SpriteInfoStartIndex;
 
 	return result;
 }
@@ -749,8 +752,6 @@ void HCGraphicDX11::CreateTextures()
 	StringHelper::SearchAllFileFromDirectory(HC::GO.GRAPHIC.TextureFolderPath, filePathes);
 
 	std::vector<TextureSpriteData> spriteDatas;
-	UINT currIndex = 0;
-	UINT currTextureIndex = 0;
 	for (auto& it : filePathes)
 	{
 		for (auto& it2 : it.second)
@@ -759,13 +760,13 @@ void HCGraphicDX11::CreateTextures()
 			TextureResourceData currTextureData;
 			TextureSpriteData locationData;
 
-			m_textureIndex[it.first + L"/" + textureName] = currIndex;
-			locationData.TextureIndex = currTextureIndex++;
+			m_textureIndex[it.first + L"/" + textureName] = SizeTTransUINT(m_textures.size());
 
 			COM_HRESULT_IF_FAILED(DirectX::CreateWICTextureFromFile(m_device.Get(), it2.c_str(), nullptr, currTextureData.TextureView.GetAddressOf()),
 				"Texture load Fail");
 
 			currTextureData.TextureView->GetDesc(&currTextureData.TextureDesc);
+			currTextureData.SpriteInfoStartIndex = SizeTTransUINT(m_allSpriteDatas.size());
 			COM_THROW_IF_FAILED(currTextureData.TextureDesc.ViewDimension== D3D11_SRV_DIMENSION_TEXTURE2D, "This type texture is not supported");
 
 			std::wstring postString = std::wstring(textureName.c_str(), HC::GO.GRAPHIC.SpriteTextureSuffix.length());
@@ -781,7 +782,6 @@ void HCGraphicDX11::CreateTextures()
 					locationData.EndUV = { it2.EndUV.x,  it2.EndUV.y };
 
 					m_allSpriteDatas.push_back(locationData);
-					currIndex++;
 				}
 			}
 			else
@@ -790,7 +790,6 @@ void HCGraphicDX11::CreateTextures()
 				locationData.EndUV = { 1.0f,1.0f };
 
 				m_allSpriteDatas.push_back(locationData);
-				currIndex++;
 			}
 
 			m_textures.push_back(currTextureData);
@@ -823,8 +822,6 @@ void HCGraphicDX11::CreateTextures()
 
 		m_device->CreateShaderResourceView(textureInfoBuffer.Get(), &bufferViewDesc, m_textureInfoView.GetAddressOf());
 	}
-
-	m_deviceContext->Flush();
 }
 
 void HCGraphicDX11::CreateGraphicPipeLineBaseSettings()

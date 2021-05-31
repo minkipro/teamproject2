@@ -8,8 +8,8 @@ TileMap::TileMap(float sizeX, float sizeY, UINT xNum, UINT yNum)
 {
 	auto graphic = HCDEVICE(HCGraphic);
 
-	m_mesh = HCMeshManager::Get()->GetMesh(typeid(HCOnePointExtToRect).name());
-	m_textureData = graphic->GetTextureIndex(L"Texture/character3-3.png");
+	m_mesh = HCMeshManager::Get()->GetMesh("NormalRect");
+	m_textureData = graphic->GetTextureIndex(L"Texture/Pipoya RPG Tileset 16x16/sp_8x249_[Base]BaseChip_pipo.png");
 
 	HC::GRAPHIC_RESOURCE_DESC renderInfoBufferDesc;
 	std::vector<HCPointRenderInfo>	renderInfos;
@@ -30,7 +30,7 @@ TileMap::TileMap(float sizeX, float sizeY, UINT xNum, UINT yNum)
 		renderInfos[i].Size = { sizeX,sizeY };
 		renderInfos[i].Position = { indexX * sizeX, indexY * sizeY , 0.6f };
 		renderInfos[i].TextureIndex = m_textureData.textureIndex;
-		renderInfos[i].SpriteIndex = i % m_textureData.spriteNum;
+		renderInfos[i].SpriteIndex = m_textureData.spriteStartIndex + i % m_textureData.spriteNum;
 	}
 
 	renderInfoBufferDesc.DefaultData = renderInfos.data();

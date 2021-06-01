@@ -9,7 +9,7 @@ public:
 	virtual ~HCTileMap() override;
 
 	virtual void Init() override;
-	virtual void Update() override;
+	virtual void Update(float deltaTime) override;
 	virtual void Render() override;
 
 private:

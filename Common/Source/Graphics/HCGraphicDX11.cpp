@@ -401,6 +401,25 @@ void HCGraphicDX11::SetTexture(UINT textureIndex, UINT shaderResourceSlot)
 	m_deviceContext->PSSetShaderResources(shaderResourceSlot, 1, &view);
 }
 
+void HCGraphicDX11::SetTextures(const std::vector<UINT>& textureIndices, UINT shaderResourceStartSlot)
+{
+	COM_THROW_IF_FAILED(shaderResourceStartSlot + textureIndices.size() -1 < 20, "max shaderResourceSlot is 19");
+
+	static std::vector<ID3D11ShaderResourceView*> views;
+	views.clear();
+	for (auto& it : textureIndices)
+	{
+		ID3D11ShaderResourceView* view = m_textures[it].TextureView.Get();
+		views.push_back(view);
+	}
+
+	m_deviceContext->VSSetShaderResources(shaderResourceStartSlot, views.size(), views.data());
+	m_deviceContext->DSSetShaderResources(shaderResourceStartSlot, views.size(), views.data());
+	m_deviceContext->HSSetShaderResources(shaderResourceStartSlot, views.size(), views.data());
+	m_deviceContext->GSSetShaderResources(shaderResourceStartSlot, views.size(), views.data());
+	m_deviceContext->PSSetShaderResources(shaderResourceStartSlot, views.size(), views.data());
+}
+
 void HCGraphicDX11::SetShaderResource(std::shared_ptr<IHCResource> resource, UINT shaderResourceSlot)
 {
 	COM_THROW_IF_FAILED(shaderResourceSlot < 20, "max shaderResourceSlot is 19");
@@ -993,10 +1012,12 @@ void HCGraphicDX11::GetSpriteData(const std::wstring& texturePath, std::vector<T
 		COM_THROW_IF_FAILED((gridInfoTextEndIndex != std::wstring::npos) && (gridInfoSplitIndex != std::wstring::npos),
 			textureName + L"this Texture name has not sprtie grid info");
 		
-		int sizeX = _wtoi(std::wstring(textureName.c_str() + gridInfoTextStartIndex, gridInfoSplitIndex - gridInfoTextStartIndex).c_str());
-		int sizeY = _wtoi(std::wstring(textureName.c_str() + gridInfoSplitIndex + 1, gridInfoTextEndIndex - (gridInfoSplitIndex + 1)).c_str());
-		float offsetX = 1.0f / sizeX;
-		float offsetY = 1.0f / sizeY;
+		const int sizeX = _wtoi(std::wstring(textureName.c_str() + gridInfoTextStartIndex, gridInfoSplitIndex - gridInfoTextStartIndex).c_str());
+		const int sizeY = _wtoi(std::wstring(textureName.c_str() + gridInfoSplitIndex + 1, gridInfoTextEndIndex - (gridInfoSplitIndex + 1)).c_str());
+		const float offsetX = 1.0f / sizeX;
+		const float offsetY = 1.0f / sizeY;
+		const float intervalX = offsetX / 200.0f;
+		const float intervalY = offsetY / 200.0f;
 
 		TextureSpriteData spData;
 		for (int y = 0; y < sizeY; y++)
@@ -1008,6 +1029,12 @@ void HCGraphicDX11::GetSpriteData(const std::wstring& texturePath, std::vector<T
 			{
 				spData.StartUV.x = x * offsetX;
 				spData.EndUV.x = (x + 1) * offsetX;
+
+				spData.StartUV.x += intervalX;
+				spData.StartUV.y += intervalY;
+
+				spData.EndUV.x -= intervalX;
+				spData.EndUV.y -= intervalY;
 
 				out->push_back(spData);
 			}

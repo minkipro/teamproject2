@@ -130,7 +130,7 @@
       <AdditionalIncludeDirectories>./;./../Common/Source;./../Common/Source/Includes;$(MSBuildThisFileDirectory)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeader>Create</PrecompiledHeader>
       <DisableSpecificWarnings>26812;%(DisableSpecificWarnings)</DisableSpecificWarnings>
-      <FloatingPointModel>Fast</FloatingPointModel>
+      <FloatingPointModel>Precise</FloatingPointModel>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -172,6 +172,7 @@
     <ClCompile Include="..\Common\Source\Graphics\HCInputDataSamples.cpp" />
     <ClCompile Include="..\Common\Source\Graphics\HCMeshManager.cpp" />
     <ClCompile Include="..\Common\Source\Graphics\HCSwapchainDX11.cpp" />
+    <ClCompile Include="..\Common\Source\HC2DAnimation.cpp" />
     <ClCompile Include="..\Common\Source\TCPSocket\SocketCommunication.cpp" />
     <ClCompile Include="..\Common\Source\Util\StringHelper.cpp" />
     <ClCompile Include="..\Common\Source\Window\HCWindow.cpp" />
@@ -183,7 +184,8 @@
     <ClCompile Include="HCCharacter.cpp" />
     <ClCompile Include="DevScene.cpp" />
     <ClCompile Include="Engine.cpp" />
-    <ClCompile Include="HCCharacterControllerByKeyboard.cpp" />
+    <ClCompile Include="HCCharacterController.cpp" />
+    <ClCompile Include="HCCharacterControlTest.cpp" />
     <ClCompile Include="HCSceneObject.cpp" />
     <ClCompile Include="HCTileMap.cpp" />
     <ClCompile Include="Main.cpp" />
@@ -214,6 +216,7 @@
     <ClInclude Include="..\Common\Source\Graphics\HCMeshManager.h" />
     <ClInclude Include="..\Common\Source\Graphics\HCSwapchainDX11.h" />
     <ClInclude Include="..\Common\Source\Graphics\HCRenderInfos.h" />
+    <ClInclude Include="..\Common\Source\HC2DAnimation.h" />
     <ClInclude Include="..\Common\Source\HCScene.h" />
     <ClInclude Include="..\Common\Source\Includes\GameObject.h" />
     <ClInclude Include="..\Common\Source\Includes\GlobalOption.h" />
@@ -230,7 +233,7 @@
     <ClInclude Include="DevScene.h" />
     <ClInclude Include="Engine.h" />
     <ClInclude Include="HCCharacterController.h" />
-    <ClInclude Include="HCCharacterControllerByKeyboard.h" />
+    <ClInclude Include="HCCharacterControlTest.h" />
     <ClInclude Include="HCTileMap.h" />
     <ClInclude Include="HCSceneObject.h" />
     <ClInclude Include="stdafx.h" />

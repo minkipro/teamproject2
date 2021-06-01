@@ -2,26 +2,30 @@
 #include <Mouse.h>
 #include "HCDevice.h"
 
+enum class HCMOUSE_BUTTON_TYPE
+{
+	LBUTTON,
+	MBUTTON,
+	RBUTTON,
+	BUTTON1,
+	BUTTON2,
+	COUNT
+};
+
+typedef DirectX::Mouse::ButtonStateTracker::ButtonState HCMOUSE_BUTTON_STATE;
+
 class HCMouse : public IHCDevice, public DirectX::Mouse::ButtonStateTracker
 {
 public:
-	enum MouseButton : unsigned char
-	{
-		LBUTTON = 0,
-		MBUTTON,
-		RBUTTON,
-		BUTTON1,
-		BUTTON2,
-		HCSHADER_COUNT
-	};
 	HCMouse() = default;
 	virtual ~HCMouse() = default;
 
-	virtual void		Init();
-	virtual void		Update();
-	virtual std::string GetDeviceName() const { return typeid(HCMouse).name(); }
+	virtual void			Init();
+	virtual void			Update();
+	virtual std::string		GetDeviceName() const { return typeid(HCMouse).name(); }
 
-	DirectX::Mouse::ButtonStateTracker::ButtonState GetButtonState(MouseButton button);
-	virtual LRESULT		WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+	HCMOUSE_BUTTON_STATE	GetButtonState(HCMOUSE_BUTTON_TYPE button);
+	virtual LRESULT			WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+
 private:
 };

@@ -32,9 +32,9 @@ void UIObject::Update()
 {
 	if (m_parent)
 	{
-		m_renderInfos.Position.x = m_parent->m_pos.x + (m_pos.x - m_renderInfos.Size.x * m_benchUV.x);
-		m_renderInfos.Position.y = m_parent->m_pos.y + (m_pos.y - m_renderInfos.Size.y * m_benchUV.y);
-		m_renderInfos.Position.z = m_parent->m_pos.z + m_pos.z;
+		m_renderInfo.Position.x = m_parent->m_pos.x + (m_pos.x - m_renderInfo.Size.x * m_benchUV.x);
+		m_renderInfo.Position.y = m_parent->m_pos.y + (m_pos.y - m_renderInfo.Size.y * m_benchUV.y);
+		m_renderInfo.Position.z = m_parent->m_pos.z + m_pos.z;
 	}
 
 	for (auto& it : m_childs)
@@ -62,7 +62,7 @@ void UIObject::SetTexture(const std::wstring& path, const DirectX::XMFLOAT2& siz
 	auto device = HCDEVICE(HCGraphic);
 	HCTextureData texData = device->GetTextureIndex(path);
 
-	m_renderInfos.Size = size;
+	m_renderInfo.Size = size;
 }
 
 void UIObject::AddChild(UIObject* child)
@@ -81,12 +81,12 @@ void UIObject::SetParent(UIObject* object)
 
 void UIObject::SetPos(const DirectX::XMFLOAT3& pos)
 {
-	m_renderInfos.Position = pos;
+	m_renderInfo.Position = pos;
 }
 
 void UIObject::SetSize(const DirectX::XMFLOAT2& size)
 {
-	m_renderInfos.Size = size;
+	m_renderInfo.Size = size;
 }
 
 void UIObject::AddFunc(HCColFunc func)

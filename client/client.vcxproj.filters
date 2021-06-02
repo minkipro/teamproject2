@@ -255,6 +255,9 @@
     <ClInclude Include="HCCharacterControlTest.h">
       <Filter>Client\Scene\SceneObject</Filter>
     </ClInclude>
+    <ClInclude Include="..\Common\Source\TCPSocket\HCCommunicationProtocol.h">
+      <Filter>Common\TCP_IP_Socket</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\Common\Shader\BaseRoot.hlsli">

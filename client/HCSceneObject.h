@@ -4,8 +4,8 @@
 class HCSceneObject
 {
 public:
-	virtual ~HCSceneObject() = 0 {};
+	virtual ~HCSceneObject() = default;
 	virtual void Init() = 0;
-	virtual void Update() = 0;
+	virtual void Update(float deltaTime) = 0;
 	virtual void Render() = 0;
 };

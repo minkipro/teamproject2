@@ -94,9 +94,6 @@
     <ClCompile Include="HCCharacter.cpp">
       <Filter>Client\Scene\SceneObject</Filter>
     </ClCompile>
-    <ClCompile Include="HCCharacterControllerByKeyboard.cpp">
-      <Filter>Client\Scene</Filter>
-    </ClCompile>
     <ClCompile Include="HCTileMap.cpp">
       <Filter>Client\Scene\SceneObject</Filter>
     </ClCompile>
@@ -138,6 +135,15 @@
     </ClCompile>
     <ClCompile Include="..\Common\Source\Graphics\HCMeshManager.cpp">
       <Filter>Common\Graphics_Base</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Common\Source\HC2DAnimation.cpp">
+      <Filter>Client</Filter>
+    </ClCompile>
+    <ClCompile Include="HCCharacterController.cpp">
+      <Filter>Client</Filter>
+    </ClCompile>
+    <ClCompile Include="HCCharacterControlTest.cpp">
+      <Filter>Client\Scene\SceneObject</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -201,9 +207,6 @@
     <ClInclude Include="..\Common\Source\Graphics\HCInputDataSamples.h">
       <Filter>Common\Graphics_Base</Filter>
     </ClInclude>
-    <ClInclude Include="HCCharacterControllerByKeyboard.h">
-      <Filter>Client\Scene</Filter>
-    </ClInclude>
     <ClInclude Include="HCTileMap.h">
       <Filter>Client\Scene\SceneObject</Filter>
     </ClInclude>
@@ -221,9 +224,6 @@
     </ClInclude>
     <ClInclude Include="..\Common\UI\UIParam.h">
       <Filter>Common\Graphics_Base\UI</Filter>
-    </ClInclude>
-    <ClInclude Include="HCCharacterController.h">
-      <Filter>Client\Scene</Filter>
     </ClInclude>
     <ClInclude Include="..\Common\Source\TCPSocket\SocketCommunication.h">
       <Filter>Common\TCP_IP_Socket</Filter>
@@ -245,6 +245,18 @@
     </ClInclude>
     <ClInclude Include="..\Common\Source\Graphics\HCCameraManager.h">
       <Filter>Common\Graphics_Base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\Source\HC2DAnimation.h">
+      <Filter>Client</Filter>
+    </ClInclude>
+    <ClInclude Include="HCCharacterController.h">
+      <Filter>Client</Filter>
+    </ClInclude>
+    <ClInclude Include="HCCharacterControlTest.h">
+      <Filter>Client\Scene\SceneObject</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\Source\TCPSocket\HCCommunicationProtocol.h">
+      <Filter>Common\TCP_IP_Socket</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

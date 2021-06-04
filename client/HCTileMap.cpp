@@ -47,7 +47,7 @@ void HCTileMap::Init()
 	graphic->CreateResource(renderInfoBufferDesc, m_renderInfoBuffer);
 }
 
-void HCTileMap::Update()
+void HCTileMap::Update(float deltaTime)
 {
 }
 

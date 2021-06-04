@@ -64,7 +64,7 @@ public:
 
 	void			AddFunc(HCColFunc func);
 
-	const DirectX::XMFLOAT2&	GetSize() { return m_renderInfos.Size; }
+	const DirectX::XMFLOAT2&	GetSize() { return m_renderInfo.Size; }
 
 private:
 	bool			CheckDependency(UIObject* object);
@@ -76,7 +76,7 @@ protected:
 	UIObject*					m_parent;
 	std::vector<UIObject*>		m_childs;
 	DirectX::XMFLOAT3			m_pos;
-	HCPointRenderInfo			m_renderInfos;
+	HCPointRenderInfo			m_renderInfo;
 	HCColliderData				m_ColliderData;
 	DirectX::XMFLOAT2			m_benchUV;
 	bool						m_isOn;

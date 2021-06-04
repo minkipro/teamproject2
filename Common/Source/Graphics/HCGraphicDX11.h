@@ -47,6 +47,7 @@ public:
 
 	virtual void			SetPipeLineObject(const HCGraphicPipeLine* pipeLine) override;
 	virtual void			SetTexture(UINT textureIndex, UINT shaderResourceSlot) override;
+	virtual void			SetTextures(const std::vector<UINT>& textureIndices, UINT shaderResourceStartSlot) override;
 	virtual void			SetShaderResource(std::shared_ptr<IHCResource> resource, UINT shaderResourceSlot) override;
 	virtual void			SetShaderResources(const std::vector<std::shared_ptr<IHCResource>>& resources, UINT shaderResourceStartSlot) override;
 	virtual void			SetConstantBuffer(std::shared_ptr<IHCResource> buffer, UINT constantBufferSlot) override;

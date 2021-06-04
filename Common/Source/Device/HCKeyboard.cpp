@@ -25,3 +25,33 @@ LRESULT HCKeyboard::WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPara
 	}
 	return 0;
 }
+
+bool HCKeyboard::IsKeyCurrState(HCKEYBOARD_KEY_TYPE key, HCKEYBOARD_KEY_STATE state)
+{
+	bool result = false;
+
+	switch (state)
+	{
+	case HCKEYBOARD_KEY_STATE::UP:
+		break;
+	case HCKEYBOARD_KEY_STATE::HELD:
+	{
+		result = lastState.IsKeyDown(key);
+	}
+		break;
+	case HCKEYBOARD_KEY_STATE::RELEASED:
+	{
+		result = released.IsKeyDown(key);
+	}
+		break;
+	case HCKEYBOARD_KEY_STATE::PRESSED:
+	{
+		result = pressed.IsKeyDown(key);
+	}
+		break;
+	default:
+		break;
+	}
+	
+	return result;
+}

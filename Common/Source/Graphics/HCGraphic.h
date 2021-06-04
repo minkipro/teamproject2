@@ -198,7 +198,7 @@ public:
 
 struct HCTextureData
 {
-	UINT textureIndex = 0;
+	int	 textureIndex = -1;
 	UINT spriteStartIndex = 0;
 	UINT spriteNum = 1;
 };
@@ -266,6 +266,7 @@ public: //pure virtual method
 
 	virtual void			SetPipeLineObject(const HCGraphicPipeLine* pipeLine) = 0;
 	virtual void			SetTexture(UINT textureIndex, UINT shaderResourceSlot) = 0;
+	virtual void			SetTextures(const std::vector<UINT>& textureIndices, UINT shaderResourceStartSlot) = 0;
 	virtual void			SetShaderResource(std::shared_ptr<IHCResource> resource, UINT shaderResourceSlot) = 0;
 	virtual void			SetShaderResources(const std::vector<std::shared_ptr<IHCResource>>& resources, UINT shaderResourceStartSlot) = 0;
 	virtual void			SetConstantBuffer(std::shared_ptr<IHCResource> buffer, UINT constantBufferSlot) = 0;

@@ -78,11 +78,6 @@ void CreatePanel(PointVertexIn vin, inout TriangleStream<VertexOut> output)
     vertices[2].PosH.xy += float2(renderInfo.Size.x, renderInfo.Size.y);
     vertices[3].PosH.xy += float2(renderInfo.Size.x, 0);
 
-    vertices[0].Color.xy = float2(0, 1.0f);
-    vertices[1].Color.xy = float2(0, 0);
-    vertices[2].Color.xy = float2(1.0f, 1.0f);
-    vertices[3].Color.xy = float2(1.0f, 0);
-    
     [unroll(4)]
     for (int i = 0; i < 4; i++)
     {

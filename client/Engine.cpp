@@ -31,7 +31,7 @@ void Engine::Init(HINSTANCE hInstance)
 	m_scene.Init();
 
 	std::vector<unsigned long> ips;
-	SocketCommunication::Get()->GetIp(ips);
+	//SocketCommunication::Get()->GetIp(ips);
 
 	m_timer->Reset();
 	m_timer->Start();

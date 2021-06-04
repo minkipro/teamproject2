@@ -2,6 +2,7 @@
 #include <WinSock2.h>
 #include <atomic>
 #include <vector>
+#include <functional>
 void ErrorHandling(const char* message)
 {
 	fputs(message, stderr);
@@ -40,54 +41,72 @@ void main()
 
 	if (listen(serverSocket, SOMAXCONN) == SOCKET_ERROR)    // connect
 		ErrorHandling("listen() error!");
-
-	struct ClientData
+	setsockopt
+	struct ClientInfo
 	{
 		SOCKET clientSocket;
 		SOCKADDR_IN clientAddr;
 		std::atomic<char> dataBuffer[1024] = { 0, };
+		std::thread* recvThread = nullptr;
+		bool recvEnable = false;
 	};
-	std::vector<ClientData> clientSockets;
+	SOCKET testSocket;
+	ioctlsocket(m_socket, FIONBIO, &iMode);
+	std::vector<ClientInfo> clientInfos;
 
 	int clientAddrSize = sizeof(SOCKADDR_IN);
 
-
-	auto receiveFunction = [](ClientData& clientData)
+	std::function<void(ClientInfo&)> receiveFunction = [](ClientInfo& clientInfo)
 	{
 		char buffer[1024];
-		while (true)
+		while (clientInfo.recvEnable)
 		{
-			recv(clientData.clientSocket, buffer, 1024, 0);
-			clientData
+			int ret = recv(clientInfo.clientSocket, buffer, 1024, 0);
+			if (ret != 0)
+			{
+				ErrorHandling("recv error!");
+			}
+
+			for (int i = 0; i < 1024; i++)
+			{
+				clientInfo.dataBuffer[i].store(buffer[i]);
+			}
 		}
-	}
-	auto acceptFunction = [serverSocket, &clientSockets, &clientAddrSize]()
+	};
+
+	
+	std::function<void()> acceptFunction = [serverSocket, &clientInfos, &clientAddrSize, &receiveFunction]()
 	{
 		while (acceptEnable)
 		{
-			clientSockets.push_back(ClientData());
-			ClientData curData = clientSockets.back();
+			clientInfos.push_back(ClientInfo());
+			ClientInfo& curData = clientInfos.back();
 			curData.clientSocket = accept(serverSocket, (SOCKADDR*)&curData.clientAddr, &clientAddrSize);
 			if (curData.clientSocket == INVALID_SOCKET)
 			{
-				clientSockets.pop_back();
+				clientInfos.pop_back();
 			}
 			else
 			{
-				
+				curData.recvThread = new std::thread(receiveFunction, curData);
+				curData.recvEnable = true;
 			}
 		}
 	};
 
 	std::thread acceptThread(acceptFunction);
 
-	
+	//send, recv
 
-	szClntAddr = sizeof(SOCKADDR);
-	clientSocket = accept(serverSocket, (SOCKADDR*)&clntAddr, &szClntAddr);  
-	if (clientSocket == INVALID_SOCKET)
-		ErrorHandling("accept() error!");
-
+	acceptEnable = false;
+	acceptThread.join();
+	size_t clientNum = clientInfos.size() - 1;
+	for (size_t i = 0; i < clientNum; i++)
+	{
+		clientInfos[i].recvEnable = false;
+		clientInfos[i].recvThread->join();
+		delete clientInfos[i].recvThread;
+	}
 	//send(clientSocket, message, sizeof(message), 0);
 
 	closesocket(clientSocket);

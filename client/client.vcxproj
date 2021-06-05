@@ -224,6 +224,7 @@
     <ClInclude Include="..\Common\Source\Includes\GlobalOption.h" />
     <ClInclude Include="..\Common\Source\Includes\HCDevice.h" />
     <ClInclude Include="..\Common\Source\Physics\PhysX4_1.h" />
+    <ClInclude Include="..\Common\Source\TCPSocket\HCCommunicationProtocol.h" />
     <ClInclude Include="..\Common\Source\TCPSocket\SocketCommunication.h" />
     <ClInclude Include="..\Common\Source\Util\StringHelper.h" />
     <ClInclude Include="..\Common\Source\Window\HCWindow.h" />

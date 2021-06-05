@@ -261,6 +261,9 @@
     <ClInclude Include="..\Common\Source\Physics\PhysX4_1.h">
       <Filter>Common\Devices\Physics</Filter>
     </ClInclude>
+    <ClInclude Include="..\Common\Source\TCPSocket\HCCommunicationProtocol.h">
+      <Filter>Common\TCP_IP_Socket</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\Common\Shader\BaseRoot.hlsli">

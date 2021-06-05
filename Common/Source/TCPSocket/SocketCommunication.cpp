@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "SocketCommunication.h"
+#include "HCCommunicationProtocol.h"
 
 
 SocketCommunication* SocketCommunication::instance = nullptr;
@@ -49,6 +50,17 @@ void SocketCommunication::Update()
 		ListenStart();
 	}
 
+	if (keyboard->IsKeyPressed(DirectX::Keyboard::Keys::F3))
+	{
+		char dataBuffer[1024] = { 0, };
+		int offset = 0;
+
+		HCDataFormat dataFormat = HCDataFormat::IP;
+		memcpy_s(dataBuffer + offset, 1024, &dataFormat, sizeof(dataFormat));
+		offset += sizeof(dataFormat);
+
+		SendData(dataBuffer, 1024);
+	}
 	std::wstring imtrue = L"true";
 	std::wstring imfalse = L"false";
 
@@ -146,13 +158,13 @@ void SocketCommunication::GetIp(std::vector<unsigned long>& out)
 
 void SocketCommunication::ConnectStart()
 {
-	const char* ip = "211.192.102.158";		//제 공인 ip
-	const char* fortNum = "24642";			//스타듀밸리 fortNum으로 변경 필요.
+	const char* ip = "192.168.0.8";		//제 공인 ip
+	const char* fortNum = "8000";			//스타듀밸리 fortNum으로 변경 필요.
 
 	SOCKADDR_IN servAddr = { 0, };
 	servAddr.sin_family = AF_INET;
 	servAddr.sin_addr.s_addr = inet_addr(ip);
-	servAddr.sin_port = htons(atoi(fortNum));
+	servAddr.sin_port = htons(8000);
 	COM_THROW_IF_FAILED(connect(m_socket, (SOCKADDR*)&servAddr, sizeof(servAddr)) != SOCKET_ERROR, "connect 실패");
 }
 
@@ -176,6 +188,11 @@ void SocketCommunication::ListenStart()
 		}
 	};
 	m_pthread = new std::thread(receiveFunction, &m_exit, m_socket, m_buffer);
+}
+
+void SocketCommunication::SendData(char* data, int dataSize)
+{
+	send(m_socket, data, dataSize, 0);
 }
 
 

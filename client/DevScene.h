@@ -2,6 +2,7 @@
 #include "HCScene.h"
 #include "Graphics/HCGraphic.h"
 #include "HCSceneObject.h"
+#include "Graphics\HCPickingTexture.h"
 
 class DevScene final : public HCScene
 {

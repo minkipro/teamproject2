@@ -171,8 +171,10 @@
     <ClCompile Include="..\Common\Source\Graphics\HCGraphicDX11Resources.cpp" />
     <ClCompile Include="..\Common\Source\Graphics\HCInputDataSamples.cpp" />
     <ClCompile Include="..\Common\Source\Graphics\HCMeshManager.cpp" />
+    <ClCompile Include="..\Common\Source\Graphics\HCPickingTexture.cpp" />
     <ClCompile Include="..\Common\Source\Graphics\HCSwapchainDX11.cpp" />
     <ClCompile Include="..\Common\Source\HC2DAnimation.cpp" />
+    <ClCompile Include="..\Common\Source\Physics\PhysX4_1.cpp" />
     <ClCompile Include="..\Common\Source\TCPSocket\SocketCommunication.cpp" />
     <ClCompile Include="..\Common\Source\Util\StringHelper.cpp" />
     <ClCompile Include="..\Common\Source\Window\HCWindow.cpp" />
@@ -184,7 +186,6 @@
     <ClCompile Include="HCCharacter.cpp" />
     <ClCompile Include="DevScene.cpp" />
     <ClCompile Include="Engine.cpp" />
-    <ClCompile Include="HCCharacterController.cpp" />
     <ClCompile Include="HCCharacterControlTest.cpp" />
     <ClCompile Include="HCSceneObject.cpp" />
     <ClCompile Include="HCTileMap.cpp" />
@@ -214,6 +215,7 @@
     <ClInclude Include="..\Common\Source\Graphics\HCGraphicDX11Resources.h" />
     <ClInclude Include="..\Common\Source\Graphics\HCInputDataSamples.h" />
     <ClInclude Include="..\Common\Source\Graphics\HCMeshManager.h" />
+    <ClInclude Include="..\Common\Source\Graphics\HCPickingTexture.h" />
     <ClInclude Include="..\Common\Source\Graphics\HCSwapchainDX11.h" />
     <ClInclude Include="..\Common\Source\Graphics\HCRenderInfos.h" />
     <ClInclude Include="..\Common\Source\HC2DAnimation.h" />
@@ -221,6 +223,7 @@
     <ClInclude Include="..\Common\Source\Includes\GameObject.h" />
     <ClInclude Include="..\Common\Source\Includes\GlobalOption.h" />
     <ClInclude Include="..\Common\Source\Includes\HCDevice.h" />
+    <ClInclude Include="..\Common\Source\Physics\PhysX4_1.h" />
     <ClInclude Include="..\Common\Source\TCPSocket\SocketCommunication.h" />
     <ClInclude Include="..\Common\Source\Util\StringHelper.h" />
     <ClInclude Include="..\Common\Source\Window\HCWindow.h" />
@@ -232,7 +235,6 @@
     <ClInclude Include="HCCharacter.h" />
     <ClInclude Include="DevScene.h" />
     <ClInclude Include="Engine.h" />
-    <ClInclude Include="HCCharacterController.h" />
     <ClInclude Include="HCCharacterControlTest.h" />
     <ClInclude Include="HCTileMap.h" />
     <ClInclude Include="HCSceneObject.h" />

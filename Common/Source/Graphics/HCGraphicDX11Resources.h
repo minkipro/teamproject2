@@ -34,19 +34,22 @@ class HCDX11Resource final : public IHCResource
 public:
 	HCDX11Resource() = delete;
 	HCDX11Resource(const HCDX11Resource& rhs) = delete;
-	HCDX11Resource(ID3D11Resource* resource, ID3D11View* view, const HC::GRAPHIC_RESOURCE_DESC& desc);
+	HCDX11Resource(ID3D11Resource* resource, ID3D11View* shaderResource_cb_view, ID3D11View* renderTargetView, ID3D11View* depthStencilView, const HC::GRAPHIC_RESOURCE_DESC& desc);
 	HCDX11Resource(ID3D11Resource* resource, const HC::GRAPHIC_RESOURCE_DESC& desc);
 	virtual ~HCDX11Resource() = default;
 
 	virtual void*	GetResource() override { return m_resource.Get(); }
 	virtual void*	GetResourceView() override { return m_resourceView.Get(); }
+	virtual void*	GetRenderTargetView() override { return m_renderTargetView.Get(); }
+	virtual void*	GetDepthStencilView() override { return m_depthStencilView.Get(); }
 
 	virtual void	Map() override;
 	virtual void	UnMap() override;
-	virtual void	CpuDataCopyToGpu(void* oneStrideData) override;
-	virtual void	CpuDataCopyToGpu(void* data, size_t byteSize, size_t byteOffset) override;
-	virtual void	CpuDataCopyToGpu(void* data, size_t offsetStride) override;
-	virtual void	GpuDataCopyToCpu(const RECT& rect, std::vector<std::vector<BYTE>>& out) override;
+	virtual void	CopyCpuDataToGpu(void* oneStrideData) override;
+	virtual void	CopyCpuDataToGpu(void* data, size_t byteSize, size_t byteOffset) override;
+	virtual void	CopyCpuDataToGpu(void* data, size_t offsetStride) override;
+	virtual BYTE*	GetMappedDataPtr() override;
+	virtual UINT	GetMappedDataRowPitch() override;
 
 	static void		SetDeviceContext(ID3D11DeviceContext* context);
 
@@ -55,6 +58,8 @@ private:
 
 	ComPtr<ID3D11Resource>			m_resource;
 	ComPtr<ID3D11View>				m_resourceView;
+	ComPtr<ID3D11View>				m_renderTargetView;
+	ComPtr<ID3D11View>				m_depthStencilView;
 
 	D3D11_MAPPED_SUBRESOURCE		m_sub;
 	UINT							m_currIndex = 0;

@@ -22,8 +22,10 @@ public:
 	void Init(UINT numSwapBuffer, HWND wnd, ID3D11Device** deviceOut, ID3D11DeviceContext** contextOut);
 	void Resize(UINT windowX, UINT windowY);
 
-	void PresentRenderTargetSetting(ID3D11DeviceContext* deviceContext, const float clearColor[4]);
 	void Present();
+
+	ID3D11RenderTargetView* GetCurrRenderTargetView() { return m_renderTargetView.Get(); }
+	ID3D11DepthStencilView* GetCurrDepthStencilView() { return m_depthStencilView.Get(); }
 
 private:
 	Microsoft::WRL::ComPtr<IDXGISwapChain>			m_swapchain;

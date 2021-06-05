@@ -35,7 +35,15 @@ void HCGraphicDX11::Init()
 
 void HCGraphicDX11::Update()
 {
-	
+
+}
+
+void HCGraphicDX11::Resize(UINT sizeX, UINT sizeY)
+{
+	m_swapchain->Resize(sizeX, sizeY);
+
+	//DirectX::XMMATRIX orthoP = DirectX::XMMatrixOrthographicOffCenterLH(
+	//	0.0f, static_cast<float>(sizeX), static_cast<float>(sizeY), 0, D3D11_MIN_DEPTH, D3D11_MAX_DEPTH);
 }
 
 void HCGraphicDX11::CreateResource(const HC::GRAPHIC_RESOURCE_DESC& desc, std::shared_ptr<IHCResource>& out)
@@ -44,9 +52,11 @@ void HCGraphicDX11::CreateResource(const HC::GRAPHIC_RESOURCE_DESC& desc, std::s
 
 	HC::GRAPHIC_RESOURCE_DESC				resultDesc = desc;
 	ComPtr<ID3D11Resource>					result;
-	ComPtr<ID3D11View>						resultView;
+	ComPtr<ID3D11View>						resultSR_CB_View;
+	ComPtr<ID3D11View>						resultRenderTargetView;
+	ComPtr<ID3D11View>						resultDepthStencilView;
 	std::unique_ptr<D3D11_SUBRESOURCE_DATA>	subResource = nullptr;
-	
+
 	switch (resultDesc.Type)
 	{
 	case HC::GRAPHIC_RESOURCE_TYPE::GRAPHIC_RESOURCE_CONSTANT_BUFFER:
@@ -99,14 +109,28 @@ void HCGraphicDX11::CreateResource(const HC::GRAPHIC_RESOURCE_DESC& desc, std::s
 			viewDesc.Buffer.ElementOffset = 0;
 			viewDesc.Buffer.NumElements = resultDesc.Buffer.StrideNum;
 
-			COM_HRESULT_IF_FAILED(m_device->CreateShaderResourceView(result.Get(), &viewDesc, reinterpret_cast<ID3D11ShaderResourceView**>(resultView.GetAddressOf())), "Failed to create buffer view.");
+			COM_HRESULT_IF_FAILED(m_device->CreateShaderResourceView(result.Get(), &viewDesc, reinterpret_cast<ID3D11ShaderResourceView**>(resultSR_CB_View.GetAddressOf())), "Failed to create buffer view.");
 		}
+
+		if (bufferDesc.BindFlags & D3D11_BIND_RENDER_TARGET)
+		{
+			COM_THROW_IF_FAILED(!(resultDesc.Flags & HC::GRAPHIC_RESOURCE_FLAG_STRUCTURED_BUFFER), "structuredBuffer can not binded renderTarget");
+
+			D3D11_RENDER_TARGET_VIEW_DESC viewDesc = {};
+			viewDesc.ViewDimension = D3D11_RTV_DIMENSION_BUFFER;
+			viewDesc.Format = resultDesc.Buffer.Format;
+			viewDesc.Buffer.ElementOffset = resultDesc.Stride;
+			viewDesc.Buffer.NumElements = resultDesc.Buffer.StrideNum;
+
+			COM_HRESULT_IF_FAILED(m_device->CreateRenderTargetView(result.Get(), &viewDesc, reinterpret_cast<ID3D11RenderTargetView**>(resultRenderTargetView.GetAddressOf())), "Failed to create buffer view.");
+		}
+
+		COM_THROW_IF_FAILED(!(resultDesc.Flags & D3D11_BIND_DEPTH_STENCIL), "buffer can be not binded depthStencil");
 	}
 	break;
 	case HC::GRAPHIC_RESOURCE_TYPE::GRAPHIC_RESOURCE_TEXTURE2D:
 	{
 		D3D11_TEXTURE2D_DESC			texture2dDesc = {};
-		D3D11_SHADER_RESOURCE_VIEW_DESC	viewDesc = {};
 
 		texture2dDesc.Usage = GetResourceUsage(resultDesc);
 		texture2dDesc.BindFlags = GetResourceBindFlags(resultDesc);
@@ -119,33 +143,58 @@ void HCGraphicDX11::CreateResource(const HC::GRAPHIC_RESOURCE_DESC& desc, std::s
 		texture2dDesc.Height = resultDesc.Texture.Size.y;
 		texture2dDesc.ArraySize = resultDesc.Texture.ArrayNum;
 
-		viewDesc.Format = resultDesc.Texture.Format;
-
 		if (resultDesc.DefaultData)
 		{
 			subResource = std::make_unique<D3D11_SUBRESOURCE_DATA>();
 			subResource->pSysMem = resultDesc.DefaultData;
-			subResource->SysMemPitch = resultDesc.Stride* resultDesc.Texture.Size.x;
+			subResource->SysMemPitch = resultDesc.Stride * resultDesc.Texture.Size.x;
 			subResource->SysMemSlicePitch = 0;
 		}
 
 		COM_HRESULT_IF_FAILED(m_device->CreateTexture2D(&texture2dDesc, subResource.get(), reinterpret_cast<ID3D11Texture2D**>(result.GetAddressOf())), "Failed to create texture.");
 
-		if (texture2dDesc.ArraySize > 1)
+		if (texture2dDesc.BindFlags & D3D11_BIND_SHADER_RESOURCE)
 		{
-			viewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2DARRAY;
-			viewDesc.Texture2DArray.ArraySize = resultDesc.Texture.ArrayNum;
-			viewDesc.Texture2DArray.MipLevels = 1;
-			viewDesc.Texture2DArray.MostDetailedMip = 0;
-		}
-		else
-		{
-			viewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
-			viewDesc.Texture2D.MipLevels = 1;
-			viewDesc.Texture2D.MostDetailedMip = 0;
+			D3D11_SHADER_RESOURCE_VIEW_DESC	viewDesc = {};
+			viewDesc.Format = resultDesc.Texture.Format;
+
+			if (texture2dDesc.ArraySize > 1)
+			{
+				viewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2DARRAY;
+				viewDesc.Texture2DArray.ArraySize = resultDesc.Texture.ArrayNum;
+				viewDesc.Texture2DArray.MipLevels = 1;
+				viewDesc.Texture2DArray.MostDetailedMip = 0;
+			}
+			else
+			{
+				viewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+				viewDesc.Texture2D.MipLevels = 1;
+				viewDesc.Texture2D.MostDetailedMip = 0;
+			}
+
+			COM_HRESULT_IF_FAILED(m_device->CreateShaderResourceView(result.Get(), &viewDesc, reinterpret_cast<ID3D11ShaderResourceView**>(resultSR_CB_View.GetAddressOf())), "Failed to create texture.");
 		}
 
-		COM_HRESULT_IF_FAILED(m_device->CreateShaderResourceView(result.Get(), &viewDesc, reinterpret_cast<ID3D11ShaderResourceView**>(resultView.GetAddressOf())), "Failed to create texture.");
+		
+		if (texture2dDesc.BindFlags & D3D11_BIND_RENDER_TARGET)
+		{
+			D3D11_RENDER_TARGET_VIEW_DESC viewDesc = {};
+			viewDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
+			viewDesc.Format = resultDesc.Texture.Format;
+			viewDesc.Texture2D.MipSlice = 0;
+
+			COM_HRESULT_IF_FAILED(m_device->CreateRenderTargetView(result.Get(), &viewDesc, reinterpret_cast<ID3D11RenderTargetView**>(resultRenderTargetView.GetAddressOf())), "Failed to create buffer view.");
+		}
+
+		if (texture2dDesc.BindFlags & D3D11_BIND_DEPTH_STENCIL)
+		{
+			D3D11_DEPTH_STENCIL_VIEW_DESC viewDesc = {};
+			viewDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+			viewDesc.Format = resultDesc.Texture.Format;
+			viewDesc.Texture2D.MipSlice = 0;
+
+			COM_HRESULT_IF_FAILED(m_device->CreateDepthStencilView(result.Get(), &viewDesc, reinterpret_cast<ID3D11DepthStencilView**>(resultDepthStencilView.GetAddressOf())), "Failed to create buffer view.");
+		}
 	}
 	break;
 	default:
@@ -153,7 +202,7 @@ void HCGraphicDX11::CreateResource(const HC::GRAPHIC_RESOURCE_DESC& desc, std::s
 		break;
 	}
 
-	out = std::make_shared<HCDX11Resource>(result.Get(), resultView.Get(), resultDesc);
+	out = std::make_shared<HCDX11Resource>(result.Get(), resultSR_CB_View.Get(), resultRenderTargetView.Get(), resultDepthStencilView.Get(), resultDesc);
 }
 
 void HCGraphicDX11::CreateShader(HC::SHADER_TYPE type, const std::wstring& filePath, const std::string& entryPoint, std::shared_ptr<IHCShader>& out)
@@ -255,9 +304,8 @@ void HCGraphicDX11::CreateShader(HC::SHADER_TYPE type, const std::wstring& fileP
 	break;
 	default:
 		assert(false);
-	break;
+		break;
 	}
-	
 }
 
 void HCGraphicDX11::CreateTextData(std::shared_ptr<IHCTextData>& out)
@@ -271,9 +319,23 @@ void HCGraphicDX11::CopyResource(std::shared_ptr<IHCResource> dest, const std::s
 	m_deviceContext->CopyResource(reinterpret_cast<ID3D11Resource*>(dest->GetResource()), reinterpret_cast<ID3D11Resource*>(src->GetResource()));
 }
 
+void HCGraphicDX11::ClearRenderTarget(std::shared_ptr<IHCResource> renderTargetResource, const float rgba[4])
+{
+	m_deviceContext->ClearRenderTargetView(static_cast<ID3D11RenderTargetView*>(renderTargetResource->GetRenderTargetView()), rgba);
+}
+
+void HCGraphicDX11::ClearDepthStencil(std::shared_ptr<IHCResource> depthStencilResource, bool clearDepth, bool clearStencil, float depth, unsigned char stencil)
+{
+	UINT clearFlag = UINT(clearDepth) | (UINT(clearStencil) << 1);
+
+	m_deviceContext->ClearDepthStencilView(static_cast<ID3D11DepthStencilView*>(depthStencilResource->GetDepthStencilView()), clearFlag, depth, stencil);
+}
+
 void HCGraphicDX11::RenderBegin()
 {
-	m_swapchain->PresentRenderTargetSetting(m_deviceContext.Get(), DirectX::Colors::Black);
+	m_deviceContext->ClearRenderTargetView(m_swapchain->GetCurrRenderTargetView(), DirectX::Colors::Bisque);
+	m_deviceContext->ClearDepthStencilView(m_swapchain->GetCurrDepthStencilView(),
+		D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
 	ID3D11ShaderResourceView* textureInfoView = m_textureInfoView.Get();
 	m_deviceContext->PSSetShaderResources(20, 1, &textureInfoView);
@@ -339,53 +401,96 @@ void HCGraphicDX11::SetPipeLineObject(const HCGraphicPipeLine* pipeLine)
 		}
 	}
 
-	m_deviceContext->IASetPrimitiveTopology(static_cast<D3D11_PRIMITIVE_TOPOLOGY>(pipeLine->m_primitive));
-
-	auto iter = m_vertexLayout.find(pipeLine->GetVertexTypeHash());
-	if (iter == m_vertexLayout.end())
 	{
-		CreateInputLayout(pipeLine->GetVertexTypeHash(), pipeLine->GetVertexInputLayout(),
-			static_cast<HCDX11Shader*>(pipeLine->m_shaders[HC::SHADER_TYPE::HCSHADER_VS].get()));
+		auto iter = m_vertexLayout.find(pipeLine->GetVertexTypeHash());
+		if (iter == m_vertexLayout.end())
+		{
+			CreateInputLayout(pipeLine->GetVertexTypeHash(), pipeLine->GetVertexInputLayout(),
+				static_cast<HCDX11Shader*>(pipeLine->m_shaders[HC::SHADER_TYPE::HCSHADER_VS].get()));
 
-		iter = m_vertexLayout.find(pipeLine->GetVertexTypeHash());
+			iter = m_vertexLayout.find(pipeLine->GetVertexTypeHash());
+		}
+
+		m_deviceContext->IASetPrimitiveTopology(static_cast<D3D11_PRIMITIVE_TOPOLOGY>(pipeLine->m_primitive));
+		m_deviceContext->IASetInputLayout(iter->second.Get());
 	}
 
-	m_deviceContext->IASetInputLayout(iter->second.Get());
-
-	if (pipeLine->m_rasterizer)
 	{
+		ID3D11RasterizerState*		currRasterizer = m_baseRasterizer.Get();
+		ID3D11BlendState*			currBlend = m_baseBlendState.Get();
+		UINT						currBlendSampleMask = 0xFFFFFFFF;
+		ID3D11DepthStencilState*	currDepthStencil = m_baseDepthStencilState.Get();
 
-	}
-	else
-	{
-		m_deviceContext->RSSetState(m_baseRasterizer.Get());
-	}
+		if (pipeLine->m_rasterizer)
+		{
+			currRasterizer = static_cast<ID3D11RasterizerState*>(pipeLine->m_rasterizer->GetStateView());
+		}
 
-	if (pipeLine->m_renderTargets.size())
-	{
+		if (pipeLine->m_blendState)
+		{
+			currBlend = static_cast<ID3D11BlendState*>(pipeLine->m_blendState->GetStateView());
+			currBlendSampleMask = pipeLine->m_blendState->GetSampleMask();
+		}
 
-	}
-	else
-	{
+		if (pipeLine->m_depthStencilState)
+		{
+			currDepthStencil = static_cast<ID3D11DepthStencilState*>(pipeLine->m_depthStencilState->GetStateView());
+		}
 
-	}
-
-	if (pipeLine->m_depthStencilState)
-	{
-
-	}
-	else
-	{
-		m_deviceContext->OMSetDepthStencilState(m_baseDepthStencilState.Get(), 0);
+		m_deviceContext->RSSetState(currRasterizer);
+		m_deviceContext->OMSetBlendState(currBlend, NULL, currBlendSampleMask);
+		m_deviceContext->OMSetDepthStencilState(currDepthStencil, 0);
 	}
 
-	if (pipeLine->m_blendState)
 	{
+		CD3D11_VIEWPORT viewport(0.0f, 0.0f, static_cast<float>(HC::GO.WIN.WindowsizeX), static_cast<float>(HC::GO.WIN.WindowsizeY));
+		std::vector<D3D11_RECT> scissorRects = { { 0, 0, HC::GO.WIN.WindowsizeX, HC::GO.WIN.WindowsizeY } };
 
+		if ((pipeLine->m_viewPort.TopLeftX != 0) && (pipeLine->m_viewPort.TopLeftY != 0) && (pipeLine->m_viewPort.Width != 0) && (pipeLine->m_viewPort.Heigh != 0))
+		{
+			CopyMemory(&viewport, &pipeLine->m_viewPort, sizeof(viewport));
+		}
+
+		if (pipeLine->m_scissorRects.size())
+		{
+			scissorRects.resize(pipeLine->m_scissorRects.size());
+			CopyMemory(scissorRects.data(), pipeLine->m_scissorRects.data(), sizeof(D3D11_RECT) * scissorRects.size());
+		}
+
+		m_deviceContext->RSSetViewports(1, &viewport);
+		m_deviceContext->RSSetScissorRects(SizeTTransUINT(scissorRects.size()), scissorRects.data());
 	}
-	else
+
 	{
-		m_deviceContext->OMSetBlendState(m_baseBlendState.Get(), NULL, 0xFFFFFFFF);
+		UINT					currRenderTargetNum = 1;
+		ID3D11RenderTargetView* currRenderTargetViews[8] = { m_swapchain->GetCurrRenderTargetView() };
+		ID3D11DepthStencilView* currDepthStencilView = m_swapchain->GetCurrDepthStencilView();
+
+		if (pipeLine->m_renderTargets.size())
+		{
+			if (!pipeLine->m_useBaseRenderTarget)
+			{
+				currRenderTargetNum = 0;
+			}
+
+			for (auto& it : pipeLine->m_renderTargets)
+			{
+				currRenderTargetViews[currRenderTargetNum++] = static_cast<ID3D11RenderTargetView*>(it->GetRenderTargetView());
+			}
+		}
+		
+		if (pipeLine->m_depthStencilState)
+		{
+			if (!pipeLine->m_useBaseDepthStencil)
+			{
+				currDepthStencilView = nullptr;
+			}
+
+			currDepthStencilView = static_cast<ID3D11DepthStencilView*>(pipeLine->m_depthStencil->GetDepthStencilView());
+		}
+
+		COM_THROW_IF_FAILED(currRenderTargetNum < 9, "max rendertarget num is 8");
+		m_deviceContext->OMSetRenderTargets(currRenderTargetNum, currRenderTargetViews, currDepthStencilView);
 	}
 }
 
@@ -403,7 +508,7 @@ void HCGraphicDX11::SetTexture(UINT textureIndex, UINT shaderResourceSlot)
 
 void HCGraphicDX11::SetTextures(const std::vector<UINT>& textureIndices, UINT shaderResourceStartSlot)
 {
-	COM_THROW_IF_FAILED(shaderResourceStartSlot + textureIndices.size() -1 < 20, "max shaderResourceSlot is 19");
+	COM_THROW_IF_FAILED(shaderResourceStartSlot + textureIndices.size() - 1 < 20, "max shaderResourceSlot is 19");
 
 	static std::vector<ID3D11ShaderResourceView*> views;
 	views.clear();
@@ -413,11 +518,11 @@ void HCGraphicDX11::SetTextures(const std::vector<UINT>& textureIndices, UINT sh
 		views.push_back(view);
 	}
 
-	m_deviceContext->VSSetShaderResources(shaderResourceStartSlot, views.size(), views.data());
-	m_deviceContext->DSSetShaderResources(shaderResourceStartSlot, views.size(), views.data());
-	m_deviceContext->HSSetShaderResources(shaderResourceStartSlot, views.size(), views.data());
-	m_deviceContext->GSSetShaderResources(shaderResourceStartSlot, views.size(), views.data());
-	m_deviceContext->PSSetShaderResources(shaderResourceStartSlot, views.size(), views.data());
+	m_deviceContext->VSSetShaderResources(shaderResourceStartSlot, SizeTTransUINT(views.size()), views.data());
+	m_deviceContext->DSSetShaderResources(shaderResourceStartSlot, SizeTTransUINT(views.size()), views.data());
+	m_deviceContext->HSSetShaderResources(shaderResourceStartSlot, SizeTTransUINT(views.size()), views.data());
+	m_deviceContext->GSSetShaderResources(shaderResourceStartSlot, SizeTTransUINT(views.size()), views.data());
+	m_deviceContext->PSSetShaderResources(shaderResourceStartSlot, SizeTTransUINT(views.size()), views.data());
 }
 
 void HCGraphicDX11::SetShaderResource(std::shared_ptr<IHCResource> resource, UINT shaderResourceSlot)
@@ -448,11 +553,11 @@ void HCGraphicDX11::SetShaderResources(const std::vector<std::shared_ptr<IHCReso
 		views.push_back(static_cast<ID3D11ShaderResourceView*>(it->GetResourceView()));
 	}
 
-	m_deviceContext->VSSetShaderResources(shaderResourceStartSlot, views.size(), views.data());
-	m_deviceContext->DSSetShaderResources(shaderResourceStartSlot, views.size(), views.data());
-	m_deviceContext->HSSetShaderResources(shaderResourceStartSlot, views.size(), views.data());
-	m_deviceContext->GSSetShaderResources(shaderResourceStartSlot, views.size(), views.data());
-	m_deviceContext->PSSetShaderResources(shaderResourceStartSlot, views.size(), views.data());
+	m_deviceContext->VSSetShaderResources(shaderResourceStartSlot, SizeTTransUINT(views.size()), views.data());
+	m_deviceContext->DSSetShaderResources(shaderResourceStartSlot, SizeTTransUINT(views.size()), views.data());
+	m_deviceContext->HSSetShaderResources(shaderResourceStartSlot, SizeTTransUINT(views.size()), views.data());
+	m_deviceContext->GSSetShaderResources(shaderResourceStartSlot, SizeTTransUINT(views.size()), views.data());
+	m_deviceContext->PSSetShaderResources(shaderResourceStartSlot, SizeTTransUINT(views.size()), views.data());
 }
 
 void HCGraphicDX11::SetConstantBuffer(std::shared_ptr<IHCResource> buffer, UINT constantBufferSlot)
@@ -480,11 +585,11 @@ void HCGraphicDX11::SetConstantBuffers(const std::vector<std::shared_ptr<IHCReso
 		currBuffers.push_back(static_cast<ID3D11Buffer*>(it->GetResource()));
 	}
 
-	m_deviceContext->VSSetConstantBuffers(constantBufferStartSlot, currBuffers.size(), currBuffers.data());
-	m_deviceContext->DSSetConstantBuffers(constantBufferStartSlot, currBuffers.size(), currBuffers.data());
-	m_deviceContext->HSSetConstantBuffers(constantBufferStartSlot, currBuffers.size(), currBuffers.data());
-	m_deviceContext->GSSetConstantBuffers(constantBufferStartSlot, currBuffers.size(), currBuffers.data());
-	m_deviceContext->PSSetConstantBuffers(constantBufferStartSlot, currBuffers.size(), currBuffers.data());
+	m_deviceContext->VSSetConstantBuffers(constantBufferStartSlot, SizeTTransUINT(currBuffers.size()), currBuffers.data());
+	m_deviceContext->DSSetConstantBuffers(constantBufferStartSlot, SizeTTransUINT(currBuffers.size()), currBuffers.data());
+	m_deviceContext->HSSetConstantBuffers(constantBufferStartSlot, SizeTTransUINT(currBuffers.size()), currBuffers.data());
+	m_deviceContext->GSSetConstantBuffers(constantBufferStartSlot, SizeTTransUINT(currBuffers.size()), currBuffers.data());
+	m_deviceContext->PSSetConstantBuffers(constantBufferStartSlot, SizeTTransUINT(currBuffers.size()), currBuffers.data());
 }
 
 void HCGraphicDX11::Draw(const HCMesh* mesh)
@@ -571,80 +676,6 @@ HCTextureData HCGraphicDX11::GetTextureIndex(const std::wstring& textureName) co
 
 LRESULT HCGraphicDX11::WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
-	switch (uMsg)
-	{
-	case WM_SIZE:
-	{
-		int clientWidth = LOWORD(lParam);
-		int clientHeight = HIWORD(lParam);
-
-		if (m_device.Get())
-		{
-			HC::GO.WIN.WindowsizeX = clientWidth;
-			HC::GO.WIN.WindowsizeY = clientHeight;
-
-			if (wParam == SIZE_MINIMIZED)
-			{
-				m_minimized = true;
-				m_maximized = false;
-			}
-			else if (wParam == SIZE_MAXIMIZED)
-			{
-				m_minimized = false;
-				m_maximized = true;
-			}
-			else if (wParam == SIZE_RESTORED)
-			{
-				if (m_minimized)
-				{
-					m_minimized = false;
-				}
-				else if (m_maximized)
-				{
-					m_maximized = false;
-				}
-				else if (m_resizing)
-				{
-
-				}
-				else
-				{
-
-				}
-			}
-		}
-
-		return 0;
-	}
-	case WM_ENTERSIZEMOVE:
-	{
-		m_resizing = true;
-		return 0;
-	}
-	case WM_EXITSIZEMOVE:
-	{
-		if (m_device.Get())
-		{
-			m_resizing = false;
-
-			m_swapchain->Resize(HC::GO.WIN.WindowsizeX, HC::GO.WIN.WindowsizeY);
-
-			DirectX::XMMATRIX orthoP = DirectX::XMMatrixOrthographicOffCenterLH(
-				0.0f, static_cast<float>(HC::GO.WIN.WindowsizeX),
-				static_cast<float>(HC::GO.WIN.WindowsizeY), 0,
-				D3D11_MIN_DEPTH, D3D11_MAX_DEPTH);
-		}
-
-		return 0;
-	}
-	case WM_GETMINMAXINFO:
-	{
-		((MINMAXINFO*)lParam)->ptMinTrackSize.x = 200;
-		((MINMAXINFO*)lParam)->ptMinTrackSize.y = 200;
-		return 0;
-	}
-	}
-
 	return 0;
 }
 
@@ -788,7 +819,7 @@ void HCGraphicDX11::CreateTextures()
 
 			currTextureData.TextureView->GetDesc(&currTextureData.TextureDesc);
 			currTextureData.SpriteInfoStartIndex = SizeTTransUINT(m_allSpriteDatas.size());
-			COM_THROW_IF_FAILED(currTextureData.TextureDesc.ViewDimension== D3D11_SRV_DIMENSION_TEXTURE2D, "This type texture is not supported");
+			COM_THROW_IF_FAILED(currTextureData.TextureDesc.ViewDimension == D3D11_SRV_DIMENSION_TEXTURE2D, "This type texture is not supported");
 
 			std::wstring postString = std::wstring(textureName.c_str(), HC::GO.GRAPHIC.SpriteTextureSuffix.length());
 			if (postString == HC::GO.GRAPHIC.SpriteTextureSuffix)
@@ -821,7 +852,7 @@ void HCGraphicDX11::CreateTextures()
 		ComPtr<ID3D11Buffer> textureInfoBuffer;
 
 		D3D11_BUFFER_DESC bufferDesc = {};
-		bufferDesc.ByteWidth = m_allSpriteDatas.size() * sizeof(TextureSpriteData);
+		bufferDesc.ByteWidth = SizeTTransUINT(m_allSpriteDatas.size() * sizeof(TextureSpriteData));
 		bufferDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
 		bufferDesc.Usage = D3D11_USAGE_DEFAULT;
 		bufferDesc.StructureByteStride = sizeof(TextureSpriteData);
@@ -839,7 +870,7 @@ void HCGraphicDX11::CreateTextures()
 		bufferViewDesc.ViewDimension = D3D11_SRV_DIMENSION_BUFFER;
 		bufferViewDesc.Buffer.ElementOffset = 0;
 		bufferViewDesc.Buffer.ElementWidth = sizeof(TextureSpriteData);
-		bufferViewDesc.Buffer.NumElements = m_allSpriteDatas.size();
+		bufferViewDesc.Buffer.NumElements = SizeTTransUINT(m_allSpriteDatas.size());
 
 		m_device->CreateShaderResourceView(textureInfoBuffer.Get(), &bufferViewDesc, m_textureInfoView.GetAddressOf());
 	}
@@ -857,7 +888,7 @@ void HCGraphicDX11::CreateGraphicPipeLineBaseSettings()
 	CD3D11_RASTERIZER_DESC rasterizerDesc(D3D11_DEFAULT);
 	COM_HRESULT_IF_FAILED(m_device->CreateRasterizerState(&rasterizerDesc, m_baseRasterizer.GetAddressOf()),
 		"Failed to create rasterizer state.");
-	
+
 	D3D11_RENDER_TARGET_BLEND_DESC rtbd = { 0 };
 	rtbd.BlendEnable = true;
 	rtbd.SrcBlend = D3D11_BLEND::D3D11_BLEND_SRC_ALPHA;
@@ -868,8 +899,12 @@ void HCGraphicDX11::CreateGraphicPipeLineBaseSettings()
 	rtbd.BlendOpAlpha = D3D11_BLEND_OP::D3D11_BLEND_OP_ADD;
 	rtbd.RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE::D3D11_COLOR_WRITE_ENABLE_ALL;
 
-	D3D11_BLEND_DESC blendDesc = { 0 };
+	D3D11_BLEND_DESC blendDesc = {};
+	blendDesc.IndependentBlendEnable = true;
 	blendDesc.RenderTarget[0] = rtbd;
+
+	rtbd.BlendEnable = false;
+	blendDesc.RenderTarget[1] = rtbd;
 
 	COM_HRESULT_IF_FAILED(m_device->CreateBlendState(&blendDesc, m_baseBlendState.GetAddressOf()),
 		"Failed to create blend state.");
@@ -905,7 +940,7 @@ void HCGraphicDX11::CreateInputLayout(size_t inputLayoutHash, const std::vector<
 			vs->GetCPUData()->GetBufferPointer(), vs->GetCPUData()->GetBufferSize(),
 			layout.GetAddressOf()),
 		"fail to create inputlayout");
-	
+
 	m_vertexLayout[inputLayoutHash] = layout;
 }
 
@@ -1007,11 +1042,11 @@ void HCGraphicDX11::GetSpriteData(const std::wstring& texturePath, std::vector<T
 
 		size_t gridInfoTextStartIndex = HC::GO.GRAPHIC.SpriteTextureSuffix.length();
 		size_t gridInfoTextEndIndex = textureName.find_first_of(L'_', HC::GO.GRAPHIC.SpriteTextureSuffix.length());
-		size_t gridInfoSplitIndex= textureName.find_first_of(L'x');
+		size_t gridInfoSplitIndex = textureName.find_first_of(L'x');
 
 		COM_THROW_IF_FAILED((gridInfoTextEndIndex != std::wstring::npos) && (gridInfoSplitIndex != std::wstring::npos),
 			textureName + L"this Texture name has not sprtie grid info");
-		
+
 		const int sizeX = _wtoi(std::wstring(textureName.c_str() + gridInfoTextStartIndex, gridInfoSplitIndex - gridInfoTextStartIndex).c_str());
 		const int sizeY = _wtoi(std::wstring(textureName.c_str() + gridInfoSplitIndex + 1, gridInfoTextEndIndex - (gridInfoSplitIndex + 1)).c_str());
 		const float offsetX = 1.0f / sizeX;

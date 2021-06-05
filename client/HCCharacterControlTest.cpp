@@ -32,55 +32,57 @@ void HCCharacterControlTest::Init()
 	m_character.SetSize({ 100.0f, 100.0f });
 	m_character.SetAnimation(&m_animations[CHAR_IDLE]);
 
-	auto charIdle = [this](HC2DCharacter* character, float deltaTime)->void
+	auto charIdle = [this](void* character, float deltaTime)->void
 	{
-		character->SetAnimation(&m_animations[CHAR_IDLE]);
+		static_cast<HC2DCharacter*>(character)->SetAnimation(&m_animations[CHAR_IDLE]);
 	};
 
-	auto charMoveUp = [this](HC2DCharacter* character, float deltaTime)->void
+	auto charMoveUp = [this](void* character, float deltaTime)->void
 	{
 		DirectX::XMFLOAT2 pos = { 0.0f, -200.0f * deltaTime };
-		character->SetAnimation(&m_animations[CHAR_UP]);
-		character->AddPos(pos);
+		static_cast<HC2DCharacter*>(character)->SetAnimation(&m_animations[CHAR_UP]);
+		static_cast<HC2DCharacter*>(character)->AddPos(pos);
 	};
 
-	auto charMoveLeft = [this](HC2DCharacter* character, float deltaTime)->void
+	auto charMoveLeft = [this](void* character, float deltaTime)->void
 	{
 		DirectX::XMFLOAT2 pos = { -200.0f * deltaTime, 0.0f };
-		character->SetAnimation(&m_animations[CHAR_LEFT]);
-		character->AddPos(pos);
+		static_cast<HC2DCharacter*>(character)->SetAnimation(&m_animations[CHAR_LEFT]);
+		static_cast<HC2DCharacter*>(character)->AddPos(pos);
 	};
 
-	auto charMoveDown = [this](HC2DCharacter* character, float deltaTime)->void
+	auto charMoveDown = [this](void* character, float deltaTime)->void
 	{
 		DirectX::XMFLOAT2 pos = { 0.0f, 200.0f * deltaTime };
-		character->SetAnimation(&m_animations[CHAR_DOWN]);
-		character->AddPos(pos);
+		static_cast<HC2DCharacter*>(character)->SetAnimation(&m_animations[CHAR_DOWN]);
+		static_cast<HC2DCharacter*>(character)->AddPos(pos);
 	};
 
-	auto charMoveRight = [this](HC2DCharacter* character, float deltaTime)->void
+	auto charMoveRight = [this](void* character, float deltaTime)->void
 	{
 		DirectX::XMFLOAT2 pos = { 200.0f * deltaTime, 0.0f };
-		character->SetAnimation(&m_animations[CHAR_RIGHT]);
-		character->AddPos(pos);
+		static_cast<HC2DCharacter*>(character)->SetAnimation(&m_animations[CHAR_RIGHT]);
+		static_cast<HC2DCharacter*>(character)->AddPos(pos);
 	};
 
-	m_controler.SetCharacter(&m_character);
+	auto keyboard = HCDEVICE(HCKeyboard);
+	std::vector<HCKEYBOARD_CONTROL_FUNC> funcs;
 
-	m_controler.AddControlData(HCINPUT_DEVICE_TYPE::KEYBOARD, { HCKEYBOARD_KEY_TYPE::W, HCKEYBOARD_KEY_STATE::HELD,  charMoveUp });
-	m_controler.AddControlData(HCINPUT_DEVICE_TYPE::KEYBOARD, { HCKEYBOARD_KEY_TYPE::S, HCKEYBOARD_KEY_STATE::HELD,  charMoveDown });
-	m_controler.AddControlData(HCINPUT_DEVICE_TYPE::KEYBOARD, { HCKEYBOARD_KEY_TYPE::A, HCKEYBOARD_KEY_STATE::HELD,  charMoveLeft });
-	m_controler.AddControlData(HCINPUT_DEVICE_TYPE::KEYBOARD, { HCKEYBOARD_KEY_TYPE::D, HCKEYBOARD_KEY_STATE::HELD,  charMoveRight });
+	funcs.push_back({ HCKEYBOARD_KEY_TYPE::W, HCKEYBOARD_KEY_STATE::HELD,  charMoveUp });
+	funcs.push_back( { HCKEYBOARD_KEY_TYPE::S, HCKEYBOARD_KEY_STATE::HELD,  charMoveDown });
+	funcs.push_back( { HCKEYBOARD_KEY_TYPE::A, HCKEYBOARD_KEY_STATE::HELD,  charMoveLeft });
+	funcs.push_back( { HCKEYBOARD_KEY_TYPE::D, HCKEYBOARD_KEY_STATE::HELD,  charMoveRight });
 
-	m_controler.AddControlData(HCINPUT_DEVICE_TYPE::KEYBOARD, { HCKEYBOARD_KEY_TYPE::W, HCKEYBOARD_KEY_STATE::RELEASED,  charIdle });
-	m_controler.AddControlData(HCINPUT_DEVICE_TYPE::KEYBOARD, { HCKEYBOARD_KEY_TYPE::S, HCKEYBOARD_KEY_STATE::RELEASED,  charIdle });
-	m_controler.AddControlData(HCINPUT_DEVICE_TYPE::KEYBOARD, { HCKEYBOARD_KEY_TYPE::A, HCKEYBOARD_KEY_STATE::RELEASED,  charIdle });
-	m_controler.AddControlData(HCINPUT_DEVICE_TYPE::KEYBOARD, { HCKEYBOARD_KEY_TYPE::D, HCKEYBOARD_KEY_STATE::RELEASED,  charIdle });
+	funcs.push_back( { HCKEYBOARD_KEY_TYPE::W, HCKEYBOARD_KEY_STATE::RELEASED,  charIdle });
+	funcs.push_back( { HCKEYBOARD_KEY_TYPE::S, HCKEYBOARD_KEY_STATE::RELEASED,  charIdle });
+	funcs.push_back( { HCKEYBOARD_KEY_TYPE::A, HCKEYBOARD_KEY_STATE::RELEASED,  charIdle });
+	funcs.push_back( { HCKEYBOARD_KEY_TYPE::D, HCKEYBOARD_KEY_STATE::RELEASED,  charIdle });
+
+	keyboard->SetObject(&m_character, &funcs);
 }
 
 void HCCharacterControlTest::Update(float deltaTime)
 {
-	m_controler.Update();
 	m_character.Update(deltaTime);
 }
 

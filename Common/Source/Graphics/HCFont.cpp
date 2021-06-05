@@ -74,7 +74,7 @@ IHCTextData* DX11FontMG::CreateTextData()
 	}
 	else
 	{
-		newData->m_Index = m_texts.size();
+		newData->m_Index = SizeTTransUINT(m_texts.size());
 		m_texts.emplace_back(newData);
 	}
 

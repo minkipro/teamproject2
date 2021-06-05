@@ -64,7 +64,7 @@ void SocketCommunication::GetIp(std::vector<unsigned long>& out)
 	memset(&sockAddr, 0x00, sizeof(sockAddr));
 	int ret2 = getpeername(m_socket, (struct sockaddr*)&sockAddr, &size);
 	char mybuffer[16];
-	strcpy(mybuffer, inet_ntoa(sockAddr.sin_addr));
+	strcpy_s(mybuffer, inet_ntoa(sockAddr.sin_addr));
 
 	char hostname[1024] = { 0, };
 	struct hostent* host_info;

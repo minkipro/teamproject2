@@ -44,7 +44,7 @@ void DevScene::Init()
 
 	m_testPipeLine->m_primitive = HC::PRIMITIVE_TOPOLOGY::POINT;
 
-	m_sceneObjects.push_back(new HCTileMap(100.0f, 100.0f, 100, 100));
+	m_sceneObjects.push_back(new HCTileMap(8.0f, 8.0f, 100, 100));
 	m_sceneObjects.back()->Init();
 
 	auto charControlTestOb = new HCCharacterControlTest;
@@ -62,16 +62,17 @@ void DevScene::Init()
 
 void DevScene::Update()
 {
+	float currDeltaTime = HCDEVICE(HCTimer)->GetDeltatime();
+
 	HC::CameraManager* cameraManager = HC::CameraManager::Get();
 	cameraManager->Update();
 
 	DirectX::XMStoreFloat4x4(&m_mainPass.ViewMatrix, cameraManager->GetMatrix());
 
 	m_mainPassCB->Map();
-	m_mainPassCB->CpuDataCopyToGpu(&m_mainPass);
+	m_mainPassCB->CopyCpuDataToGpu(&m_mainPass);
 	m_mainPassCB->UnMap();
 
-	float currDeltaTime = HCDEVICE(HCTimer)->GetDeltatime();
 	size_t objectNum = m_sceneObjects.size();
 	for (size_t i = 0; i < objectNum; i++)
 	{
@@ -85,6 +86,8 @@ void DevScene::Update()
 void DevScene::Render()
 {
 	auto graphic = HCDEVICE(HCGraphic);
+
+	static float pickingDefault[4] = { -1.0f,-1.0f,-1.0f,-1.0f };
 	graphic->SetPipeLineObject(m_testPipeLine.get());
 	graphic->SetConstantBuffer(m_mainPassCB, 0);
 

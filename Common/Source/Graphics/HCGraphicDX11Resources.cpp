@@ -8,10 +8,12 @@ void* HCDX11Shader::GetShaderData()
 	return m_shaderData.Get();
 }
 
-HCDX11Resource::HCDX11Resource(ID3D11Resource* resource, ID3D11View* view, const HC::GRAPHIC_RESOURCE_DESC& desc)
+HCDX11Resource::HCDX11Resource(ID3D11Resource* resource, ID3D11View* shaderResource_cb_view, ID3D11View* renderTargetView, ID3D11View* depthStencilView, const HC::GRAPHIC_RESOURCE_DESC& desc)
 {
 	m_resource = resource;
-	m_resourceView = view;
+	m_resourceView = shaderResource_cb_view;
+	m_renderTargetView = renderTargetView;
+	m_depthStencilView = depthStencilView;
 
 	ZeroMemory(&m_sub, sizeof(m_sub));
 	m_desc = desc;
@@ -53,7 +55,7 @@ void HCDX11Resource::UnMap()
 	s_deviceContext->Unmap(m_resource.Get(), 0);
 }
 
-void HCDX11Resource::CpuDataCopyToGpu(void* oneStrideData)
+void HCDX11Resource::CopyCpuDataToGpu(void* oneStrideData)
 {
 	COM_THROW_IF_FAILED(m_desc.UsageType == HC::GRAPHIC_RESOURCE_USAGE_TYPE::GRAPHIC_RESOURCE_USAGE_DYNAMIC, "this resource can't copy data to gpu");
 	COM_THROW_IF_FAILED(m_sub.pData, "this resource is not mapped");
@@ -63,7 +65,7 @@ void HCDX11Resource::CpuDataCopyToGpu(void* oneStrideData)
 	m_currIndex++;
 }
 
-void HCDX11Resource::CpuDataCopyToGpu(void* data, size_t byteSize, size_t byteOffset)
+void HCDX11Resource::CopyCpuDataToGpu(void* data, size_t byteSize, size_t byteOffset)
 {
 	COM_THROW_IF_FAILED(m_desc.UsageType == HC::GRAPHIC_RESOURCE_USAGE_TYPE::GRAPHIC_RESOURCE_USAGE_DYNAMIC, "this resource can't copy data to gpu");
 	COM_THROW_IF_FAILED(m_sub.pData, "this resource is not mapped");
@@ -72,7 +74,7 @@ void HCDX11Resource::CpuDataCopyToGpu(void* data, size_t byteSize, size_t byteOf
 	CopyMemory((mappedData +byteOffset), data, byteSize);
 }
 
-void HCDX11Resource::CpuDataCopyToGpu(void* data, size_t offsetSrtide)
+void HCDX11Resource::CopyCpuDataToGpu(void* data, size_t offsetSrtide)
 {
 	COM_THROW_IF_FAILED(m_desc.UsageType == HC::GRAPHIC_RESOURCE_USAGE_TYPE::GRAPHIC_RESOURCE_USAGE_DYNAMIC, "this resource can't copy data to gpu");
 	COM_THROW_IF_FAILED(m_sub.pData, "this resource is not mapped");
@@ -81,36 +83,16 @@ void HCDX11Resource::CpuDataCopyToGpu(void* data, size_t offsetSrtide)
 	CopyMemory(mappedData + (m_desc.Stride* offsetSrtide), data, m_desc.Stride);
 }
 
-void HCDX11Resource::GpuDataCopyToCpu(const RECT& rect, std::vector<std::vector<BYTE>>& out)
+BYTE* HCDX11Resource::GetMappedDataPtr()
 {
-	COM_THROW_IF_FAILED(m_desc.UsageType == HC::GRAPHIC_RESOURCE_USAGE_TYPE::GRAPHIC_RESOURCE_USAGE_STAGING, "this resource can't copy data to cpu");
 	COM_THROW_IF_FAILED(m_sub.pData, "this resource is not mapped");
 
-	const BYTE* mappedData = static_cast<BYTE*>(m_sub.pData);
-	size_t dataStrid = m_desc.Stride;
-	size_t rowPitch = m_sub.RowPitch;
-	size_t dataHeight = (static_cast<size_t>(rect.bottom) - rect.top) * dataStrid;
-	size_t datawidth = (static_cast<size_t>(rect.right) - rect.left) * dataStrid;
+	return  static_cast<BYTE*>(m_sub.pData);
+}
 
-	if (out.size() != dataHeight)
-	{
-		out.resize(dataHeight);
-	}
-
-	if (out.front().size() != datawidth)
-	{
-		for (auto& it : out)
-		{
-			it.resize(datawidth);
-		}
-	}
-
-	const BYTE* currDataPtr = mappedData + (rect.left * dataStrid) + (rowPitch * rect.top);
-	for (auto& it : out)
-	{
-		CopyMemory(it.data(), currDataPtr, datawidth);
-		currDataPtr += rowPitch;
-	}
+UINT HCDX11Resource::GetMappedDataRowPitch()
+{
+	return m_sub.RowPitch;
 }
 
 void HCDX11Resource::SetDeviceContext(ID3D11DeviceContext* context)

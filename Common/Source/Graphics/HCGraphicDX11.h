@@ -20,7 +20,7 @@ class HCGraphicDX11 final : public HCGraphic
 	struct TextureResourceData
 	{
 		ComPtr<ID3D11ShaderResourceView>						TextureView;
-		D3D11_SHADER_RESOURCE_VIEW_DESC							TextureDesc;
+		D3D11_SHADER_RESOURCE_VIEW_DESC							TextureDesc = {};
 		UINT													SpriteNum = 1;
 		UINT													SpriteInfoStartIndex = 0;
 	};
@@ -35,12 +35,15 @@ public:
 
 	virtual void			Init();
 	virtual void			Update();
+	virtual void			Resize(UINT sizeX, UINT sizeY);
 
 	virtual void			CreateResource(const HC::GRAPHIC_RESOURCE_DESC& desc, std::shared_ptr<IHCResource>& out) override;
 	virtual void			CreateShader(HC::SHADER_TYPE type, const std::wstring& filePath, const std::string& entryPoint, std::shared_ptr<IHCShader>& out) override;
 	virtual void			CreateTextData(std::shared_ptr<IHCTextData>& out) override;
 
 	virtual void			CopyResource(std::shared_ptr<IHCResource> dest, std::shared_ptr<IHCResource> src) override;
+	virtual void			ClearRenderTarget(std::shared_ptr<IHCResource> renderTargetResource, const float rgba[4]) override;
+	virtual void			ClearDepthStencil(std::shared_ptr<IHCResource> depthStencilResource, bool clearDepth, bool clearStencil, float depth, unsigned char stencil) override;
 
 	virtual void			RenderBegin() override;
 	virtual void			RenderEnd() override;
@@ -96,9 +99,5 @@ private:
 	const HCGraphicPipeLine*												m_currPipeLine = nullptr;
 
 	DX11FontMG																m_font;
-
-	bool																	m_resizing = false;
-	bool																	m_minimized = false;
-	bool																	m_maximized = false;
 };
 

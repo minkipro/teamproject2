@@ -29,8 +29,3 @@ DirectX::Mouse::ButtonStateTracker::ButtonState HCMouse::GetButtonState(HCMOUSE_
 	COM_THROW_IF_FAILED(false, "wrong mouseButtonInput");
 	return HCMOUSE_BUTTON_STATE::UP;
 }
-
-LRESULT HCMouse::WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
-{
-	return LRESULT();
-}

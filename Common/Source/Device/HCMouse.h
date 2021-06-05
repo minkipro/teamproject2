@@ -25,7 +25,6 @@ public:
 	virtual std::string		GetDeviceName() const { return typeid(HCMouse).name(); }
 
 	HCMOUSE_BUTTON_STATE	GetButtonState(HCMOUSE_BUTTON_TYPE button);
-	virtual LRESULT			WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 private:
 };

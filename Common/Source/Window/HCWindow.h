@@ -26,4 +26,7 @@ private:
 	static std::vector<IHCDevice*>			s_Proces;
 	HINSTANCE								m_hAppInst;
 	HWND									m_hMainWnd;
+	static bool								s_resizing;
+	static bool								s_minimized;
+	static bool								s_maximized;
 };

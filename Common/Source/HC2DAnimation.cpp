@@ -21,7 +21,7 @@ int HC2DAnimation::Update(float deltaTime)
 		{
 			if (currIndex >= m_spriteIndices.size())
 			{
-				currIndex = m_spriteIndices.size() - 1;
+				currIndex = SizeTTransUINT(m_spriteIndices.size() - 1);
 			}
 		}
 

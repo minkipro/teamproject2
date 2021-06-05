@@ -48,22 +48,23 @@ public:
 
 	static	void	CreateUIRenderPipeLine(HCGraphic* device);
 
-	virtual void	Init() = 0;
+	virtual void	Init();
 	virtual void	Update();
 	virtual void	Render();
+	virtual void	UIOn(bool value) { m_isOn = value; }
 
-	virtual void	UIOn();
-	virtual void	UIOff();
-	virtual void	SetTexture(const std::wstring& path, const DirectX::XMFLOAT2& size);
-
-	void			AddChild(UIObject* child);
-	void			SetParent(UIObject* object);
+	void			SetTexture(const std::wstring& path, const DirectX::XMFLOAT2& size);
+	void			SetTexture(const HCTextureData& textureData, const DirectX::XMFLOAT2& size);
 	void			SetPos(const DirectX::XMFLOAT3& pos);
 	void			SetSize(const DirectX::XMFLOAT2& size);
 	void			SetBenchUV(const DirectX::XMFLOAT2& benchUV) { m_benchUV = benchUV; }
 
+	void			AddChild(UIObject* child);
 	void			AddFunc(HCColFunc func);
-
+	void			SetParent(UIObject* object);
+	
+	void			ClearFunc();
+	UINT						GetUINum();
 	const DirectX::XMFLOAT2&	GetSize() { return m_renderInfo.Size; }
 
 private:
@@ -72,12 +73,16 @@ private:
 
 protected:
 	static std::shared_ptr<HCGraphicPipeLine>	s_graphicPipeLine;
+	static const HCMesh*						s_mesh;
 
-	UIObject*					m_parent;
-	std::vector<UIObject*>		m_childs;
-	DirectX::XMFLOAT3			m_pos;
-	HCPointRenderInfo			m_renderInfo;
-	HCColliderData				m_ColliderData;
-	DirectX::XMFLOAT2			m_benchUV;
-	bool						m_isOn;
+	DirectX::XMFLOAT3				m_pos;
+	std::shared_ptr<IHCResource>	m_renderInfoBuffer;
+	HCPointRenderInfo				m_renderInfo;
+	HCTextureData					m_textureData;
+	IHCCollider*					m_colliderData;
+	DirectX::XMFLOAT2				m_benchUV;
+
+	UIObject*						m_parent;
+	std::vector<UIObject*>			m_childs;
+	bool							m_isOn;
 };

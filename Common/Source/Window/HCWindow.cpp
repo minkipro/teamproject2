@@ -6,8 +6,12 @@
 #include <Keyboard.h>
 
 std::vector<IHCDevice*> HCWindow::s_Proces;
+bool					HCWindow::s_resizing = false;
+bool					HCWindow::s_minimized = false;
+bool					HCWindow::s_maximized = false;
+
 DirectX::Mouse mouse;
-DirectX::Keyboard keyboard;
+DirectX::Keyboard keybaord;
 
 HCWindow::~HCWindow()
 {
@@ -54,10 +58,7 @@ void HCWindow::RegisterProc(IHCDevice* device)
 
 LRESULT HCWindow::WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
-	if (uMsg == WM_IME_STARTCOMPOSITION)
-	{
-		uMsg = 0;//박스 윈도우 생성 막기
-	}
+	DirectX::Keyboard::ProcessMessage(uMsg, wParam, lParam);
 	DirectX::Mouse::ProcessMessage(uMsg, wParam, lParam);
 
 	for (auto it : s_Proces)
@@ -67,25 +68,79 @@ LRESULT HCWindow::WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 	switch (uMsg)
 	{
-	case WM_DESTROY:
-		PostQuitMessage(0);
+	case WM_SIZE:
+	{
+		int clientWidth = LOWORD(lParam);
+		int clientHeight = HIWORD(lParam);
+
+		if (s_Proces.size())
+		{
+			HC::GO.WIN.WindowsizeX = clientWidth;
+			HC::GO.WIN.WindowsizeY = clientHeight;
+
+			if (wParam == SIZE_MINIMIZED)
+			{
+				s_minimized = true;
+				s_maximized = false;
+			}
+			else if (wParam == SIZE_MAXIMIZED)
+			{
+				s_minimized = false;
+				s_maximized = true;
+				HCDEVICE(HCGraphic)->Resize(HC::GO.WIN.WindowsizeX, HC::GO.WIN.WindowsizeY);
+			}
+			else if (wParam == SIZE_RESTORED)
+			{
+				if (s_minimized)
+				{
+					s_minimized = false;
+					HCDEVICE(HCGraphic)->Resize(HC::GO.WIN.WindowsizeX, HC::GO.WIN.WindowsizeY);
+				}
+				else if (s_maximized)
+				{
+					s_maximized = false;
+					HCDEVICE(HCGraphic)->Resize(HC::GO.WIN.WindowsizeX, HC::GO.WIN.WindowsizeY);
+				}
+				else if (s_resizing)
+				{
+					HCDEVICE(HCGraphic)->Resize(HC::GO.WIN.WindowsizeX, HC::GO.WIN.WindowsizeY);
+				}
+			}
+		}
+
 		return 0;
+	}
+	case WM_ENTERSIZEMOVE:
+	{
+		s_resizing = true;
+		return 0;
+	}
+	case WM_EXITSIZEMOVE:
+	{
+		if (s_Proces.size())
+		{
+			HCDEVICE(HCGraphic)->Resize(HC::GO.WIN.WindowsizeX, HC::GO.WIN.WindowsizeY);
+			s_resizing = false;
+		}
 
-	case WM_MENUCHAR:
-		return MAKELRESULT(0, MNC_CLOSE);
-
+		return 0;
+	}
 	case WM_GETMINMAXINFO:
+	{
 		((MINMAXINFO*)lParam)->ptMinTrackSize.x = 200;
 		((MINMAXINFO*)lParam)->ptMinTrackSize.y = 200;
 		return 0;
 	}
-
-	switch (uMsg)
-	{
+	case WM_DESTROY:
+		PostQuitMessage(0);
+		return 0;
+	case WM_MENUCHAR:
+		return MAKELRESULT(0, MNC_CLOSE);
+	case WM_IME_STARTCOMPOSITION:
 	case WM_SYSKEYDOWN:
 	case WM_SYSKEYUP:
 	{
-		uMsg = 0;//system키를 인게임중에 막기(keystate는 위에서 변경)
+		uMsg = 0; //박스 윈도우 생성 막기 //system키를 인게임중에 막기(keystate는 위에서 변경)
 	}
 	}
 

@@ -27,6 +27,6 @@ struct HCPointRenderInfo
 	DirectX::XMFLOAT2	Size = { 0,0 };
 	DirectX::XMFLOAT4	Color = { 0,0,0,1 };
 	int					SpriteInfoIndex = -1;
-	int					Pad0 = 0;
+	int					PixelColId = -1;
 	int					Pad1 = 0;
 };

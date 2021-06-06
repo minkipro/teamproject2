@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include "HCCharacter.h"
-#include "HCCharacterController.h"
 #include "Graphics\HCMeshManager.h"
 
 HC2DCharacter::~HC2DCharacter()
@@ -36,7 +35,7 @@ void HC2DCharacter::Update(float deltaTime)
 	}
 
 	m_renderInfoBuffer->Map();
-	m_renderInfoBuffer->CpuDataCopyToGpu(&m_renderInfo);
+	m_renderInfoBuffer->CopyCpuDataToGpu(&m_renderInfo);
 	m_renderInfoBuffer->UnMap();
 }
 

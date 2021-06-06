@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "HCPhysics.h"
 
-HCColliderData::~HCColliderData()
+IHCCollider::~IHCCollider()
 {
 	HCDEVICE(HCPhysics)->DeletedCollider(this);
 }

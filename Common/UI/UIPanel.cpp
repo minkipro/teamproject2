@@ -12,7 +12,6 @@ void UIPanel::SetBackGroundColor(const DirectX::XMFLOAT4 color)
 
 void UIPanel::SetName(const std::wstring& name)
 {
-	//m_Font->m_Text = name;
 }
 
 void UIPanel::Update()

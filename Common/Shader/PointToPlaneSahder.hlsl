@@ -11,6 +11,13 @@ struct VertexOut
     float4 Color : TEXCOORD0;
     float2 UV : TEXCOORD1;
     nointerpolation int IsTexVertex : TEXCOORD2;
+    //nointerpolation int FixelColId : TEXCOORD3;
+};
+
+struct PixelOut
+{
+    float4  Color : SV_Target0;
+    //int     FixelColId : SV_Target1;
 };
 
 struct RenderInfo
@@ -19,7 +26,7 @@ struct RenderInfo
     float2 Size;
     float4 Color;
     int SpriteInfoIndex;
-    int pad0;
+    int FixelColId;
     int pad1;
 };
 
@@ -48,6 +55,7 @@ void CreatePanel(PointVertexIn vin, inout TriangleStream<VertexOut> output)
         vertices[k].Color = renderInfo.Color;
         vertices[k].PosH = float4(renderInfo.PosL, 1);
         vertices[k].IsTexVertex = renderInfo.SpriteInfoIndex;
+        //vertices[k].FixelColId = renderInfo.FixelColId;
     }
     
     /*
@@ -105,18 +113,20 @@ void GS(point PointVertexIn input[1], inout TriangleStream<VertexOut> output)
 	CreatePanel(input[0], output);
 }
 
-float4 PS(VertexOut input) : SV_TARGET
+PixelOut PS(VertexOut input)
 {
-	float4 result = {0,0,0,1};
+    PixelOut result;
+    //result.FixelColId = input.FixelColId;
     
     if (input.IsTexVertex >= 0)
     {
-        result = gMainTexture.Sample(gsamPointClamp, input.UV);
+        result.Color = gMainTexture.Sample(gsamPointClamp, input.UV);
     }
     else
     {
-        result = input.Color;
+        result.Color = input.Color;
     }
 
+    
     return result;
 }

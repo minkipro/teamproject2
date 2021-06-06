@@ -1,5 +1,5 @@
 #pragma once
-#include "HCCharacterController.h"
+#include "HCCharacter.h"
 
 class HCCharacterControlTest :public HCSceneObject
 {
@@ -10,6 +10,5 @@ public:
 
 private:
 	HC2DCharacter				m_character;
-	HCCharacterController		m_controler;
 	std::vector<HC2DAnimation>	m_animations;
 };

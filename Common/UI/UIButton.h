@@ -20,9 +20,8 @@ public:
 	void			SetText(const std::wstring& text);
 	void			SetTextHeight(int height);
 
-	void			ClearFunc();
 	void			OnlyFontMode();
 
 private:
-	bool m_isOnlyFontMode;
+	bool	m_isOnlyFontMode;
 };

@@ -80,22 +80,6 @@ void HCSwapchainDX11::Resize(UINT windowX, UINT windowY)
 		"Failed to create depth stencil view.");
 }
 
-void HCSwapchainDX11::PresentRenderTargetSetting(ID3D11DeviceContext* deviceContext, const float clearColor[4])
-{
-	auto present = m_renderTargetView.Get();
-
-	deviceContext->ClearRenderTargetView(present, clearColor);
-	deviceContext->ClearDepthStencilView(m_depthStencilView.Get(), 
-		D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
-	
-	CD3D11_VIEWPORT viewport(0.0f, 0.0f, static_cast<float>(HC::GO.WIN.WindowsizeX), static_cast<float>(HC::GO.WIN.WindowsizeY));
-	D3D11_RECT rect = { 0, 0, HC::GO.WIN.WindowsizeX, HC::GO.WIN.WindowsizeY };
-	deviceContext->RSSetViewports(1, &viewport);
-	deviceContext->RSSetScissorRects(1, &rect);
-
-	deviceContext->OMSetRenderTargets(1, &present, m_depthStencilView.Get());
-}
-
 void HCSwapchainDX11::Present()
 {
 	COM_HRESULT_IF_FAILED(m_swapchain->Present(0, 0), "Rendertarget Present error");

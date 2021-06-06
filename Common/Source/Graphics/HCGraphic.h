@@ -64,6 +64,7 @@ namespace HC
 	struct GRAPHIC_RESOURCE_BUFFER
 	{
 		UINT					StrideNum = 0;
+		DXGI_FORMAT				Format = DXGI_FORMAT_UNKNOWN;
 	};
 
 	struct GRAPHIC_RESOURCE_TEXTURE
@@ -79,14 +80,14 @@ namespace HC
 		{
 			ZeroMemory(this, sizeof(GRAPHIC_RESOURCE_DESC));
 		}
-		
+
 		GRAPHIC_RESOURCE_TYPE		Type;
 		GRAPHIC_RESOURCE_FLAGS		Flags;
 		GRAPHIC_RESOURCE_USAGE_TYPE	UsageType;
 		GRAPHIC_RESOURCE_BIND_FLAGS BindFlags;
 		UINT						Stride = 0;
 
-		const void*					DefaultData = nullptr;
+		const void* DefaultData = nullptr;
 
 		union
 		{
@@ -141,16 +142,33 @@ public:
 	const HC::GRAPHIC_RESOURCE_DESC&	GetDesc() { return m_desc; }
 	virtual void*						GetResource() = 0;
 	virtual void*						GetResourceView() = 0;
+	virtual void*						GetRenderTargetView() = 0;
+	virtual void*						GetDepthStencilView() = 0;
 
 	virtual void						Map() = 0;
 	virtual void						UnMap() = 0;
-	virtual void						CpuDataCopyToGpu(void* data) = 0;
-	virtual void						CpuDataCopyToGpu(void* data, size_t byteSize, size_t byteOffset) = 0;
-	virtual void						CpuDataCopyToGpu(void* data, size_t offsetSrtide) = 0;
-	virtual void						GpuDataCopyToCpu(const RECT& rect, std::vector<std::vector<BYTE>>& out) = 0;
+	virtual void						CopyCpuDataToGpu(void* data) = 0;
+	virtual void						CopyCpuDataToGpu(void* data, size_t byteSize, size_t byteOffset) = 0;
+	virtual void						CopyCpuDataToGpu(void* data, size_t offsetSrtide) = 0;
+	virtual BYTE*						GetMappedDataPtr() = 0;
+	virtual UINT						GetMappedDataRowPitch() = 0;
 
 protected:
 	HC::GRAPHIC_RESOURCE_DESC m_desc;
+};
+
+class HCDepthStencil
+{
+public:
+	HCDepthStencil()
+	{
+	}
+	virtual ~HCDepthStencil() = default;
+
+	virtual void* GetResource() = 0;
+	virtual void* GetResourceView() = 0;
+
+protected:
 };
 
 class IHCRasterizer
@@ -158,6 +176,8 @@ class IHCRasterizer
 public:
 	IHCRasterizer() {}
 	virtual ~IHCRasterizer() = default;
+
+	virtual void* GetStateView() = 0;
 
 protected:
 };
@@ -168,7 +188,12 @@ public:
 	IHCBlendState() {}
 	virtual ~IHCBlendState() = default;
 
+	virtual void*	GetStateView() = 0;
+	UINT			GetSampleMask() { return m_sampleMask; }
+	void			SetSampleMask(UINT sampleMask) { m_sampleMask = sampleMask; }
+
 protected:
+	UINT m_sampleMask = 0xFFFFFFFF;
 };
 
 class IHCDepthStencilState
@@ -176,6 +201,8 @@ class IHCDepthStencilState
 public:
 	IHCDepthStencilState() {}
 	virtual ~IHCDepthStencilState() = default;
+
+	virtual void* GetStateView() = 0;
 
 protected:
 };
@@ -214,6 +241,16 @@ struct HCMesh
 	std::shared_ptr<IHCResource>	IndexBuffer;
 };
 
+struct HCViewPort
+{
+	float TopLeftX = 0.0f;
+	float TopLeftY = 0.0f;
+	float Width = 0.0f;
+	float Heigh = 0.0f;
+	float MinDepth = 0.0;
+	float MaxDepth = 1.0f;
+};
+
 class HCGraphicPipeLine
 {
 public:
@@ -233,13 +270,19 @@ public:
 	std::shared_ptr<IHCBlendState>				m_blendState;
 
 	std::vector<std::shared_ptr<IHCResource>>	m_renderTargets;
-	std::shared_ptr<IHCResource>				m_depthStencil;																																																																																																						
+	std::shared_ptr<IHCResource>				m_depthStencil;
 	HC::PRIMITIVE_TOPOLOGY						m_primitive = HC::PRIMITIVE_TOPOLOGY::POINT;
 
+	HCViewPort									m_viewPort;
+	std::vector<DirectX::XMINT4>				m_scissorRects;
+
+	bool										m_useBaseRenderTarget = true;
+	bool										m_useBaseDepthStencil = true;
+
 private:
-	const std::vector<HCInputLayoutElement>*	m_vertexLayout;
-	size_t										m_vertexTypeHash;
-	UINT										m_vertexSize;
+	const std::vector<HCInputLayoutElement>*	m_vertexLayout = nullptr;
+	size_t										m_vertexTypeHash = 0;
+	UINT										m_vertexSize = 0;
 };
 
 class HCGraphic : public IHCDevice
@@ -254,12 +297,15 @@ public: //pure virtual method
 
 	virtual void			Init() = 0;
 	virtual void			Update() = 0;
+	virtual void			Resize(UINT sizeX, UINT sizeY) = 0;
 
 	virtual void			CreateResource(const HC::GRAPHIC_RESOURCE_DESC& desc, std::shared_ptr<IHCResource>& out) = 0;
 	virtual void			CreateShader(HC::SHADER_TYPE type, const std::wstring& filePath, const std::string& entryPoint, std::shared_ptr<IHCShader>& out) = 0;
 	virtual void			CreateTextData(std::shared_ptr<IHCTextData>& out) = 0;
 
 	virtual void			CopyResource(std::shared_ptr<IHCResource> dest, std::shared_ptr<IHCResource> src) = 0;
+	virtual void			ClearRenderTarget(std::shared_ptr<IHCResource> renderTargetResource, const float rgba[4]) = 0;
+	virtual void			ClearDepthStencil(std::shared_ptr<IHCResource> depthStencilResource, bool clearDepth, bool clearStencil, float depth, unsigned char stencil) = 0;
 
 	virtual void			RenderBegin() = 0;
 	virtual void			RenderEnd() = 0;

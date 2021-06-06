@@ -8,14 +8,12 @@ void UIButton::Init()
 
 void UIButton::Update()
 {
-	if (m_isOn)
+	if (!m_isOnlyFontMode)
 	{
-		UIObject::Update();
 
-		if (!m_isOnlyFontMode)
-		{
-		}
 	}
+
+	UIObject::Update();
 }
 
 void UIButton::SetTexture(const std::wstring& path, const DirectX::XMFLOAT2& size)
@@ -32,15 +30,10 @@ void UIButton::OnlyFontMode()
 
 void UIButton::SetText(const std::wstring& text)
 {
-	
+
 }
 
 void UIButton::SetTextHeight(int height)
 {
 
-}
-
-void UIButton::ClearFunc()
-{
-	m_ColliderData.ColFuncs.clear();
 }

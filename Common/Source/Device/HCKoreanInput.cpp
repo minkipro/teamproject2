@@ -50,5 +50,6 @@ LRESULT HCKoreanInput::WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lP
 	case WM_KEYDOWN:
 		return 0;
 	}
-	return 1;
+
+	return 0;
 }

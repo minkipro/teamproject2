@@ -7,7 +7,7 @@ class DX11FontMG
 {
 public:
 	DX11FontMG() = default;
-	~DX11FontMG() = default;
+	~DX11FontMG();
 
 	void					Init(void* device, void* dc);
 	void					Render();

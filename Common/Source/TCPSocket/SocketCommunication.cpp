@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "SocketCommunication.h"
-#include "HCCommunicationProtocol.h"
+
 
 
 SocketCommunication* SocketCommunication::instance = nullptr;
@@ -65,6 +65,8 @@ void SocketCommunication::Update()
 	std::wstring imfalse = L"false";
 
 	m_textRender->m_text= L" is m_pthread exist? : " + (m_pthread != nullptr ? imtrue : imfalse);
+
+
 }
 
 void SocketCommunication::GetIp(std::vector<unsigned long>& out)
@@ -158,13 +160,10 @@ void SocketCommunication::GetIp(std::vector<unsigned long>& out)
 
 void SocketCommunication::ConnectStart()
 {
-	const char* ip = "192.168.0.8";		//제 공인 ip
-	const char* fortNum = "8000";			//스타듀밸리 fortNum으로 변경 필요.
-
 	SOCKADDR_IN servAddr = { 0, };
 	servAddr.sin_family = AF_INET;
-	servAddr.sin_addr.s_addr = inet_addr(ip);
-	servAddr.sin_port = htons(8000);
+	servAddr.sin_addr.s_addr = inet_addr(SERVER_IP);
+	servAddr.sin_port = htons(SERVER_PORT);
 	COM_THROW_IF_FAILED(connect(m_socket, (SOCKADDR*)&servAddr, sizeof(servAddr)) != SOCKET_ERROR, "connect 실패");
 }
 

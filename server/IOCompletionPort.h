@@ -5,6 +5,8 @@
 #define	MAX_BUFFER		1024
 #define SERVER_PORT		8000
 
+#include <vector>
+
 struct SocketInfo
 {
 	WSAOVERLAPPED	overlapped;
@@ -28,7 +30,7 @@ public:
 	void WorkerThread();
 
 private:
-	SocketInfo* m_pSocketInfo;		// 소켓 정보
+	std::vector<SocketInfo*> m_pSocketInfo;		// 소켓 정보
 	SOCKET			m_listenSocket;		// 서버 리슨 소켓
 	HANDLE			m_hIOCP;			// IOCP 객체 핸들
 	bool			m_bAccept;			// 요청 동작 플래그

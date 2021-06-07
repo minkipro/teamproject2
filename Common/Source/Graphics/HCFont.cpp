@@ -65,7 +65,7 @@ IHCTextData* DX11FontMG::CreateTextData()
 {
 	auto newData = new DX11TextData;
 
-	if (m_indexBuffer.size())
+	if (!m_indexBuffer.empty())
 	{
 		m_texts[m_indexBuffer.back()] = newData;
 		newData->m_Index = m_indexBuffer.back();

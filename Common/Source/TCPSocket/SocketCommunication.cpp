@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "SocketCommunication.h"
-#include "HCCommunicationProtocol.h"
+
 
 
 SocketCommunication* SocketCommunication::instance = nullptr;
@@ -27,13 +27,14 @@ SocketCommunication::SocketCommunication()
 SocketCommunication::~SocketCommunication()
 {
 	m_exit = true;
+	
+	closesocket(m_socket);
 	if (m_pthread != nullptr)
 	{
 		m_pthread->join();
 		delete m_pthread;
 		m_pthread = nullptr;
 	}
-	closesocket(m_socket);
 	WSACleanup();
 }
 
@@ -52,14 +53,16 @@ void SocketCommunication::Update()
 
 	if (keyboard->IsKeyPressed(DirectX::Keyboard::Keys::F3))
 	{
-		char dataBuffer[1024] = { 0, };
+		char dataBuffer[MAX_BUFFER] = { 0, };
 		int offset = 0;
-
-		HCDataFormat dataFormat = HCDataFormat::IP;
+		const char* sourceText = "working test";
+		size_t textLen = strlen(sourceText);
+		memcpy_s(dataBuffer, MAX_BUFFER, sourceText, textLen);
+		/*HCDataFormat dataFormat = HCDataFormat::IP;
 		memcpy_s(dataBuffer + offset, 1024, &dataFormat, sizeof(dataFormat));
-		offset += sizeof(dataFormat);
+		offset += sizeof(dataFormat);*/
 
-		SendData(dataBuffer, 1024);
+		SendData(dataBuffer, textLen);
 	}
 	std::wstring imtrue = L"true";
 	std::wstring imfalse = L"false";
@@ -80,11 +83,8 @@ void SocketCommunication::GetIp(std::vector<unsigned long>& out)
 
 	char hostname[1024] = { 0, };
 	struct hostent* host_info;
-	//gethostname(hostname, 1024);
-	strcpy_s(hostname, 1024,"DESKTOP-Fil2GBD");
-	host_info = gethostbyname(hostname); // gethostbyname function retrieves host information.
-  // gethostbyname returns a pointer of type struct hostent.
-  //A null pointer is returned if an error occurs. The specific error number can be known by calling WSAGetLastError.
+	gethostname(hostname, 1024);
+	host_info = gethostbyname(hostname);
 	std::string name = host_info->h_name;
 	
 	int i = 0;
@@ -99,72 +99,14 @@ void SocketCommunication::GetIp(std::vector<unsigned long>& out)
 		std::string str = inet_ntoa(addr);
 		int a = 1;
 	}
-
-	//
-	int nPrivate = -1;
-	std::string strIP;
-	int ret = 0;
-	for (int i = 0; host_info->h_addr_list[i]; i++)
-	{
-		switch (((PUCHAR)host_info->h_addr_list[i])[0])
-		{
-			// 자동 개인 ip 주소 제거
-		case 169:
-			if (((PUCHAR)host_info->h_addr_list[i])[1] == 254)
-				continue;
-			break;
-
-			// 사설 ip 주소인 경우 저장
-		case 10:
-			nPrivate = i;
-			break;
-		case 172:
-			if (((PUCHAR)host_info->h_addr_list[i])[1] > 15 &&
-				(host_info->h_addr_list[i])[1] < 32)
-				nPrivate = i;
-			break;
-		case 192:
-			if (((PUCHAR)host_info->h_addr_list[i])[1] == 168)
-				nPrivate = i;
-			break;
-
-			// 공인 ip 주소인 경우
-		default:
-
-			for (int j = 0; j < 4; j++)
-			{
-				strIP += ((PUCHAR)host_info->h_addr_list[i])[j];
-				if (j != 3)
-					strIP += ".";
-			}
-			ret = 1;
-		}
-	}
-
-	if (nPrivate >= 0)
-	{
-		for (int j = 0; j < 4; j++)
-		{
-			strIP += ((PUCHAR)host_info->h_addr_list[nPrivate])[j];
-			if (j != 3)
-				strIP += ".";
-		}
-		ret = 2;
-	}
-	else
-		ret = 0;
-	int a = 1;
 }
 
 void SocketCommunication::ConnectStart()
 {
-	const char* ip = "192.168.0.8";		//제 공인 ip
-	const char* fortNum = "8000";			//스타듀밸리 fortNum으로 변경 필요.
-
 	SOCKADDR_IN servAddr = { 0, };
 	servAddr.sin_family = AF_INET;
-	servAddr.sin_addr.s_addr = inet_addr(ip);
-	servAddr.sin_port = htons(8000);
+	servAddr.sin_addr.s_addr = inet_addr(SERVER_IP);
+	servAddr.sin_port = htons(SERVER_PORT);
 	COM_THROW_IF_FAILED(connect(m_socket, (SOCKADDR*)&servAddr, sizeof(servAddr)) != SOCKET_ERROR, "connect 실패");
 }
 

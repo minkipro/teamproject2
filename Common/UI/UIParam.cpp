@@ -5,18 +5,18 @@
 
 void UIParam::SetEnumParam(const std::wstring& paramName, const std::vector<ENUM_ELEMENT>* elementInfo, int* data)
 {
-	m_ControlType = UICONTROLTYPE::ENUM_DATA;
-	m_ParamName = paramName;
-	m_ParamPtr = reinterpret_cast<void*>(data);
-	m_EnumElementInfo = elementInfo;
+	m_controlType = UICONTROLTYPE::ENUM_DATA;
+	m_paramName = paramName;
+	m_paramPtr = reinterpret_cast<void*>(data);
+	m_enumElementInfo = elementInfo;
 }
 
 void UIParam::SetStringParam(const std::wstring& paramName, const std::vector<std::string>* strings, std::string* data)
 {
-	m_ControlType = UICONTROLTYPE::STRING_DATA;
-	m_ParamName = paramName;
-	m_ParamPtr = reinterpret_cast<void*>(data);
-	m_Strings = strings;
+	m_controlType = UICONTROLTYPE::STRING_DATA;
+	m_paramName = paramName;
+	m_paramPtr = reinterpret_cast<void*>(data);
+	m_strings = strings;
 }
 
 void UIParam::SetTextHeight(int height)
@@ -26,16 +26,30 @@ void UIParam::SetTextHeight(int height)
 
 void UIParam::Init()
 {
-
+	UIObject::Init();
+	HCDEVICE(HCGraphic)->CreateTextData(m_textRenderer);
 }
 
 void UIParam::Update()
 {
 	if (m_isOn)
 	{
-		UIObject::Update();
+		if (m_parent)
+		{
+			m_renderInfo.Position.x = reinterpret_cast<UIParam*>(m_parent)->m_renderInfo.Position.x + (m_pos.x - m_renderInfo.Size.x * m_benchUV.x);
+			m_renderInfo.Position.y = reinterpret_cast<UIParam*>(m_parent)->m_renderInfo.Position.y + (m_pos.y - m_renderInfo.Size.y * m_benchUV.y);
+			m_renderInfo.Position.z = reinterpret_cast<UIParam*>(m_parent)->m_renderInfo.Position.z + m_pos.z;
+		}
+		else
+		{
+			m_renderInfo.Position.x = (m_pos.x - m_renderInfo.Size.x * m_benchUV.x);
+			m_renderInfo.Position.y = (m_pos.y - m_renderInfo.Size.y * m_benchUV.y);
+			m_renderInfo.Position.z = m_pos.z;
+		}
 
-		if (m_ParamPtr)
+		m_textRenderer->m_position = m_renderInfo.Position;
+
+		if (m_paramPtr)
 		{
 			/*m_Font->m_Pos.x = pos.x;
 			m_Font->m_Pos.y = pos.y;
@@ -43,7 +57,7 @@ void UIParam::Update()
 
 			//std::wstring text = m_ParamName + L" : ";
 
-			switch (m_Type)
+			switch (m_type)
 			{
 			case UIParam::UIPARAMTYPE::VIEWER:
 			{
@@ -58,6 +72,30 @@ void UIParam::Update()
 				break;
 			}
 		}
+
+		for (auto& it : m_childs)
+		{
+			it->Update();
+		}
+	}
+}
+
+void UIParam::Render()
+{
+
+}
+
+void UIParam::UIOn(bool Value)
+{
+	UIObject::UIOn(Value);
+
+	if (Value)
+	{
+
+	}
+	else
+	{
+
 	}
 }
 
@@ -65,14 +103,14 @@ std::wstring UIParam::GetDataString()
 {
 	std::wstring result;
 
-	switch (m_ControlType)
+	switch (m_controlType)
 	{
 	case UIParam::UICONTROLTYPE::ORIGIN_DATA:
 	{
-	/*	switch (m_DataType)
+		switch (m_dataType)
 		{
 		case HC::DATA_TYPE::TYPE_BOOL:
-			result = *(reinterpret_cast<bool*>(m_ParamPtr)) ? L"true" : L"false";
+			result = *(reinterpret_cast<bool*>(m_paramPtr)) ? L"true" : L"false";
 			break;
 		case HC::DATA_TYPE::TYPE_FLOAT:
 			result = GetStringFromValue<float>();
@@ -86,19 +124,19 @@ std::wstring UIParam::GetDataString()
 		default:
 			assert(false);
 			break;
-		}*/
+		}
 	}
 	break;
 	case UIParam::UICONTROLTYPE::ENUM_DATA:
 	{
-		int paramValue = *reinterpret_cast<int*>(m_ParamPtr);
+		int paramValue = *reinterpret_cast<int*>(m_paramPtr);
 		bool isNotValidValue = true;
 
-		for (auto& it : *m_EnumElementInfo)
+		for (auto& it : *m_enumElementInfo)
 		{
-			if (it.value == paramValue)
+			if (it.Value == paramValue)
 			{
-				result = it.elementName + L"(" + std::to_wstring(paramValue) + L")";
+				result = it.ElementName + L"(" + std::to_wstring(paramValue) + L")";
 				isNotValidValue = false;
 				break;
 			}
@@ -106,15 +144,15 @@ std::wstring UIParam::GetDataString()
 
 		if (isNotValidValue)
 		{
-			auto& element = m_EnumElementInfo->front();
-			*reinterpret_cast<int*>(m_ParamPtr) = element.value;
-			result = element.elementName + L"(" + std::to_wstring(element.value) + L")";
+			auto& element = m_enumElementInfo->front();
+			*reinterpret_cast<int*>(m_paramPtr) = element.Value;
+			result = element.ElementName + L"(" + std::to_wstring(element.Value) + L")";
 		}
 	}
 	break;
 	case UIParam::UICONTROLTYPE::STRING_DATA:
 	{
-		std::string* targetString = reinterpret_cast<std::string*>(m_ParamPtr);
+		std::string* targetString = reinterpret_cast<std::string*>(m_paramPtr);
 		result.insert(result.end(), targetString->begin(), targetString->end());
 	}
 	break;

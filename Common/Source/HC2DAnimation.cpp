@@ -7,7 +7,7 @@ int HC2DAnimation::Update(float deltaTime)
 
 	if (m_spriteIndices.size())
 	{
-		UINT currIndex = m_stockTime / (m_animationTime / m_spriteIndices.size());
+		UINT currIndex = static_cast<UINT>(m_stockTime / (m_animationTime / m_spriteIndices.size()));
 		
 		if (m_loopAnimation)
 		{

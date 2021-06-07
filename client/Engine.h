@@ -7,7 +7,7 @@
 #include "Window/HCWindow.h"
 
 #include "Graphics/HCGraphic.h"
-
+#include "Device\HCPhysics.h"
 #include "Device/HCKeyboard.h"
 #include "Device/HCMouse.h"
 #include "Device/HCKoreanInput.h"
@@ -41,6 +41,7 @@ private:
 	std::unordered_map<std::string, IHCDevice*>	m_deviceMap;
 	std::unique_ptr<HCWindow>					m_window;
 	HCGraphic*									m_graphic;
+	HCPhysics*									m_physics;
 	HCTimer*									m_timer;
 	HCMouse*									m_mouse;
 	HCKeyboard*									m_keyboard;

@@ -596,7 +596,7 @@ namespace Xml
 		static const char* ReadBOM(const char* p, bool* hasBOM);
 		// p is the starting location,
 		// the UTF-8 value of the entity will be placed in value, and length filled in.
-		static const char* GetCharacterRef(const char* p, char* value, int* length);
+		static const char* GetCharacterRef(const char* p, char* Value, int* length);
 		static void ConvertUTF32ToUTF8(unsigned long input, char* output, int* length);
 
 		// converts primitive types to strings
@@ -608,12 +608,12 @@ namespace Xml
 		static void ToStr(int64_t v, char* buffer, int bufferSize);
 
 		// converts strings to primitive types
-		static bool	ToInt(const char* str, int* value);
-		static bool ToUnsigned(const char* str, unsigned* value);
-		static bool	ToBool(const char* str, bool* value);
-		static bool	ToFloat(const char* str, float* value);
-		static bool ToDouble(const char* str, double* value);
-		static bool ToInt64(const char* str, int64_t* value);
+		static bool	ToInt(const char* str, int* Value);
+		static bool ToUnsigned(const char* str, unsigned* Value);
+		static bool	ToBool(const char* str, bool* Value);
+		static bool	ToFloat(const char* str, float* Value);
+		static bool ToDouble(const char* str, double* Value);
+		static bool ToInt64(const char* str, int64_t* Value);
 
 		// Changes what is serialized for a boolean value.
 		// Default to "true" and "false". Shouldn't be changed
@@ -1182,32 +1182,32 @@ namespace Xml
 		in the provided parameter. The function will return XML_SUCCESS on success,
 		and XML_WRONG_ATTRIBUTE_TYPE if the conversion is not successful.
 		*/
-		XMLError QueryIntValue(int* value) const;
+		XMLError QueryIntValue(int* Value) const;
 		/// See QueryIntValue
-		XMLError QueryUnsignedValue(unsigned int* value) const;
+		XMLError QueryUnsignedValue(unsigned int* Value) const;
 		/// See QueryIntValue
-		XMLError QueryInt64Value(int64_t* value) const;
+		XMLError QueryInt64Value(int64_t* Value) const;
 		/// See QueryIntValue
-		XMLError QueryBoolValue(bool* value) const;
+		XMLError QueryBoolValue(bool* Value) const;
 		/// See QueryIntValue
-		XMLError QueryDoubleValue(double* value) const;
+		XMLError QueryDoubleValue(double* Value) const;
 		/// See QueryIntValue
-		XMLError QueryFloatValue(float* value) const;
+		XMLError QueryFloatValue(float* Value) const;
 
 		/// Set the attribute to a string value.
-		void SetAttribute(const char* value);
+		void SetAttribute(const char* Value);
 		/// Set the attribute to value.
-		void SetAttribute(int value);
+		void SetAttribute(int Value);
 		/// Set the attribute to value.
-		void SetAttribute(unsigned value);
+		void SetAttribute(unsigned Value);
 		/// Set the attribute to value.
-		void SetAttribute(int64_t value);
+		void SetAttribute(int64_t Value);
 		/// Set the attribute to value.
-		void SetAttribute(bool value);
+		void SetAttribute(bool Value);
 		/// Set the attribute to value.
-		void SetAttribute(double value);
+		void SetAttribute(double Value);
 		/// Set the attribute to value.
-		void SetAttribute(float value);
+		void SetAttribute(float Value);
 
 	private:
 		enum { BUF_SIZE = 200 };
@@ -1277,7 +1277,7 @@ namespace Xml
 		}
 		@endverbatim
 		*/
-		const char* Attribute(const char* name, const char* value = 0) const;
+		const char* Attribute(const char* name, const char* Value = 0) const;
 
 		/** Given an attribute name, IntAttribute() returns the value
 		of the attribute interpreted as an integer. The default
@@ -1310,55 +1310,55 @@ namespace Xml
 		QueryIntAttribute( "foo", &value );		// if "foo" isn't found, value will still be 10
 		@endverbatim
 		*/
-		XMLError QueryIntAttribute(const char* name, int* value) const {
+		XMLError QueryIntAttribute(const char* name, int* Value) const {
 			const XMLAttribute* a = FindAttribute(name);
 			if (!a) {
 				return XML_NO_ATTRIBUTE;
 			}
-			return a->QueryIntValue(value);
+			return a->QueryIntValue(Value);
 		}
 
 		/// See QueryIntAttribute()
-		XMLError QueryUnsignedAttribute(const char* name, unsigned int* value) const {
+		XMLError QueryUnsignedAttribute(const char* name, unsigned int* Value) const {
 			const XMLAttribute* a = FindAttribute(name);
 			if (!a) {
 				return XML_NO_ATTRIBUTE;
 			}
-			return a->QueryUnsignedValue(value);
+			return a->QueryUnsignedValue(Value);
 		}
 
 		/// See QueryIntAttribute()
-		XMLError QueryInt64Attribute(const char* name, int64_t* value) const {
+		XMLError QueryInt64Attribute(const char* name, int64_t* Value) const {
 			const XMLAttribute* a = FindAttribute(name);
 			if (!a) {
 				return XML_NO_ATTRIBUTE;
 			}
-			return a->QueryInt64Value(value);
+			return a->QueryInt64Value(Value);
 		}
 
 		/// See QueryIntAttribute()
-		XMLError QueryBoolAttribute(const char* name, bool* value) const {
+		XMLError QueryBoolAttribute(const char* name, bool* Value) const {
 			const XMLAttribute* a = FindAttribute(name);
 			if (!a) {
 				return XML_NO_ATTRIBUTE;
 			}
-			return a->QueryBoolValue(value);
+			return a->QueryBoolValue(Value);
 		}
 		/// See QueryIntAttribute()
-		XMLError QueryDoubleAttribute(const char* name, double* value) const {
+		XMLError QueryDoubleAttribute(const char* name, double* Value) const {
 			const XMLAttribute* a = FindAttribute(name);
 			if (!a) {
 				return XML_NO_ATTRIBUTE;
 			}
-			return a->QueryDoubleValue(value);
+			return a->QueryDoubleValue(Value);
 		}
 		/// See QueryIntAttribute()
-		XMLError QueryFloatAttribute(const char* name, float* value) const {
+		XMLError QueryFloatAttribute(const char* name, float* Value) const {
 			const XMLAttribute* a = FindAttribute(name);
 			if (!a) {
 				return XML_NO_ATTRIBUTE;
 			}
-			return a->QueryFloatValue(value);
+			return a->QueryFloatValue(Value);
 		}
 
 
@@ -1379,66 +1379,66 @@ namespace Xml
 		QueryAttribute( "foo", &value );		// if "foo" isn't found, value will still be 10
 		@endverbatim
 		*/
-		int QueryAttribute(const char* name, int* value) const {
-			return QueryIntAttribute(name, value);
+		int QueryAttribute(const char* name, int* Value) const {
+			return QueryIntAttribute(name, Value);
 		}
 
-		int QueryAttribute(const char* name, unsigned int* value) const {
-			return QueryUnsignedAttribute(name, value);
+		int QueryAttribute(const char* name, unsigned int* Value) const {
+			return QueryUnsignedAttribute(name, Value);
 		}
 
-		int QueryAttribute(const char* name, int64_t* value) const {
-			return QueryInt64Attribute(name, value);
+		int QueryAttribute(const char* name, int64_t* Value) const {
+			return QueryInt64Attribute(name, Value);
 		}
 
-		int QueryAttribute(const char* name, bool* value) const {
-			return QueryBoolAttribute(name, value);
+		int QueryAttribute(const char* name, bool* Value) const {
+			return QueryBoolAttribute(name, Value);
 		}
 
-		int QueryAttribute(const char* name, double* value) const {
-			return QueryDoubleAttribute(name, value);
+		int QueryAttribute(const char* name, double* Value) const {
+			return QueryDoubleAttribute(name, Value);
 		}
 
-		int QueryAttribute(const char* name, float* value) const {
-			return QueryFloatAttribute(name, value);
-		}
-
-		/// Sets the named attribute to value.
-		void SetAttribute(const char* name, const char* value) {
-			XMLAttribute* a = FindOrCreateAttribute(name);
-			a->SetAttribute(value);
-		}
-		/// Sets the named attribute to value.
-		void SetAttribute(const char* name, int value) {
-			XMLAttribute* a = FindOrCreateAttribute(name);
-			a->SetAttribute(value);
-		}
-		/// Sets the named attribute to value.
-		void SetAttribute(const char* name, unsigned value) {
-			XMLAttribute* a = FindOrCreateAttribute(name);
-			a->SetAttribute(value);
+		int QueryAttribute(const char* name, float* Value) const {
+			return QueryFloatAttribute(name, Value);
 		}
 
 		/// Sets the named attribute to value.
-		void SetAttribute(const char* name, int64_t value) {
+		void SetAttribute(const char* name, const char* Value) {
 			XMLAttribute* a = FindOrCreateAttribute(name);
-			a->SetAttribute(value);
+			a->SetAttribute(Value);
+		}
+		/// Sets the named attribute to value.
+		void SetAttribute(const char* name, int Value) {
+			XMLAttribute* a = FindOrCreateAttribute(name);
+			a->SetAttribute(Value);
+		}
+		/// Sets the named attribute to value.
+		void SetAttribute(const char* name, unsigned Value) {
+			XMLAttribute* a = FindOrCreateAttribute(name);
+			a->SetAttribute(Value);
 		}
 
 		/// Sets the named attribute to value.
-		void SetAttribute(const char* name, bool value) {
+		void SetAttribute(const char* name, int64_t Value) {
 			XMLAttribute* a = FindOrCreateAttribute(name);
-			a->SetAttribute(value);
+			a->SetAttribute(Value);
+		}
+
+		/// Sets the named attribute to value.
+		void SetAttribute(const char* name, bool Value) {
+			XMLAttribute* a = FindOrCreateAttribute(name);
+			a->SetAttribute(Value);
 		}
 		/// Sets the named attribute to value.
-		void SetAttribute(const char* name, double value) {
+		void SetAttribute(const char* name, double Value) {
 			XMLAttribute* a = FindOrCreateAttribute(name);
-			a->SetAttribute(value);
+			a->SetAttribute(Value);
 		}
 		/// Sets the named attribute to value.
-		void SetAttribute(const char* name, float value) {
+		void SetAttribute(const char* name, float Value) {
 			XMLAttribute* a = FindOrCreateAttribute(name);
-			a->SetAttribute(value);
+			a->SetAttribute(Value);
 		}
 
 		/**
@@ -1519,17 +1519,17 @@ namespace Xml
 		*/
 		void SetText(const char* inText);
 		/// Convenience method for setting text inside an element. See SetText() for important limitations.
-		void SetText(int value);
+		void SetText(int Value);
 		/// Convenience method for setting text inside an element. See SetText() for important limitations.
-		void SetText(unsigned value);
+		void SetText(unsigned Value);
 		/// Convenience method for setting text inside an element. See SetText() for important limitations.
-		void SetText(int64_t value);
+		void SetText(int64_t Value);
 		/// Convenience method for setting text inside an element. See SetText() for important limitations.
-		void SetText(bool value);
+		void SetText(bool Value);
 		/// Convenience method for setting text inside an element. See SetText() for important limitations.
-		void SetText(double value);
+		void SetText(double Value);
 		/// Convenience method for setting text inside an element. See SetText() for important limitations.
-		void SetText(float value);
+		void SetText(float Value);
 
 		/**
 		Convenience method to query the value of a child text node. This is probably best
@@ -2154,35 +2154,35 @@ namespace Xml
 		*/
 		void OpenElement(const char* name, bool compactMode = false);
 		/// If streaming, add an attribute to an open element.
-		void PushAttribute(const char* name, const char* value);
-		void PushAttribute(const char* name, int value);
-		void PushAttribute(const char* name, unsigned value);
-		void PushAttribute(const char* name, int64_t value);
-		void PushAttribute(const char* name, bool value);
-		void PushAttribute(const char* name, double value);
+		void PushAttribute(const char* name, const char* Value);
+		void PushAttribute(const char* name, int Value);
+		void PushAttribute(const char* name, unsigned Value);
+		void PushAttribute(const char* name, int64_t Value);
+		void PushAttribute(const char* name, bool Value);
+		void PushAttribute(const char* name, double Value);
 		/// If streaming, close the Element.
 		virtual void CloseElement(bool compactMode = false);
 
 		/// Add a text node.
 		void PushText(const char* text, bool cdata = false);
 		/// Add a text node from an integer.
-		void PushText(int value);
+		void PushText(int Value);
 		/// Add a text node from an unsigned.
-		void PushText(unsigned value);
+		void PushText(unsigned Value);
 		/// Add a text node from an unsigned.
-		void PushText(int64_t value);
+		void PushText(int64_t Value);
 		/// Add a text node from a bool.
-		void PushText(bool value);
+		void PushText(bool Value);
 		/// Add a text node from a float.
-		void PushText(float value);
+		void PushText(float Value);
 		/// Add a text node from a double.
-		void PushText(double value);
+		void PushText(double Value);
 
 		/// Add a comment
 		void PushComment(const char* comment);
 
-		void PushDeclaration(const char* value);
-		void PushUnknown(const char* value);
+		void PushDeclaration(const char* Value);
+		void PushUnknown(const char* Value);
 
 		virtual bool VisitEnter(const XMLDocument& /*doc*/);
 		virtual bool VisitExit(const XMLDocument& /*doc*/) {

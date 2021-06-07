@@ -33,16 +33,16 @@ void HC2DCharacter::Update(float deltaTime)
 
 		m_renderInfo.SpriteInfoIndex = spriteInfoIndex;
 	}
-
-	m_renderInfoBuffer->Map();
-	m_renderInfoBuffer->CopyCpuDataToGpu(&m_renderInfo);
-	m_renderInfoBuffer->UnMap();
 }
 
 void HC2DCharacter::Render()
 {
 	if (m_currAniamtion)
 	{
+		m_renderInfoBuffer->Map();
+		m_renderInfoBuffer->CopyCpuDataToGpu(&m_renderInfo);
+		m_renderInfoBuffer->UnMap();
+
 		auto graphic = HCDEVICE(HCGraphic);
 
 		graphic->SetTexture(m_currAniamtion->GetTextureIndex(), 0);

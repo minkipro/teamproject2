@@ -1,12 +1,13 @@
 #pragma once
-#include "HCDevice.h"
+#include "HCMouse.h"
+#include <DirectXMath.h>
 #include <functional>
 
 enum class HCCOLLIDER_TYPE
 {
-	HCCOLLIDERTYPE_RECTLT,
-	HCCOLLIDERTYPE_RECTCENTER,
-	HCCOLLIDERTYPE_CIRCLE,
+	HCCOLLIDER_TYPE_2D_RECTLT,
+	HCCOLLIDER_TYPE_2D_RECTCENTER,
+	HCCOLLIDER_TYPE_2D_CIRCLE,
 };
 
 enum class HCCOL_FUNC_TYPE
@@ -14,31 +15,48 @@ enum class HCCOL_FUNC_TYPE
 	HCCOLFUNC_CONTACT,
 	HCCOLFUNC_CONTACTING,
 	HCCOLFUNC_UNTACT,
-	HCCOLFUNC_PICKING_LEFT_PRESE,
-	HCCOLFUNC_PICKING_LEFT_RELEASE,
-	HCCOLFUNC_PICKING_LEFT_HELD,
-	HCCOLFUNC_PICKING_RIGHT_PRESE,
-	HCCOLFUNC_PICKING_RIGHT_RELEASE,
-	HCCOLFUNC_PICKING_RIGHT_HELD,
 };
 
 struct HCColFunc
 {
-	HCCOL_FUNC_TYPE			Type;
-	std::function<void()>	ColFunc;
+	HCCOL_FUNC_TYPE				Type;
+	HCMOUSE_BUTTON_TYPE			PickingMouseButton = HCMOUSE_BUTTON_TYPE::COUNT;
+	HCMOUSE_BUTTON_STATE		PickingMouseButtonState;
+	std::function<void(float)>	ColFunc;
 };
 
-struct IHCCollider
+struct HCPickingFunc
 {
-	IHCCollider() = default;
-	virtual ~IHCCollider();
+	HCMOUSE_BUTTON_TYPE			PickingMouseButton = HCMOUSE_BUTTON_TYPE::LBUTTON;
+	HCMOUSE_BUTTON_STATE		PickingMouseButtonState = HCMOUSE_BUTTON_STATE::RELEASED;
+	std::function<void(float)>	ColFunc;
+};
 
-private:
-	HCCOLLIDER_TYPE			Type = HCCOLLIDER_TYPE::HCCOLLIDERTYPE_RECTLT;
-	DirectX::XMFLOAT3*		Pos = nullptr;
-	std::vector<HCColFunc>	ColFuncs;
+class IHCCollider
+{
+public:
+	IHCCollider(const UINT id)
+		:m_colIdFromDevice(id)
+	{
+	}
+	virtual ~IHCCollider() = default;
 
-	const int				ColIdFromDevice = -1;
+	virtual void			Update(float delta) = 0;
+
+	virtual void			SetColliderType(HCCOLLIDER_TYPE type) = 0;
+	virtual void			ColliderOn(bool Value) = 0;
+	virtual void			PickingOn(bool Value) = 0;
+
+	virtual HCCOLLIDER_TYPE GetType() = 0;
+	UINT					GetID() { return m_colIdFromDevice; }
+
+	DirectX::XMFLOAT3*			m_pos = nullptr;
+	DirectX::XMFLOAT2			m_size = {};
+	std::vector<HCColFunc>		m_colFuncs;
+	std::vector<HCPickingFunc>	m_pickingFuncs;
+
+protected:
+	const UINT					m_colIdFromDevice;
 };
 
 class HCPhysics :public IHCDevice
@@ -48,13 +66,12 @@ public:
 	virtual ~HCPhysics() = default;
 
 public:
-	virtual void		Init() = 0;
-	virtual void		Update() = 0;
-
-	virtual void		CreateCollider(HCCOLLIDER_TYPE type, IHCCollider** out) = 0;
-	virtual void		SetCollider(IHCCollider* data, const std::wstring& sceneName) = 0;
-	virtual void		TakeOutCollider(IHCCollider* data, const std::wstring& sceneName) = 0;
-	virtual void		DeletedCollider(IHCCollider* data) = 0;
+	virtual void Init() = 0;
+	virtual void Update() = 0;
+	virtual void PickingUpdate() = 0;
+				 
+	virtual void CreateCollider(HCCOLLIDER_TYPE type, std::shared_ptr<IHCCollider>& out) = 0;
+	virtual void DeleteCollider(IHCCollider* collider) = 0;
 
 private:
 	virtual std::string GetDeviceName() const override { return typeid(HCPhysics).name(); }

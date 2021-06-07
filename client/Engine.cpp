@@ -4,6 +4,7 @@
 #include "Graphics/HCGraphicDX11.h"
 #include "TCPSocket/SocketCommunication.h"
 #include "Graphics\HCMeshManager.h"
+#include "Physics\Physics2D.h"
 
 Engine* Engine::m_engine = nullptr;
 
@@ -19,6 +20,7 @@ void Engine::Init(HINSTANCE hInstance)
 	m_keyboard = CreateDevice<HCKeyboard>(typeid(HCKeyboard).name());
 	m_koreanInput = CreateDevice<HCKoreanInput>(typeid(HCKoreanInput).name());
 	m_graphic = CreateDevice<HCGraphicDX11>(typeid(HCGraphic).name(), m_window->GetHandle());
+	m_physics = CreateDevice<Physics2D>(typeid(HCPhysics).name());
 
 	for (auto& it : m_devices)
 	{
@@ -56,9 +58,11 @@ int Engine::Run()
 			m_keyboard->Update();
 			m_mouse->Update();
 			m_koreanInput->Update();
+			m_physics->PickingUpdate();
 
 			m_scene.Update();
 
+			m_physics->Update();
 			m_graphic->Update();
 
 			SocketCommunication::Get()->Update();

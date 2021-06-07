@@ -100,13 +100,7 @@
     <ClCompile Include="..\Common\Source\Xml\Xml.cpp">
       <Filter>Common\Externel\Xml</Filter>
     </ClCompile>
-    <ClCompile Include="..\Common\UI\UIButton.cpp">
-      <Filter>Common\Graphics_Base\UI</Filter>
-    </ClCompile>
     <ClCompile Include="..\Common\UI\UIObject.cpp">
-      <Filter>Common\Graphics_Base\UI</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Common\UI\UIPanel.cpp">
       <Filter>Common\Graphics_Base\UI</Filter>
     </ClCompile>
     <ClCompile Include="..\Common\UI\UIParam.cpp">
@@ -123,9 +117,6 @@
     </ClCompile>
     <ClCompile Include="HCSceneObject.cpp">
       <Filter>Client\Scene\SceneObject</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Common\Source\Device\HCPhysics.cpp">
-      <Filter>Common\Devices</Filter>
     </ClCompile>
     <ClCompile Include="..\Common\Source\Graphics\HCGraphic.cpp">
       <Filter>Common\Devices</Filter>
@@ -145,7 +136,7 @@
     <ClCompile Include="..\Common\Source\Graphics\HCPickingTexture.cpp">
       <Filter>Common\Graphics_Base</Filter>
     </ClCompile>
-    <ClCompile Include="..\Common\Source\Physics\PhysX4_1.cpp">
+    <ClCompile Include="..\Common\Source\Physics\Physics2D.cpp">
       <Filter>Common\Devices\Physics</Filter>
     </ClCompile>
   </ItemGroup>
@@ -216,13 +207,7 @@
     <ClInclude Include="..\Common\Source\Xml\Xml.h">
       <Filter>Common\Externel\Xml</Filter>
     </ClInclude>
-    <ClInclude Include="..\Common\UI\UIButton.h">
-      <Filter>Common\Graphics_Base\UI</Filter>
-    </ClInclude>
     <ClInclude Include="..\Common\UI\UIObject.h">
-      <Filter>Common\Graphics_Base\UI</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Common\UI\UIPanel.h">
       <Filter>Common\Graphics_Base\UI</Filter>
     </ClInclude>
     <ClInclude Include="..\Common\UI\UIParam.h">
@@ -258,7 +243,7 @@
     <ClInclude Include="..\Common\Source\Graphics\HCPickingTexture.h">
       <Filter>Common\Graphics_Base</Filter>
     </ClInclude>
-    <ClInclude Include="..\Common\Source\Physics\PhysX4_1.h">
+    <ClInclude Include="..\Common\Source\Physics\Physics2D.h">
       <Filter>Common\Devices\Physics</Filter>
     </ClInclude>
     <ClInclude Include="..\Common\Source\TCPSocket\HCCommunicationProtocol.h">

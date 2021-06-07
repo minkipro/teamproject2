@@ -41,6 +41,7 @@ public:
 		: m_benchUV(0.0f,0.0f)
 		, m_parent(nullptr)
 		, m_isOn(true)
+		, m_isMoveable(false)
 	{
 		m_pos = {};
 	}
@@ -55,19 +56,21 @@ public:
 
 	void			SetTexture(const std::wstring& path, const DirectX::XMFLOAT2& size);
 	void			SetTexture(const HCTextureData& textureData, const DirectX::XMFLOAT2& size);
+	void			SetColor(const DirectX::XMFLOAT4 color);
 	void			SetPos(const DirectX::XMFLOAT3& pos);
 	void			SetSize(const DirectX::XMFLOAT2& size);
 	void			SetBenchUV(const DirectX::XMFLOAT2& benchUV) { m_benchUV = benchUV; }
+	void			SetMoveableClicked(bool Value);
 
 	void			AddChild(UIObject* child);
-	void			AddFunc(HCColFunc func);
+	void			AddFunc(HCPickingFunc func);
 	void			SetParent(UIObject* object);
 	
 	void			ClearFunc();
 	UINT						GetUINum();
 	const DirectX::XMFLOAT2&	GetSize() { return m_renderInfo.Size; }
 
-private:
+protected:
 	bool			CheckDependency(UIObject* object);
 	UIObject*		GetRootUIObject();
 
@@ -79,10 +82,11 @@ protected:
 	std::shared_ptr<IHCResource>	m_renderInfoBuffer;
 	HCPointRenderInfo				m_renderInfo;
 	HCTextureData					m_textureData;
-	IHCCollider*					m_colliderData;
+	std::shared_ptr<IHCCollider>	m_collider;
 	DirectX::XMFLOAT2				m_benchUV;
 
 	UIObject*						m_parent;
 	std::vector<UIObject*>			m_childs;
 	bool							m_isOn;
+	bool							m_isMoveable;
 };

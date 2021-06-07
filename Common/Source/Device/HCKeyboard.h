@@ -8,6 +8,7 @@ typedef DirectX::Keyboard::Keys HCKEYBOARD_KEY_TYPE;
 enum class HCKEYBOARD_KEY_STATE
 {
 	PRESSED, 
+	PRESS_HELD,    
 	HELD,    
 	RELEASED,
 };

@@ -58,6 +58,16 @@ bool HCKeyboard::IsKeyCurrState(HCKEYBOARD_KEY_TYPE key, HCKEYBOARD_KEY_STATE st
 
 	switch (state)
 	{
+	case HCKEYBOARD_KEY_STATE::PRESSED:
+	{
+		result = pressed.IsKeyDown(key);
+	}
+	break;
+	case HCKEYBOARD_KEY_STATE::PRESS_HELD:
+	{
+		result = lastState.IsKeyDown(key);
+	}
+	break;
 	case HCKEYBOARD_KEY_STATE::HELD:
 	{
 		result = held.IsKeyDown(key);
@@ -66,11 +76,6 @@ bool HCKeyboard::IsKeyCurrState(HCKEYBOARD_KEY_TYPE key, HCKEYBOARD_KEY_STATE st
 	case HCKEYBOARD_KEY_STATE::RELEASED:
 	{
 		result = released.IsKeyDown(key);
-	}
-	break;
-	case HCKEYBOARD_KEY_STATE::PRESSED:
-	{
-		result = pressed.IsKeyDown(key);
 	}
 	break;
 	default:

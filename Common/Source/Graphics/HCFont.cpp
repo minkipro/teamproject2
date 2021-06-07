@@ -5,18 +5,6 @@
 
 using namespace DirectX;
 
-DX11FontMG::~DX11FontMG()
-{
-	for (auto it : m_texts)
-	{
-		DX11TextData* textData = it;
-		if (nullptr != textData)
-		{
-			delete textData;
-		}
-	}
-}
-
 void DX11FontMG::Init(void* device, void* dc)
 {
 	DX11TextData::s_fontMG = this;

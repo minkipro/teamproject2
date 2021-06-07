@@ -44,6 +44,7 @@ public:
 	bool				IsKeyCurrState(HCKEYBOARD_KEY_TYPE key, HCKEYBOARD_KEY_STATE state);
 
 private:
+	DirectX::Keyboard::State				held;
 	std::function<void(float)>				m_baseKeyFuncs[UCHAR_MAX] = {};
 	bool									m_usedBaseKeyFuncStates[UCHAR_MAX] = {};
 	std::vector<HCKEYBOARD_CONTROL_FUNC>	m_currObjectFuncs;

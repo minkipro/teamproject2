@@ -52,21 +52,20 @@ void SocketCommunication::Update()
 
 	if (keyboard->IsKeyPressed(DirectX::Keyboard::Keys::F3))
 	{
-		char dataBuffer[1024] = { 0, };
+		char dataBuffer[MAX_BUFFER] = { 0, };
 		int offset = 0;
-
-		HCDataFormat dataFormat = HCDataFormat::IP;
+		const char* sourceText = "working test";
+		memcpy_s(dataBuffer, MAX_BUFFER, sourceText, strlen(sourceText));
+		/*HCDataFormat dataFormat = HCDataFormat::IP;
 		memcpy_s(dataBuffer + offset, 1024, &dataFormat, sizeof(dataFormat));
-		offset += sizeof(dataFormat);
+		offset += sizeof(dataFormat);*/
 
-		SendData(dataBuffer, 1024);
+		SendData(dataBuffer, MAX_BUFFER);
 	}
 	std::wstring imtrue = L"true";
 	std::wstring imfalse = L"false";
 
 	m_textRender->m_text= L" is m_pthread exist? : " + (m_pthread != nullptr ? imtrue : imfalse);
-
-
 }
 
 void SocketCommunication::GetIp(std::vector<unsigned long>& out)

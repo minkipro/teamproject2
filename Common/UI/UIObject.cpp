@@ -148,11 +148,15 @@ void UIObject::SetMoveableClicked(bool value)
 {
 	if (value)
 	{
-		HCPickingFunc func;
-		func.PickingMouseButton = HCMOUSE_BUTTON_TYPE::LBUTTON;
-		func.PickingMouseButtonState = HCMOUSE_BUTTON_STATE::HELD;
-		func.ColFunc = std::bind(&HCMouse::SetMoveableClickedObject, &m_pos);
-		m_collider->m_pickingFuncs.push_back(func);
+		if (!m_isMoveable)
+		{
+			HCPickingFunc func;
+			func.PickingMouseButton = HCMOUSE_BUTTON_TYPE::LBUTTON;
+			func.PickingMouseButtonState = HCMOUSE_BUTTON_STATE::HELD;
+			func.ColFunc = std::bind(&HCMouse::SetMoveableClickedObject, &m_pos);
+			m_collider->m_pickingFuncs.push_back(func);
+			m_isMoveable = value;
+		}
 	}
 	else
 	{

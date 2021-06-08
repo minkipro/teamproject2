@@ -50,14 +50,6 @@ void DevScene::Init()
 	auto charControlTestOb = new HCCharacterControlTest;
 	charControlTestOb->Init();
 	m_sceneObjects.push_back(charControlTestOb);
-
-	DirectX::XMMATRIX orthoP = DirectX::XMMatrixOrthographicOffCenterLH(
-		-static_cast<float>(HC::GO.WIN.WindowsizeX) * 0.5f, static_cast<float>(HC::GO.WIN.WindowsizeX) * 0.5f,
-		static_cast<float>(HC::GO.WIN.WindowsizeY) * 0.5f, -static_cast<float>(HC::GO.WIN.WindowsizeY) * 0.5f,
-		0, 1.0f);
-
-	DirectX::XMStoreFloat4x4(&m_mainPass.OrthoMatrix, orthoP);
-	DirectX::XMStoreFloat4x4(&m_mainPass.ViewMatrix, DirectX::XMMatrixIdentity());
 }
 
 void DevScene::Update()
@@ -67,7 +59,13 @@ void DevScene::Update()
 	HC::CameraManager* cameraManager = HC::CameraManager::Get();
 	cameraManager->Update();
 
+	DirectX::XMMATRIX orthoP = DirectX::XMMatrixOrthographicOffCenterLH(
+		-static_cast<float>(HC::GO.WIN.WindowsizeX) * 0.5f, static_cast<float>(HC::GO.WIN.WindowsizeX) * 0.5f,
+		static_cast<float>(HC::GO.WIN.WindowsizeY) * 0.5f, -static_cast<float>(HC::GO.WIN.WindowsizeY) * 0.5f,
+		0, 1.0f);
+
 	DirectX::XMStoreFloat4x4(&m_mainPass.ViewMatrix, cameraManager->GetMatrix());
+	DirectX::XMStoreFloat4x4(&m_mainPass.OrthoMatrix, orthoP);
 
 	m_mainPassCB->Map();
 	m_mainPassCB->CopyCpuDataToGpu(&m_mainPass);

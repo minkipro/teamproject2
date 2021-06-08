@@ -25,7 +25,10 @@ private:
 
 	void ConnectStart();
 	void ListenStart();
-	void SendData(char* data, int dataSize);
+
+public:
+	template<typename T> void SendData(T dataArr[], size_t arrSize);
+
 private:
 	std::thread* m_pthread;
 	SOCKET m_socket;

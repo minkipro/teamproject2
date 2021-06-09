@@ -25,7 +25,7 @@ void HCSwapchainDX11::Init(UINT numSwapBuffer, HWND wnd, ID3D11Device** deviceOu
 	scd.OutputWindow = wnd;
 	scd.Windowed = TRUE;
 	scd.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
-	scd.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH | DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING;
+	scd.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
 
 	COM_HRESULT_IF_FAILED(D3D11CreateDeviceAndSwapChain(nullptr,
 		D3D_DRIVER_TYPE_HARDWARE,

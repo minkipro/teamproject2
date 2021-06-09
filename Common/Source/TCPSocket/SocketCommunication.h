@@ -37,4 +37,32 @@ private:
 	std::shared_ptr<IHCTextData> m_textRender;
 };
 
+template<typename T>
+void SocketCommunication::SendData(T dataArr[], size_t arrSize)
+{
+	HCTypeEnum dataType;
+	if (typeid(T) == typeid(char))
+	{
+		dataType = HCTypeEnum::HCchar;
+	}
+	else if (typeid(T) == typeid(int))
+	{
+		dataType = HCTypeEnum::HCint;
+	}
+	else if (typeid(T) == typeid(float))
+	{
+		dataType = HCTypeEnum::HCfloat;
+	}
+	else if (typeid(T) == typeid(double))
+	{
+		dataType = HCTypeEnum::HCdouble;
+	}
+	std::vector<char> dataBuffer;
+	size_t bufferSize = arrSize * sizeof(T) + sizeof(HCTypeEnum);
+	dataBuffer.resize(bufferSize);
+	memcpy_s(&dataBuffer[0], dataBuffer.size(), &dataType, sizeof(HCTypeEnum));
+	memcpy_s(&dataBuffer[0] + sizeof(HCTypeEnum), dataBuffer.size() - sizeof(HCTypeEnum), dataArr, sizeof(T) * arrSize);
+	send(m_socket, &dataBuffer[0], SizeTTransINT(bufferSize), 0);
+}
+
 

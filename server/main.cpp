@@ -1,11 +1,19 @@
 #include "IOCompletionPort.h"
+#include "COMException.h"
 
-int main()
+void main()
 {
-	IOCompletionPort iocp_server;
-	if (iocp_server.Initialize())
+	try
 	{
-		iocp_server.StartServer();
+		IOCompletionPort iocp_server;
+		if (iocp_server.Initialize())
+		{
+			iocp_server.StartServer();
+		}
 	}
-	return 0;
+	catch (COMException& error)
+	{
+		std::wstring error_message = error.what();
+		MessageBoxW(NULL, error_message.c_str(), L"Error", MB_ICONERROR);
+	}
 }

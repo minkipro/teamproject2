@@ -2,6 +2,7 @@
 #include <process.h>
 #include <iostream>
 #include "TCPSocket/HCCommunicationProtocol.h"
+#include "COMException.h"
 
 unsigned int WINAPI CallWorkerThread(LPVOID p)
 {
@@ -48,11 +49,7 @@ bool IOCompletionPort::Initialize()
 	int nResult;
 	nResult = WSAStartup(MAKEWORD(2, 2), &wsaData);
 
-	if (nResult != 0)
-	{
-		printf_s("[ERROR] winsock 초기화 실패\n");
-		return false;
-	}
+	COM_THROW_IF_FAILED(nResult == 0, "[ERROR] winsock 초기화 실패");
 
 	m_listenSocket = WSASocket(AF_INET, SOCK_STREAM, 0, NULL, 0, WSA_FLAG_OVERLAPPED);
 	if (m_listenSocket == INVALID_SOCKET)
@@ -107,6 +104,18 @@ void IOCompletionPort::StartServer()
 		clientSocket = WSAAccept(
 			m_listenSocket, (struct sockaddr*)&clientAddr, &addrLen, NULL, NULL
 		);
+
+		sockaddr_in sockAddr;
+		int sockAddrSize = sizeof(sockAddr);
+		memset(&sockAddr, 0x00, sizeof(sockAddr));
+		if (0 != getpeername(clientSocket, (struct sockaddr*)&sockAddr, &sockAddrSize))
+		{
+			COM_THROW_IF_FAILED(false, "getpeername fail");
+		}
+
+		char mybuffer[16];
+		strcpy_s(mybuffer, inet_ntoa(sockAddr.sin_addr));
+
 
 		if (clientSocket == INVALID_SOCKET)
 		{

@@ -131,39 +131,6 @@ void SocketCommunication::ListenStart()
 	};
 	m_pthread = new std::thread(receiveFunction, &m_exit, m_socket, m_buffer);
 }
-template<typename T>
-void SocketCommunication::SendData(T dataArr[], size_t arrSize)
-{
-	HCTypeEnum dataType;
-	switch (typeid(T))
-	{
-		case typeid(char) :
-		{
-			dataType = HCchar;
-		break;
-		}
-		case typeid(int) :
-		{
-			dataType = HCint;
-			break;
-		}
-		case typeid(float) :
-		{
-			dataType = HCfloat
-			break;
-		}
-		case typeid(double) :
-		{
-			dataType = HCdouble;
-			break;
-		}
-	}
-	std::vector<char> dataBuffer;
-	size_t bufferSize = arrSize * sizeof(T) + sizeof(HCTypeEnum);
-	dataBuffer.resize(bufferSize);
-	memcpy_s(dataBuffer.data, dataBuffer.size(), &dataType, sizeof(HCTypeEnum));
-	memcpy_s(dataBuffer.data+sizeof(HCTypeEnum), dataBuffer.size()-sizeof(HCTypeEnum), dataArr, sizeof(T)*arrSize);
-	send(m_socket, dataBuffer.data, SizeTTransINT(bufferSize), 0);
-}
+
 
 

@@ -9,12 +9,44 @@
 
 enum class HCTypeEnum : long
 {
-	HCchar = 0,
-	HCint = 1,
-	HCfloat = 2,
-	HCdouble = 3,
-	HCSTRUCT1 = 4
+	HCchar		= 0,
+	HCint		= 1,
+	HCfloat		= 2,
+	HCdouble	= 3,
+	HCSizeT		= 4,
+	HCSTRUCT1	= 5
 };
+
+template<typename T>
+HCTypeEnum GetTypeEnum(T data)
+{
+	if (typeid(T) == typeid(char))
+	{
+		return HCTypeEnum::HCchar;
+	}
+	else if (typeid(T) == typeid(int))
+	{
+		return HCTypeEnum::HCint;
+	}
+	else if (typeid(T) == typeid(float))
+	{
+		return HCTypeEnum::HCfloat;
+	}
+	else if (typeid(T) == typeid(double))
+	{
+		return HCTypeEnum::HCdouble;
+	}
+	else if (typeid(T) == typeid(size_t))
+	{
+		return HCTypeEnum::HCSizeT;
+	}
+	else if (typeid(T) == typeid(HCStruct1))
+	{
+		return HCTypeEnum::HCSTRUCT1;
+	}
+	assert("모든 타입을 설정해줘야 합니다.");
+	return HCTypeEnum::HCchar;
+}
 
 struct HCStruct1
 {
@@ -22,78 +54,41 @@ struct HCStruct1
 };
 
 template<typename T>
-void HCDataToBuffer(char dataBuffer[], unsigned int& bufferOffset, T& out)
+void HCDataToBuffer(char destBuffer[], unsigned int& bufferOffset, T& source)
 {
-	memcpy_s(&dataBuffer[bufferOffset], MAX_BUFFER - bufferOffset, &out, sizeof(T));
+	memcpy_s(&destBuffer[bufferOffset], MAX_BUFFER - bufferOffset, &source, sizeof(T));
 	bufferOffset += sizeof(T);
 }
 
 template<typename T>
-void HCDataToBuffer(char dataBuffer[], unsigned int& bufferOffset, T out[], unsigned int arrNum, unsigned int& dataIndexOffset)
+void HCDataToBuffer(char destBuffer[], unsigned int& bufferOffset, T source[], unsigned int arrNum, unsigned int& sourceOffset)
 {
-	memcpy_s(&dataBuffer[bufferOffset], MAX_BUFFER - bufferOffset, &out[dataIndexOffset], sizeof(T)* (arrNum-dataIndexOffset));
+	memcpy_s(&destBuffer[bufferOffset], MAX_BUFFER - bufferOffset, &source[sourceOffset], sizeof(T)* (arrNum-sourceOffset));
 	bufferOffset += sizeof(T)*arrNum;
-	dataIndexOffset += arrNum;
+	sourceOffset += arrNum;
 }
 
 template<typename T>
-void HCBufferToData(char outdataBuffer[], unsigned int& bufferOffset, T& in)
+void HCDataArangeForSend(T dataArr[], size_t arrNum, char out[], unsigned int& dataIndexOffset)
 {
-		
-}
-
-template<typename T>
-void HCBufferToData(char outdataBuffer[], unsigned int& bufferOffset, T in[], unsigned int arrNum, unsigned int& dataIndexOffset)
-{
-
-}
-
-template<typename T>
-void HCDataArangeForSend(T dataArr[], size_t arrNum, char out[])
-{
-	HCTypeEnum dataType = HCTypeEnum::HCchar;
-	if (typeid(T) == typeid(char))
+	if (arrNum == 0)
 	{
-		dataType = HCTypeEnum::HCchar;
+		return;
 	}
-	else if (typeid(T) == typeid(int))
-	{
-		dataType = HCTypeEnum::HCint;
-	}
-	else if (typeid(T) == typeid(float))
-	{
-		dataType = HCTypeEnum::HCfloat;
-	}
-	else if (typeid(T) == typeid(double))
-	{
-		dataType = HCTypeEnum::HCdouble;
-	}
-	else if (typeid(T) == typeid(HCStruct1))
-	{
-		dataType = HCTypeEnum::HCSTRUCT1;
-	}
+	HCTypeEnum dataType = GetTypeEnum(dataArr[0]);
 	unsigned int bufferOffset = 0;
-	unsigned int dataIndexOffset = 0;
 	HCDataToBuffer(out, bufferOffset, dataType);
+	HCDataToBuffer(out, bufferOffset, arrNum);
 	HCDataToBuffer(out, bufferOffset, dataArr, arrNum, dataIndexOffset);
 }
 
 template<typename T>
-void HCGetDataArr(char buffer[], void* outDataArr, std::mutex* ourMutex)
+void HCDataArangeForSend(T data, char out[])
 {
-	char curBuffer[MAX_BUFFER];
-	ourMutex->lock();
-	memcpy_s(curBuffer, MAX_BUFFER, buffer, MAX_BUFFER);
-	ourMutex->unlock();
-
+	size_t arrNum =1;
+	HCTypeEnum dataType = GetTypeEnum(data);
 	unsigned int bufferOffset = 0;
-
-	HCTypeEnum dataType = HCTypeEnum::HCchar;
-	HCDataToBuffer(curBuffer, bufferOffset, dataType);
-
-	unsigned int arrNum = 0;
-	HCDataToBuffer(curBuffer, bufferOffset, arrNum);
-
-	outData.resize(arrNum);
-	HCDataToBuffer()
+	HCDataToBuffer(out, bufferOffset, dataType);
+	HCDataToBuffer(out, bufferOffset, arrNum);
+	HCDataToBuffer(out, bufferOffset, dataArr);
 }

@@ -2,7 +2,6 @@
 #include "SocketCommunication.h"
 
 
-
 SocketCommunication* SocketCommunication::instance = nullptr;
 SocketCommunication::SocketCommunication()
 {
@@ -50,7 +49,15 @@ void SocketCommunication::Update()
 	{
 		ListenStart();
 	}
-
+	m_mutex.lock();
+	while (m_buffer.empty())
+	{
+		RecvDataStruct& curData = m_buffer.front();
+		
+		m_buffer.pop();
+	}
+	m_mutex.unlock();
+	
 	if (keyboard->IsKeyPressed(DirectX::Keyboard::Keys::F3))
 	{
 		char dataBuffer[MAX_BUFFER] = { 0, };
@@ -58,11 +65,7 @@ void SocketCommunication::Update()
 		const char* sourceText = "working test";
 		size_t textLen = strlen(sourceText);
 		memcpy_s(dataBuffer, MAX_BUFFER, sourceText, textLen);
-		/*HCDataFormat dataFormat = HCDataFormat::IP;
-		memcpy_s(dataBuffer + offset, 1024, &dataFormat, sizeof(dataFormat));
-		offset += sizeof(dataFormat);*/
-
-		SendData(dataBuffer, textLen);
+		send(m_socket, dataBuffer, textLen, 0);
 	}
 	std::wstring imtrue = L"true";
 	std::wstring imfalse = L"false";
@@ -72,14 +75,13 @@ void SocketCommunication::Update()
 
 void SocketCommunication::GetIp(std::vector<unsigned long>& out)
 {
-	int size;
-	sockaddr_in sockAddr;
-
-	size = sizeof(sockAddr);
+	//GetPeerName 예제
+	/*sockaddr_in sockAddr;
+	int size = sizeof(sockAddr);
 	memset(&sockAddr, 0x00, sizeof(sockAddr));
 	int ret2 = getpeername(m_socket, (struct sockaddr*)&sockAddr, &size);
 	char mybuffer[16];
-	strcpy_s(mybuffer, inet_ntoa(sockAddr.sin_addr));
+	strcpy_s(mybuffer, inet_ntoa(sockAddr.sin_addr));*/
 
 	char hostname[1024] = { 0, };
 	struct hostent* host_info;
@@ -117,19 +119,18 @@ void SocketCommunication::ListenStart()
 		//COM_THROW_IF_FAILED(false, "ListenStart 함수는 한번만 호출되어야 합니다.");
 		return;
 	}
-	auto receiveFunction = [](bool* exit, SOCKET receiveSocket, std::atomic<char>* pm_buffer)
+	auto receiveFunction = [](bool* exit, SOCKET receiveSocket, std::queue<RecvDataStruct>* pm_buffer, std::mutex* ourMutex)
 	{
-		char buffer[1024] = { 0, };
 		while (*exit == false)
 		{
-			recv(receiveSocket, buffer, 1024, 0);
-			for (int i = 0; i < 1024; i++)
-			{
-				pm_buffer[i].store(buffer[i]);
-			}
+			RecvDataStruct dataStruct;
+			recv(receiveSocket, dataStruct.buffer, MAX_BUFFER, 0);
+			ourMutex->lock();
+			pm_buffer->push(dataStruct);
+			ourMutex->unlock();
 		}
 	};
-	m_pthread = new std::thread(receiveFunction, &m_exit, m_socket, m_buffer);
+	m_pthread = new std::thread(receiveFunction, &m_exit, m_socket, m_buffer, &m_mutex);
 }
 
 

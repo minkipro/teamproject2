@@ -61,34 +61,42 @@ void HCDataToBuffer(char destBuffer[], unsigned int& bufferOffset, T& source)
 }
 
 template<typename T>
-void HCDataToBuffer(char destBuffer[], unsigned int& bufferOffset, T source[], unsigned int arrNum, unsigned int& sourceOffset)
+void HCDataToBuffer(char destBuffer[], unsigned int& bufferOffset, T source[], unsigned int arrNum)
 {
-	memcpy_s(&destBuffer[bufferOffset], MAX_BUFFER - bufferOffset, &source[sourceOffset], sizeof(T)* (arrNum-sourceOffset));
-	bufferOffset += sizeof(T)*arrNum;
-	sourceOffset += arrNum;
+	memcpy_s(&destBuffer[bufferOffset], MAX_BUFFER - bufferOffset, &source[0], sizeof(T) * (arrNum));
+	bufferOffset += sizeof(T) * arrNum;
 }
 
 template<typename T>
-void HCDataArangeForSend(T dataArr[], size_t arrNum, char out[], unsigned int& dataIndexOffset)
+void HCBufferToData(char sourceBuffer[], unsigned int& bufferOffset, T& out)
 {
+	memcpy_s(&out, sizeof(T), sourceBuffer, sizeof(T));
+	bufferOffset += sizeof(T);
+}
+
+template<typename T>
+unsigned int HCDataArangeForSend(T dataArr[], size_t arrNum, char out[])
+{
+	unsigned int bufferOffset = 0;
 	if (arrNum == 0)
 	{
-		return;
+		return bufferOffset;
 	}
 	HCTypeEnum dataType = GetTypeEnum(dataArr[0]);
-	unsigned int bufferOffset = 0;
 	HCDataToBuffer(out, bufferOffset, dataType);
 	HCDataToBuffer(out, bufferOffset, arrNum);
-	HCDataToBuffer(out, bufferOffset, dataArr, arrNum, dataIndexOffset);
+	HCDataToBuffer(out, bufferOffset, dataArr, arrNum);
+	return bufferOffset;
 }
 
 template<typename T>
-void HCDataArangeForSend(T data, char out[])
+unsigned int HCDataArangeForSend(T data, char out[])
 {
-	size_t arrNum =1;
+	size_t arrNum = 1;
 	HCTypeEnum dataType = GetTypeEnum(data);
 	unsigned int bufferOffset = 0;
 	HCDataToBuffer(out, bufferOffset, dataType);
 	HCDataToBuffer(out, bufferOffset, arrNum);
 	HCDataToBuffer(out, bufferOffset, dataArr);
+	return bufferOffset;
 }

@@ -49,15 +49,51 @@ void SocketCommunication::Update()
 	{
 		ListenStart();
 	}
-	m_mutex.lock();
-	while (m_buffer.empty())
+
+	while (!m_sendBuffer.empty())
 	{
-		RecvDataStruct& curData = m_buffer.front();
-		
-		m_buffer.pop();
+		send(m_socket, m_sendBuffer.front().buffer, MAX_BUFFER, 0);
+	}
+	
+	m_mutex.lock();
+	while (!m_recvBuffer.empty())
+	{
+		m_tempBuffer.push(m_recvBuffer.front());
+		m_recvBuffer.pop();
 	}
 	m_mutex.unlock();
 	
+	while (!m_tempBuffer.empty())
+	{
+		char* curBuffer = m_tempBuffer.front().buffer;
+		unsigned int bufferOffset = 0;
+		HCTypeEnum dataType;
+		size_t arrNum;
+		HCBufferToData(curBuffer, bufferOffset, dataType);
+		HCBufferToData(curBuffer, bufferOffset, arrNum);
+		for (size_t i = 0; i < arrNum; i++)
+		{
+			switch (dataType)
+			{
+			case HCTypeEnum::HCchar:
+				break;
+			case HCTypeEnum::HCint:
+				break;
+			case HCTypeEnum::HCfloat:
+				break;
+			case HCTypeEnum::HCdouble:
+				break;
+			case HCTypeEnum::HCSizeT:
+				break;
+			case HCTypeEnum::HCSTRUCT1:
+				break;
+			default:
+				break;
+			}
+		}
+		m_tempBuffer.pop();
+	}
+
 	if (keyboard->IsKeyPressed(DirectX::Keyboard::Keys::F3))
 	{
 		char dataBuffer[MAX_BUFFER] = { 0, };
@@ -119,18 +155,18 @@ void SocketCommunication::ListenStart()
 		//COM_THROW_IF_FAILED(false, "ListenStart 함수는 한번만 호출되어야 합니다.");
 		return;
 	}
-	auto receiveFunction = [](bool* exit, SOCKET receiveSocket, std::queue<RecvDataStruct>* pm_buffer, std::mutex* ourMutex)
+	auto receiveFunction = [](bool* exit, SOCKET receiveSocket, std::queue<DataStruct>* pm_buffer, std::mutex* ourMutex)
 	{
 		while (*exit == false)
 		{
-			RecvDataStruct dataStruct;
-			recv(receiveSocket, dataStruct.buffer, MAX_BUFFER, 0);
+			DataStruct dataStruct;
+			recv(receiveSocket, dataStruct.buffer, MAX_BUFFER, MSG_WAITALL);
 			ourMutex->lock();
 			pm_buffer->push(dataStruct);
 			ourMutex->unlock();
 		}
 	};
-	m_pthread = new std::thread(receiveFunction, &m_exit, m_socket, m_buffer, &m_mutex);
+	m_pthread = new std::thread(receiveFunction, &m_exit, m_socket, m_recvBuffer, &m_mutex);
 }
 
 

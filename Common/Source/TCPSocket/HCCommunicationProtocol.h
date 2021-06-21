@@ -2,6 +2,7 @@
 #define _WINSOCK_DEPRECATED_NO_WARNINGS
 #include <WinSock2.h>
 #include <mutex>
+#include <assert.h>
 
 #define	MAX_BUFFER		8192 //보통 8k , 4k, 12k 가능
 #define SERVER_PORT		24642
@@ -15,6 +16,11 @@ enum class HCTypeEnum : long
 	HCdouble	= 3,
 	HCSizeT		= 4,
 	HCSTRUCT1	= 5
+};
+
+struct HCStruct1
+{
+	int testData;
 };
 
 template<typename T>
@@ -48,10 +54,7 @@ HCTypeEnum GetTypeEnum(T data)
 	return HCTypeEnum::HCchar;
 }
 
-struct HCStruct1
-{
-	int testData;
-};
+
 
 template<typename T>
 void HCDataToBuffer(char destBuffer[], unsigned int& bufferOffset, T& source)
@@ -97,6 +100,6 @@ unsigned int HCDataArangeForSend(T data, char out[])
 	unsigned int bufferOffset = 0;
 	HCDataToBuffer(out, bufferOffset, dataType);
 	HCDataToBuffer(out, bufferOffset, arrNum);
-	HCDataToBuffer(out, bufferOffset, dataArr);
+	HCDataToBuffer(out, bufferOffset, data);
 	return bufferOffset;
 }

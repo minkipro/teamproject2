@@ -68,7 +68,7 @@ void HCCharacterControlTest::Init()
 	auto keyboard = HCDEVICE(HCKeyboard);
 	std::vector<HCKEYBOARD_CONTROL_FUNC> funcs;
 
-	funcs.push_back({ HCKEYBOARD_KEY_TYPE::W, HCKEYBOARD_KEY_STATE::PRESS_HELD,  charMoveUp });
+	funcs.push_back( { HCKEYBOARD_KEY_TYPE::W, HCKEYBOARD_KEY_STATE::PRESS_HELD,  charMoveUp });
 	funcs.push_back( { HCKEYBOARD_KEY_TYPE::S, HCKEYBOARD_KEY_STATE::PRESS_HELD,  charMoveDown });
 	funcs.push_back( { HCKEYBOARD_KEY_TYPE::A, HCKEYBOARD_KEY_STATE::PRESS_HELD,  charMoveLeft });
 	funcs.push_back( { HCKEYBOARD_KEY_TYPE::D, HCKEYBOARD_KEY_STATE::PRESS_HELD,  charMoveRight });

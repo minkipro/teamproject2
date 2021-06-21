@@ -50,7 +50,7 @@ template<typename T>
 inline void SocketCommunication::HCSend(T data)
 {
 	char tempBuffer[MAX_BUFFER];
-	unsigned int dataSize = HCDataArangeForSend(data, buffer);
+	unsigned int dataSize = HCDataArangeForSend(data, tempBuffer);
 	DataStruct& curData = m_sendBuffer.back();
 	if (MAX_BUFFER - curData.offset < dataSize)
 	{
@@ -64,7 +64,7 @@ template<typename T>
 inline void SocketCommunication::HCSend(T data[], unsigned int arrSize)
 {
 	char tempBuffer[MAX_BUFFER];
-	unsigned int dataSize = HCDataArangeForSend(data, arrSize, buffer);
+	unsigned int dataSize = HCDataArangeForSend(data, arrSize, tempBuffer);
 	DataStruct& curData = m_sendBuffer.back();
 	if (MAX_BUFFER - curData.offset < dataSize)
 	{

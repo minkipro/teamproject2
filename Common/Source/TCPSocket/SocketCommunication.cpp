@@ -166,7 +166,7 @@ void SocketCommunication::ListenStart()
 			ourMutex->unlock();
 		}
 	};
-	m_pthread = new std::thread(receiveFunction, &m_exit, m_socket, m_recvBuffer, &m_mutex);
+	m_pthread = new std::thread(receiveFunction, &m_exit, m_socket, &m_recvBuffer, &m_mutex);
 }
 
 

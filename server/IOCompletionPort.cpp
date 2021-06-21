@@ -3,6 +3,7 @@
 #include <iostream>
 #include "TCPSocket/HCCommunicationProtocol.h"
 #include "COMException.h"
+#include <thread>
 
 unsigned int WINAPI CallWorkerThread(LPVOID p)
 {
@@ -35,7 +36,7 @@ IOCompletionPort::~IOCompletionPort()
 		m_pSocketInfo[i] = nullptr;
 	}
 	m_pSocketInfo.clear();
-
+	m_bWorkerThread = false;
 	if (m_pWorkerHandle)
 	{
 		delete[] m_pWorkerHandle;
@@ -99,6 +100,8 @@ void IOCompletionPort::StartServer()
 
 	printf_s("[INFO] 서버 시작...\n");
 
+	
+
 	while (m_bAccept)
 	{
 		clientSocket = WSAAccept(
@@ -113,8 +116,8 @@ void IOCompletionPort::StartServer()
 			COM_THROW_IF_FAILED(false, "getpeername fail");
 		}
 
-		char mybuffer[16];
-		strcpy_s(mybuffer, inet_ntoa(sockAddr.sin_addr));
+		char ipbuffer[16];
+		strcpy_s(ipbuffer, inet_ntoa(sockAddr.sin_addr));
 
 
 		if (clientSocket == INVALID_SOCKET)
@@ -126,8 +129,8 @@ void IOCompletionPort::StartServer()
 		m_pSocketInfo.push_back(new SocketInfo());
 		SocketInfo* curSocketInfo = m_pSocketInfo.back();
 		curSocketInfo->socket = clientSocket;
-		curSocketInfo->recvBytes = 0;
-		curSocketInfo->sendBytes = 0;
+		//curSocketInfo->recvBytes = 0;
+		//curSocketInfo->sendBytes = 0;
 		curSocketInfo->dataBuf.len = MAX_BUFFER;
 		curSocketInfo->dataBuf.buf = curSocketInfo->messageBuffer;
 		flags = 0;
@@ -158,16 +161,12 @@ void IOCompletionPort::StartServer()
 bool IOCompletionPort::CreateWorkerThread()
 {
 	unsigned int threadId;
-	// 시스템 정보 가져옴
 	SYSTEM_INFO sysInfo;
 	GetSystemInfo(&sysInfo);
 	printf_s("[INFO] CPU 갯수 : %d\n", sysInfo.dwNumberOfProcessors);
-	// 적절한 작업 스레드의 갯수는 (CPU * 2) + 1
 	int nThreadCnt = sysInfo.dwNumberOfProcessors * 2;
 
-	// thread handler 선언
 	m_pWorkerHandle = new HANDLE[nThreadCnt];
-	// thread 생성
 	for (int i = 0; i < nThreadCnt; i++)
 	{
 		m_pWorkerHandle[i] = (HANDLE*)_beginthreadex(
@@ -186,26 +185,16 @@ bool IOCompletionPort::CreateWorkerThread()
 
 void IOCompletionPort::WorkerThread()
 {
-	// 함수 호출 성공 여부
 	BOOL	bResult;
 	int		nResult;
-	// Overlapped I/O 작업에서 전송된 데이터 크기
 	DWORD	recvBytes;
 	DWORD	sendBytes;
-	// Completion Key를 받을 포인터 변수
 	SocketInfo* pCompletionKey;
-	// I/O 작업을 위해 요청한 Overlapped 구조체를 받을 포인터	
 	SocketInfo* pSocketInfo;
-	// 
 	DWORD	dwFlags = 0;
 
 	while (m_bWorkerThread)
 	{
-		/**
-		 * 이 함수로 인해 쓰레드들은 WaitingThread Queue 에 대기상태로 들어가게 됨
-		 * 완료된 Overlapped I/O 작업이 발생하면 IOCP Queue 에서 완료된 작업을 가져와
-		 * 뒷처리를 함
-		 */
 		bResult = GetQueuedCompletionStatus(m_hIOCP,
 			&recvBytes,				// 실제로 전송된 바이트
 			(PULONG_PTR)&pCompletionKey,	// completion key
@@ -215,7 +204,16 @@ void IOCompletionPort::WorkerThread()
 
 		if (!bResult && recvBytes == 0)
 		{
-			printf_s("[INFO] socket(%d) 접속 끊김\n", pSocketInfo->socket);
+			printf_s("[INFO] socket(%d) 접속 끊김\n", (int)(pSocketInfo->socket));
+			
+			for (std::vector<SocketInfo*>::iterator it = m_pSocketInfo.begin(); it != m_pSocketInfo.end(); it++)
+			{
+				if (it[0]->socket == pSocketInfo->socket)
+				{
+					m_pSocketInfo.erase(it);
+				}
+			}
+
 			closesocket(pSocketInfo->socket);
 			free(pSocketInfo);
 			continue;
@@ -225,6 +223,13 @@ void IOCompletionPort::WorkerThread()
 
 		if (recvBytes == 0)
 		{
+			for (std::vector<SocketInfo*>::iterator it = m_pSocketInfo.begin(); it != m_pSocketInfo.end(); it++)
+			{
+				if (it[0]->socket == pSocketInfo->socket)
+				{
+					m_pSocketInfo.erase(it);
+				}
+			}
 			closesocket(pSocketInfo->socket);
 			free(pSocketInfo);
 			continue;
@@ -245,6 +250,33 @@ void IOCompletionPort::WorkerThread()
 				NULL
 			);
 
+			char* curBuffer = pSocketInfo->dataBuf.buf;
+			unsigned int bufferOffset = 0;
+			HCTypeEnum dataType;
+			size_t arrNum;
+			HCBufferToData(curBuffer, bufferOffset, dataType);
+			HCBufferToData(curBuffer, bufferOffset, arrNum);
+			switch (dataType)
+			{
+			case HCTypeEnum::HCchar:
+				for (size_t i = 0; i < arrNum; i++)
+				{
+				}
+				break;
+			case HCTypeEnum::HCint:
+				break;
+			case HCTypeEnum::HCfloat:
+				break;
+			case HCTypeEnum::HCdouble:
+				break;
+			case HCTypeEnum::HCSizeT:
+				break;
+			case HCTypeEnum::HCSTRUCT1:
+				break;
+			default:
+				break;
+			}
+
 			if (nResult == SOCKET_ERROR && WSAGetLastError() != WSA_IO_PENDING)
 			{
 				printf_s("[ERROR] WSASend 실패 : ", WSAGetLastError());
@@ -258,8 +290,8 @@ void IOCompletionPort::WorkerThread()
 			pSocketInfo->dataBuf.len = MAX_BUFFER;
 			pSocketInfo->dataBuf.buf = pSocketInfo->messageBuffer;
 			ZeroMemory(pSocketInfo->messageBuffer, MAX_BUFFER);
-			pSocketInfo->recvBytes = 0;
-			pSocketInfo->sendBytes = 0;
+			//pSocketInfo->recvBytes = 0;
+			//pSocketInfo->sendBytes = 0;
 
 			dwFlags = 0;
 

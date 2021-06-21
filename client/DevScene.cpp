@@ -44,7 +44,7 @@ void DevScene::Init()
 
 	m_testPipeLine->m_primitive = HC::PRIMITIVE_TOPOLOGY::POINT;
 
-	m_sceneObjects.push_back(new HCTileMap(8.0f, 8.0f, 100, 100));
+	m_sceneObjects.push_back(new HCTileMap(100.0f, 100.0f, 100, 100));
 	m_sceneObjects.back()->Init();
 
 	auto charControlTestOb = new HCCharacterControlTest;

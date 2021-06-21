@@ -13,8 +13,8 @@ struct SocketInfo
 	WSABUF			dataBuf;
 	SOCKET			socket;
 	char			messageBuffer[MAX_BUFFER];
-	int				recvBytes;
-	int				sendBytes;
+	//int				recvBytes;
+	//int				sendBytes;
 };
 
 
@@ -31,9 +31,9 @@ public:
 
 private:
 	std::vector<SocketInfo*> m_pSocketInfo;		// 소켓 정보
-	SOCKET			m_listenSocket;		// 서버 리슨 소켓
-	HANDLE			m_hIOCP;			// IOCP 객체 핸들
-	bool			m_bAccept;			// 요청 동작 플래그
-	bool			m_bWorkerThread;	// 작업 스레드 동작 플래그
-	HANDLE* m_pWorkerHandle;	// 작업 스레드 핸들
+	SOCKET			m_listenSocket;
+	HANDLE			m_hIOCP;
+	bool			m_bAccept;
+	bool			m_bWorkerThread;
+	HANDLE* m_pWorkerHandle;
 };

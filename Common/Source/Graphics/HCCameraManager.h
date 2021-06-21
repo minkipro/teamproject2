@@ -15,9 +15,9 @@ namespace HC
 		static CameraManager* Get() { return &instance; }
 	private:
 		static CameraManager instance;
+		CameraManager();
 
 	public:
-		CameraManager();
 		Camera* CreateCamera();
 		void Update();
 		DirectX::XMMATRIX XM_CALLCONV GetMatrix();

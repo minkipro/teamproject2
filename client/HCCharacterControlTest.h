@@ -8,7 +8,7 @@ public:
 	virtual void Update(float deltaTime);
 	virtual void Render();
 
-private:
+public:
 	HC2DCharacter				m_character;
 	std::vector<HC2DAnimation>	m_animations;
 };

@@ -814,8 +814,10 @@ void HCGraphicDX11::CreateTextures()
 
 			m_textureIndex[it.first + L"/" + textureName] = SizeTTransUINT(m_textures.size());
 
+			std::wstring wstr = it.first + L"/" + textureName + L"Texture load Fail";
+			
 			COM_HRESULT_IF_FAILED(DirectX::CreateWICTextureFromFile(m_device.Get(), it2.c_str(), nullptr, currTextureData.TextureView.GetAddressOf()),
-				"Texture load Fail");
+				StringHelper::WideToString(wstr).c_str());
 
 			currTextureData.TextureView->GetDesc(&currTextureData.TextureDesc);
 			currTextureData.SpriteInfoStartIndex = SizeTTransUINT(m_allSpriteDatas.size());

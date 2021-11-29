@@ -20,10 +20,9 @@ HCWindow::~HCWindow()
 void HCWindow::Init(HINSTANCE hInstance)
 {
 	m_hAppInst = hInstance;
-
 	WNDCLASS wc;
 	wc.style = CS_HREDRAW | CS_VREDRAW;
-	wc.lpfnWndProc = HCWindow::WindowProc;
+	wc.lpfnWndProc = (WNDPROC)HCWindow::WindowProc;
 	wc.cbClsExtra = 0;
 	wc.cbWndExtra = 0;
 	wc.hInstance = m_hAppInst;

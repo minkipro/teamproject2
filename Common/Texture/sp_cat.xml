@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with TexturePacker http://www.codeandweb.com/texturepacker-->
+<!-- $TexturePacker:SmartUpdate:ac39ccf52bec38d9d4727dec61015423:9043fbae8187de697831feb0df655c1f:76e7630cee1009ac4e2bd04670400cf9$ -->
+<!--Format:
+n  => name of the sprite
+x  => sprite x pos in texture
+y  => sprite y pos in texture
+w  => sprite width (may be trimmed)
+h  => sprite height (may be trimmed)
+pX => x pos of the pivot point (relative to sprite width)
+pY => y pos of the pivot point (relative to sprite height)
+oX => sprite's x-corner offset (only available if trimmed)
+oY => sprite's y-corner offset (only available if trimmed)
+oW => sprite's original width (only available if trimmed)
+oH => sprite's original height (only available if trimmed)
+r => 'y' only set if sprite is rotated
+with polygon mode enabled:
+vertices   => points in sprite coordinate system (x0,y0,x1,y1,x2,y2, ...)
+verticesUV => points in sheet coordinate system (x0,y0,x1,y1,x2,y2, ...)
+triangles  => sprite triangulation, 3 vertex indices per triangle
+-->
+<TextureAtlas imagePath="cat.png" width="238" height="252">
+  <Ready Repeat ="1" Time ="100">
+    <sprite n="0.png" x="1" y="1" w="41" h="34" pX="0.5" pY="0.5"/>
+  </Ready>
+  <Angly Repeat ="1" Time ="100">
+    <sprite n="1.png" x="44" y="5" w="37" h="38" pX="0.5" pY="0.5"/>
+  </Angly>
+  <Cry Repeat ="1" Time ="100">
+    <sprite n="2.png" x="83" y="-2" w="41" h="38" pX="0.5" pY="0.5"/>
+  </Cry>
+  <Walk Repeat ="1" Time ="200">
+    <sprite n="3.png" x="126" y="1" w="38" h="37" pX="0.5" pY="0.5"/>
+    <sprite n="4.png" x="166" y="1" w="41" h="39" pX="0.5" pY="0.5"/>
+  </Walk>
+  <Sad Repeat ="1" Time ="100">
+    <sprite n="5.png" x="1" y="45" w="49" h="32" pX="0.5" pY="0.5"/>
+    <sprite n="6.png" x="52" y="45" w="49" h="32" pX="0.5" pY="0.5"/>
+    <sprite n="7.png" x="103" y="45" w="49" h="32" pX="0.5" pY="0.5"/>
+    <sprite n="8.png" x="154" y="45" w="49" h="32" pX="0.5" pY="0.5"/>
+  </Sad>
+  <Run Repeat ="1" Time ="dddd100">
+    <sprite n="9.png" x="1" y="79" w="38" h="35" pX="0.5" pY="0.5"/>
+    <sprite n="10.png" x="41" y="79" w="38" h="37" pX="0.5" pY="0.5"/>
+    <sprite n="11.png" x="81" y="79" w="39" h="37" pX="0.5" pY="0.5"/>
+    <sprite n="12.png" x="122" y="79" w="41" h="39" pX="0.5" pY="0.5"/>
+  </Run>
+  <Jump Repeat ="1" Time ="100">
+    <sprite n="13.png" x="165" y="79" w="54" h="33" pX="0.5" pY="0.5"/>
+  </Jump>
+  <Seat Repeat ="1" Time ="100">
+    <sprite n="14.png" x="1" y="120" w="41" h="39" pX="0.5" pY="0.5"/>
+    <sprite n="15.png" x="44" y="120" w="46" h="39" pX="0.5" pY="0.5"/>
+    <sprite n="16.png" x="92" y="120" w="44" h="39" pX="0.5" pY="0.5"/>
+  </Seat>
+  <Stand Repeat ="1" Time ="100">
+    <sprite n="17.png" x="138" y="120" w="41" h="49" pX="0.5" pY="0.5"/>
+  </Stand>
+  <Idle Repeat ="1" Time ="100">
+    <sprite n="18.png" x="181" y="120" w="38" h="39" pX="0.5" pY="0.5"/>
+    <sprite n="19.png" x="1" y="171" w="38" h="39" pX="0.5" pY="0.5"/>
+    <sprite n="20.png" x="41" y="171" w="38" h="39" pX="0.5" pY="0.5"/>
+    <sprite n="21.png" x="81" y="171" w="38" h="39" pX="0.5" pY="0.5"/>
+    <sprite n="22.png" x="121" y="171" w="36" h="39" pX="0.5" pY="0.5"/>
+    <sprite n="23.png" x="159" y="171" w="35" h="39" pX="0.5" pY="0.5"/>
+    <sprite n="24.png" x="196" y="171" w="41" h="39" pX="0.5" pY="0.5"/>
+    <sprite n="25.png" x="1" y="212" w="48" h="39" pX="0.5" pY="0.5"/>
+    <sprite n="26.png" x="51" y="212" w="44" h="39" pX="0.5" pY="0.5"/>
+    <sprite n="27.png" x="97" y="212" w="45" h="39" pX="0.5" pY="0.5"/>
+  </Idle>
+  <Stretching Repeat ="1" Time ="100">
+    <sprite n="28.png" x="144" y="212" w="49" h="36" pX="0.5" pY="0.5"/>
+  </Stretching>
+
+</TextureAtlas>

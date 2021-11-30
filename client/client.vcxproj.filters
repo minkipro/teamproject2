@@ -115,9 +115,6 @@
     <ClCompile Include="..\Common\Source\Graphics\HCInputDataSamples.cpp">
       <Filter>Common\Graphics_Base</Filter>
     </ClCompile>
-    <ClCompile Include="HCSceneObject.cpp">
-      <Filter>Client\Scene\SceneObject</Filter>
-    </ClCompile>
     <ClCompile Include="..\Common\Source\Graphics\HCGraphic.cpp">
       <Filter>Common\Devices</Filter>
     </ClCompile>
@@ -136,7 +133,15 @@
     <ClCompile Include="..\Common\Source\Physics\Physics2D.cpp">
       <Filter>Common\Devices\Physics</Filter>
     </ClCompile>
-    <ClCompile Include="MinkiCollision.cpp" />
+    <ClCompile Include="HCSceneObject.cpp">
+      <Filter>Client\Scene\SceneObject</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Common\Source\HC2DAnimation.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="HCharacter.cpp">
+      <Filter>Client\Scene\SceneObject</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Common\Source\Util\StringHelper.h">
@@ -243,6 +248,12 @@
     </ClInclude>
     <ClInclude Include="..\Common\Source\TCPSocket\HCCommunicationProtocol.h">
       <Filter>Common\TCP_IP_Socket</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\Source\HC2DAnimation.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="HCharacter.h">
+      <Filter>Client\Scene\SceneObject</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

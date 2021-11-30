@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "DevScene.h"
 #include "HCDevice.h"
-#include "HCCharacter.h"
 #include "Graphics\HCCameraManager.h"
 #include "GlobalOption.h"
 #include "HCTileMap.h"

@@ -808,6 +808,12 @@ void HCGraphicDX11::CreateTextures()
 	{
 		for (auto& it2 : it.second)
 		{
+			string strFilePath = StringHelper::WideToString(it2);
+			string ext = StringHelper::GetFileExtension(strFilePath);
+			if (ext != "png")
+			{
+				continue;
+			}
 			std::wstring textureName = StringHelper::GetFileNameFromPath(it2);
 			TextureResourceData currTextureData;
 			TextureSpriteData locationData;
@@ -1032,11 +1038,20 @@ D3D11_BIND_FLAG HCGraphicDX11::GetResourceBindFlags(const HC::GRAPHIC_RESOURCE_D
 
 void HCGraphicDX11::GetSpriteData(const std::wstring& texturePath, std::vector<TextureSpriteData>* out)
 {
+	size_t cat = texturePath.find(L"cat", 0);
+	if (cat != wstring::npos)
+	{
+		int a = 1;
+	}
+
 	std::wstring textureName = StringHelper::GetFileNameFromPath(texturePath);
 	std::unique_ptr<Xml::XMLDocument> document(new XmlDocument);
-
-	document->LoadFile((std::string(StringHelper::WideToString(texturePath), texturePath.find_last_of(L'.', 0)) + ".xml").c_str());
-
+	size_t off2 = texturePath.find_last_of('.');
+	wstring xmlFilePath = texturePath.substr(0, off2);
+	xmlFilePath += L".xml";
+	string strXmlFilePath = StringHelper::WideToString(xmlFilePath);
+	document->LoadFile(strXmlFilePath.c_str());
+	TextureSpriteData spData;
 	if (document->Error())
 	{
 		//don't has SpriteData.xml
@@ -1056,7 +1071,7 @@ void HCGraphicDX11::GetSpriteData(const std::wstring& texturePath, std::vector<T
 		const float intervalX = offsetX / 200.0f;
 		const float intervalY = offsetY / 200.0f;
 
-		TextureSpriteData spData;
+		
 		for (int y = 0; y < sizeY; y++)
 		{
 			spData.StartUV.y = y * offsetY;
@@ -1072,28 +1087,25 @@ void HCGraphicDX11::GetSpriteData(const std::wstring& texturePath, std::vector<T
 
 				spData.EndUV.x -= intervalX;
 				spData.EndUV.y -= intervalY;
-
 				out->push_back(spData);
+				
 			}
 		}
 	}
 	else
 	{
-		XmlElement* list;
-		XmlElement* element;
-
-		list = document->FirstChildElement("Sprites");
-		element = list->FirstChildElement();
-
 		TextureSpriteData spData;
-		for (; element != nullptr; element = element->NextSiblingElement())
-		{
-			spData.StartUV.x = element->FloatAttribute("StartUV_X");
-			spData.StartUV.y = element->FloatAttribute("StartUV_Y");
-			spData.EndUV.x = element->FloatAttribute("EndUV_X");
-			spData.EndUV.y = element->FloatAttribute("EndUV_Y");
 
+		XmlElement* atlas = document->FirstChildElement("TextureAtlas");
+		XmlElement* frame = atlas->FirstChildElement();
+		for (; frame != NULL; frame = frame->NextSiblingElement())
+		{
+			spData.StartUV.x = frame->FloatAttribute("x");
+			spData.StartUV.y = frame->FloatAttribute("y");
+			spData.EndUV.x = spData.StartUV.x + frame->FloatAttribute("w");
+			spData.EndUV.y = spData.StartUV.y +frame->FloatAttribute("h");
 			out->push_back(spData);
 		}
 	}
+	
 }

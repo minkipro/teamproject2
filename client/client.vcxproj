@@ -172,6 +172,7 @@
     <ClCompile Include="..\Common\Source\Graphics\HCMeshManager.cpp" />
     <ClCompile Include="..\Common\Source\Graphics\HCPickingTexture.cpp" />
     <ClCompile Include="..\Common\Source\Graphics\HCSwapchainDX11.cpp" />
+    <ClCompile Include="..\Common\Source\Graphics\HXmlAnimationManager.cpp" />
     <ClCompile Include="..\Common\Source\HC2DAnimation.cpp" />
     <ClCompile Include="..\Common\Source\Physics\Physics2D.cpp" />
     <ClCompile Include="..\Common\Source\TCPSocket\SocketCommunication.cpp" />
@@ -216,6 +217,7 @@
     <ClInclude Include="..\Common\Source\Graphics\HCPickingTexture.h" />
     <ClInclude Include="..\Common\Source\Graphics\HCSwapchainDX11.h" />
     <ClInclude Include="..\Common\Source\Graphics\HCRenderInfos.h" />
+    <ClInclude Include="..\Common\Source\Graphics\HXmlAnimationManager.h" />
     <ClInclude Include="..\Common\Source\HC2DAnimation.h" />
     <ClInclude Include="..\Common\Source\HCScene.h" />
     <ClInclude Include="..\Common\Source\Includes\GameObject.h" />

@@ -20,30 +20,24 @@ void HCTileMap::Init()
 	auto graphic = HCDEVICE(HCGraphic);
 
 	m_mesh = HCMeshManager::Get()->GetMesh(typeid(HCOnePointExtToRect).name());
-	m_textureData = graphic->GetTextureIndex(L"Texture/Pipoya RPG Tileset 16x16/sp_8x249_[Base]BaseChip_pipo.png");
+	m_textureData = graphic->GetTextureIndex(L"Texture/sp_cat.png");
 
 	HC::GRAPHIC_RESOURCE_DESC renderInfoBufferDesc;
-	std::vector<HCPointRenderInfo>	renderInfos;
+	HCPointRenderInfo	renderInfos;
 
 	renderInfoBufferDesc.Type = HC::GRAPHIC_RESOURCE_TYPE::GRAPHIC_RESOURCE_BUFFER;
 	renderInfoBufferDesc.UsageType = HC::GRAPHIC_RESOURCE_USAGE_TYPE::GRAPHIC_RESOURCE_USAGE_DEFAULT;
 	renderInfoBufferDesc.BindFlags = HC::GRAPHIC_RESOURCE_BIND_SHADERRESOURCE_ALL;
 	renderInfoBufferDesc.Flags = HC::GRAPHIC_RESOURCE_FLAG_STRUCTURED_BUFFER;
 	renderInfoBufferDesc.Stride = sizeof(HCPointRenderInfo);
-	renderInfoBufferDesc.Buffer.StrideNum = m_numX*m_numY;
+	renderInfoBufferDesc.Buffer.StrideNum = 1;
 
-	renderInfos.resize(renderInfoBufferDesc.Buffer.StrideNum);
-	for (UINT i = 0; i < renderInfoBufferDesc.Buffer.StrideNum; i++)
-	{
-		UINT indexX = i % m_numX;
-		UINT indexY = i / m_numY;
+	renderInfos.Size = { m_sizeX, m_sizeY };
+	renderInfos.Position = { m_sizeX, m_sizeY , 0.6f };
+	renderInfos.SpriteInfoIndex = m_textureData.spriteStartIndex;
+	
 
-		renderInfos[i].Size = { m_sizeX, m_sizeY };
-		renderInfos[i].Position = { indexX * m_sizeX, indexY * m_sizeY , 0.6f };
-		renderInfos[i].SpriteInfoIndex = m_textureData.spriteStartIndex + i % m_textureData.spriteNum;
-	}
-
-	renderInfoBufferDesc.DefaultData = renderInfos.data();
+	renderInfoBufferDesc.DefaultData = &renderInfos;
 	graphic->CreateResource(renderInfoBufferDesc, m_renderInfoBuffer);
 }
 
@@ -58,5 +52,5 @@ void HCTileMap::Render()
 	graphic->SetTexture(m_textureData.textureIndex, 0);
 	graphic->SetShaderResource(m_renderInfoBuffer, 1);
 
-	graphic->DrawInsatance(m_mesh, m_numX*m_numY);
+	graphic->DrawInsatance(m_mesh, 1);
 }

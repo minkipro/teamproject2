@@ -39,7 +39,7 @@ triangles  => sprite triangulation, 3 vertex indices per triangle
     <sprite n="7.png" x="103" y="45" w="49" h="32" pX="0.5" pY="0.5"/>
     <sprite n="8.png" x="154" y="45" w="49" h="32" pX="0.5" pY="0.5"/>
   </Sad>
-  <Run Repeat ="1" Time ="dddd100">
+  <Run Repeat ="1" Time ="100">
     <sprite n="9.png" x="1" y="79" w="38" h="35" pX="0.5" pY="0.5"/>
     <sprite n="10.png" x="41" y="79" w="38" h="37" pX="0.5" pY="0.5"/>
     <sprite n="11.png" x="81" y="79" w="39" h="37" pX="0.5" pY="0.5"/>

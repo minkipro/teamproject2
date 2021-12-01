@@ -43,7 +43,7 @@ void DevScene::Init()
 
 	m_testPipeLine->m_primitive = HC::PRIMITIVE_TOPOLOGY::POINT;
 
-	HCTileMap* ptrTilemap = new HCTileMap(100.0f, 100.0f, 10, 1);
+	HCTileMap* ptrTilemap = new HCTileMap(100.0f, 100.0f, 1, 1);
 	m_sceneObjects.push_back(ptrTilemap);
 	m_sceneObjects.back()->Init();
 

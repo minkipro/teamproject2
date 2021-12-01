@@ -9,6 +9,7 @@
 #include "HCFont.h"
 #include "HCCameraManager.h"
 #include "Xml\Xml.h"
+#include "HXmlAnimationManager.h"
 
 using Microsoft::WRL::ComPtr;
 
@@ -818,7 +819,8 @@ void HCGraphicDX11::CreateTextures()
 			TextureResourceData currTextureData;
 			TextureSpriteData locationData;
 
-			m_textureIndex[it.first + L"/" + textureName] = SizeTTransUINT(m_textures.size());
+			wstring textureIndexStr = it.first + L"/" + textureName;
+			m_textureIndex[textureIndexStr] = SizeTTransUINT(m_textures.size());
 
 			std::wstring wstr = it.first + L"/" + textureName + L"Texture load Fail";
 			
@@ -1095,17 +1097,31 @@ void HCGraphicDX11::GetSpriteData(const std::wstring& texturePath, std::vector<T
 	else
 	{
 		TextureSpriteData spData;
-
-		XmlElement* atlas = document->FirstChildElement("TextureAtlas");
-		XmlElement* frame = atlas->FirstChildElement();
-		for (; frame != NULL; frame = frame->NextSiblingElement())
+		XmlElement* textureAtlas = document->FirstChildElement("TextureAtlas");
+		float width = textureAtlas->FloatAttribute("width");
+		float height = textureAtlas->FloatAttribute("height");
+		XmlElement* action = textureAtlas->FirstChildElement();
+		int offset = 0;
+		HXmlAnimationManager::Get()->m_actionCharacterMap[StringHelper::WideToString(textureName)];
+		auto& curCharacter = HXmlAnimationManager::Get()->m_actionCharacterMap[StringHelper::WideToString(textureName)];
+		for (; action != NULL; action = action->NextSiblingElement())
 		{
-			spData.StartUV.x = frame->FloatAttribute("x");
-			spData.StartUV.y = frame->FloatAttribute("y");
-			spData.EndUV.x = spData.StartUV.x + frame->FloatAttribute("w");
-			spData.EndUV.y = spData.StartUV.y +frame->FloatAttribute("h");
-			out->push_back(spData);
+			const char* actionText = action->Value();
+			curCharacter[actionText];
+			HAction& curAction = curCharacter[actionText];
+			curAction.isRepeat = (bool)action->UnsignedAttribute("Repeat");
+			curAction.time = action->UnsignedAttribute("Time");
+
+			XmlElement* frame = action->FirstChildElement();
+			for (; frame != NULL; frame = frame->NextSiblingElement())
+			{
+				spData.StartUV.x = frame->FloatAttribute("x") / width;
+				spData.StartUV.y = frame->FloatAttribute("y") / height;
+				spData.EndUV.x = spData.StartUV.x + frame->FloatAttribute("w") / width;
+				spData.EndUV.y = spData.StartUV.y + frame->FloatAttribute("h") / height;
+				out->push_back(spData);
+				curAction.indices.push_back(offset++);
+			}
 		}
 	}
-	
 }

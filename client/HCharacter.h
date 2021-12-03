@@ -1,5 +1,5 @@
 #pragma once
-#include "HCSceneObject.h"
+#include "Scene/HCSceneObject.h"
 class HCharacter : public HCSceneObject
 {
 public:

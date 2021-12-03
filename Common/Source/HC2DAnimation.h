@@ -14,7 +14,7 @@ public:
 	int  Update(float deltaTime); //return spriteInfoIndex
 	
 	void SetTexture(const HCTextureData& textureData) { m_textureData = textureData; }
-	void SetSpriteIndices(const std::vector<UINT>& sprites, float animationTime, bool loop);
+	void SetSpriteIndices(const std::vector<UINT>& sprites, const char* animName, float animationTime, bool loop);
 	void SetAnimationTime(float animationTime);
 	void SetLoopAnimation(bool loop) { m_loopAnimation = loop; }
 	void PushBackSpriteIndex(UINT sprite);
@@ -26,6 +26,7 @@ public:
 
 private:
 	HCTextureData		m_textureData;
+	string				m_animName;
 	std::vector<UINT>	m_spriteIndices;
 	float				m_animationTime;
 	float				m_stockTime;

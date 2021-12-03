@@ -30,7 +30,6 @@ void DevScene::Init()
 	HC::GRAPHIC_RESOURCE_DESC mainpassCBDesc;
 	mainpassCBDesc.Type = HC::GRAPHIC_RESOURCE_TYPE::GRAPHIC_RESOURCE_CONSTANT_BUFFER;
 	mainpassCBDesc.Stride = sizeof(m_mainPass);
-
 	graphic->CreateResource(mainpassCBDesc, m_mainPassCB);
 
 	m_testPipeLine = std::make_shared<HCGraphicPipeLine>();
@@ -43,12 +42,12 @@ void DevScene::Init()
 
 	m_testPipeLine->m_primitive = HC::PRIMITIVE_TOPOLOGY::POINT;
 
-	HCTileMap* ptrTilemap = new HCTileMap(100.0f, 100.0f, 1, 1);
+	/*HCTileMap* ptrTilemap = new HCTileMap(100.0f, 100.0f, 1, 1);
 	m_sceneObjects.push_back(ptrTilemap);
-	m_sceneObjects.back()->Init();
+	m_sceneObjects.back()->Init();*/
 
 	auto charControlTestOb = new HCCharacterControlTest;
-	charControlTestOb->Init();
+	charControlTestOb->Init(L"Texture/sp_cat.png");
 	m_sceneObjects.push_back(charControlTestOb);
 	
 }

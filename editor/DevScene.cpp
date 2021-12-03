@@ -1,10 +1,13 @@
 #include "stdafx.h"
 #include "DevScene.h"
 #include "HCDevice.h"
+#include "Graphics\HCCameraManager.h"
+#include "GlobalOption.h"
+#include "HBasicSceneObject.h"
 
 DevScene::DevScene()
 {
-
+	m_mainPass = {};
 }
 DevScene::~DevScene()
 {
@@ -23,39 +26,74 @@ void DevScene::Init()
 {
 	auto graphic = HCDEVICE(HCGraphic);
 
-	IHCResource* texture = nullptr;
-	IHCResource* texture2 = nullptr;
+	HC::GRAPHIC_RESOURCE_DESC mainpassCBDesc;
+	mainpassCBDesc.Type = HC::GRAPHIC_RESOURCE_TYPE::GRAPHIC_RESOURCE_CONSTANT_BUFFER;
+	mainpassCBDesc.Stride = sizeof(m_mainPass);
 
-	HCGraphicPipeLine* testPipeLine = nullptr;
-	IHCShader* vs = nullptr;
-	IHCShader* gs = nullptr;
-	IHCShader* ps = nullptr;
+	graphic->CreateResource(mainpassCBDesc, m_mainPassCB);
 
+	m_testPipeLine = std::make_shared<HCGraphicPipeLine>();
 
-	graphic->CreateGraphicPipeLine("testPipe", &testPipeLine);
-	graphic->CreateShader("testVS", HC::SHADER_TYPE::VS, L"./../Common/Shader/PointToPlaneSahder.hlsl", "VS", &vs);
-	graphic->CreateShader("testGS", HC::SHADER_TYPE::GS, L"./../Common/Shader/PointToPlaneSahder.hlsl", "GS", &gs);
-	graphic->CreateShader("testPS", HC::SHADER_TYPE::PS, L"./../Common/Shader/PointToPlaneSahder.hlsl", "PS", &ps);
+	m_testPipeLine->SetVertexType(typeid(HCOnePointExtToRect).hash_code(), sizeof(HCOnePointExtToRect), &HCOnePointExtToRect::InputLayout);
 
-	testPipeLine->m_primitive = HC::PRIMITIVE_TOPOLOGY::POINT;
-	testPipeLine->SelectInputSample<RenderPoint>();
+	graphic->CreateShader(HC::SHADER_TYPE::HCSHADER_VS, L"./../Common/Shader/PointToPlaneSahder.hlsl", "VS", m_testPipeLine->m_shaders[HC::SHADER_TYPE::HCSHADER_VS]);
+	graphic->CreateShader(HC::SHADER_TYPE::HCSHADER_GS, L"./../Common/Shader/PointToPlaneSahder.hlsl", "GS", m_testPipeLine->m_shaders[HC::SHADER_TYPE::HCSHADER_GS]);
+	graphic->CreateShader(HC::SHADER_TYPE::HCSHADER_PS, L"./../Common/Shader/PointToPlaneSahder.hlsl", "PS", m_testPipeLine->m_shaders[HC::SHADER_TYPE::HCSHADER_PS]);
 
-	testPipeLine->SetShader(HC::SHADER_TYPE::VS, vs);
-	testPipeLine->SetShader(HC::SHADER_TYPE::GS, gs);
-	testPipeLine->SetShader(HC::SHADER_TYPE::PS, ps);
-
-	graphic->NumberingGraphicPipeLineSlot(0, testPipeLine);
-	//m_sceneObjects.push_back(new HC::Character);
+	m_testPipeLine->m_primitive = HC::PRIMITIVE_TOPOLOGY::POINT;
+	
+	auto basicSceneObject = new HBasicSceneObject;
+	basicSceneObject->Init(L"Texture/sp_cat.png");
+	m_sceneObjects.push_back(basicSceneObject);
 }
 
 void DevScene::Update()
 {
+	float currDeltaTime = HCDEVICE(HCTimer)->GetDeltatime();
+
+	HC::CameraManager* cameraManager = HC::CameraManager::Get();
+	cameraManager->Update();
+
+	/*DirectX::XMMATRIX orthoP = DirectX::XMMatrixOrthographicOffCenterLH(
+		-static_cast<float>(HC::GO.WIN.WindowsizeX) * 0.5f, static_cast<float>(HC::GO.WIN.WindowsizeX) * 0.5f,
+		static_cast<float>(HC::GO.WIN.WindowsizeY) * 0.5f, -static_cast<float>(HC::GO.WIN.WindowsizeY) * 0.5f,
+		0, 1.0f);*/
+
+	DirectX::XMMATRIX orthoP = DirectX::XMMatrixOrthographicOffCenterLH(
+		0.0f, static_cast<float>(HC::GO.WIN.WindowsizeX),
+		static_cast<float>(HC::GO.WIN.WindowsizeY), 0.0f,
+		0.0f, 1.0f);
+	DirectX::XMStoreFloat4x4(&m_mainPass.ViewMatrix, cameraManager->GetMatrix());
+	DirectX::XMStoreFloat4x4(&m_mainPass.OrthoMatrix, orthoP);
+
+	m_mainPassCB->Map();
+	m_mainPassCB->CopyCpuDataToGpu(&m_mainPass);
+	m_mainPassCB->UnMap();
+
 	size_t objectNum = m_sceneObjects.size();
 	for (size_t i = 0; i < objectNum; i++)
 	{
 		if (m_sceneObjects[i])
 		{
-			m_sceneObjects[i]->Update();
+			m_sceneObjects[i]->Update(currDeltaTime);
+		}
+	}
+}
+
+void DevScene::Render()
+{
+	auto graphic = HCDEVICE(HCGraphic);
+
+	static float pickingDefault[4] = { -1.0f,-1.0f,-1.0f,-1.0f };
+	graphic->SetPipeLineObject(m_testPipeLine.get());
+	graphic->SetConstantBuffer(m_mainPassCB, 0);
+
+	size_t objectNum = m_sceneObjects.size();
+	for (size_t i = 0; i < objectNum; i++)
+	{
+		if (m_sceneObjects[i])
+		{
+			m_sceneObjects[i]->Render();
 		}
 	}
 }

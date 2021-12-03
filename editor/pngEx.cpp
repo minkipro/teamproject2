@@ -180,5 +180,4 @@ void main()
 	process_file();
 	filePath = "../Common/Texture/Tile/water2.png";
 	write_png_file(filePath.c_str());
-
 }

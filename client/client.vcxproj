@@ -175,6 +175,7 @@
     <ClCompile Include="..\Common\Source\Graphics\HXmlAnimationManager.cpp" />
     <ClCompile Include="..\Common\Source\HC2DAnimation.cpp" />
     <ClCompile Include="..\Common\Source\Physics\Physics2D.cpp" />
+    <ClCompile Include="..\Common\Source\Scene\HCSceneObject.cpp" />
     <ClCompile Include="..\Common\Source\TCPSocket\SocketCommunication.cpp" />
     <ClCompile Include="..\Common\Source\Util\StringHelper.cpp" />
     <ClCompile Include="..\Common\Source\Window\HCWindow.cpp" />
@@ -186,7 +187,6 @@
     <ClCompile Include="Engine.cpp" />
     <ClCompile Include="HCCharacterControlTest.cpp" />
     <ClCompile Include="HCharacter.cpp" />
-    <ClCompile Include="HCSceneObject.cpp" />
     <ClCompile Include="HCTileMap.cpp" />
     <ClCompile Include="Main.cpp" />
   </ItemGroup>
@@ -219,11 +219,12 @@
     <ClInclude Include="..\Common\Source\Graphics\HCRenderInfos.h" />
     <ClInclude Include="..\Common\Source\Graphics\HXmlAnimationManager.h" />
     <ClInclude Include="..\Common\Source\HC2DAnimation.h" />
-    <ClInclude Include="..\Common\Source\HCScene.h" />
-    <ClInclude Include="..\Common\Source\Includes\GameObject.h" />
     <ClInclude Include="..\Common\Source\Includes\GlobalOption.h" />
     <ClInclude Include="..\Common\Source\Includes\HCDevice.h" />
     <ClInclude Include="..\Common\Source\Physics\Physics2D.h" />
+    <ClInclude Include="..\Common\Source\Scene\HCScene.h" />
+    <ClInclude Include="..\Common\Source\Scene\HCSceneObject.h" />
+    <ClInclude Include="..\Common\Source\stdafx.h" />
     <ClInclude Include="..\Common\Source\TCPSocket\HCCommunicationProtocol.h" />
     <ClInclude Include="..\Common\Source\TCPSocket\SocketCommunication.h" />
     <ClInclude Include="..\Common\Source\Util\StringHelper.h" />
@@ -237,8 +238,6 @@
     <ClInclude Include="HCCharacterControlTest.h" />
     <ClInclude Include="HCharacter.h" />
     <ClInclude Include="HCTileMap.h" />
-    <ClInclude Include="HCSceneObject.h" />
-    <ClInclude Include="stdafx.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

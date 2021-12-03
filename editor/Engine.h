@@ -7,7 +7,7 @@
 #include "Window/HCWindow.h"
 
 #include "Graphics/HCGraphic.h"
-
+#include "Device\HCPhysics.h"
 #include "Device/HCKeyboard.h"
 #include "Device/HCMouse.h"
 #include "Device/HCKoreanInput.h"
@@ -21,7 +21,7 @@ public:
 	Engine() = default;
 	~Engine() = default;
 
-	static Engine*	Get() { return m_engine; }
+	static Engine* Get() { return m_engine; }
 	void			Init(HINSTANCE hInstance);
 	int				Run();
 
@@ -30,21 +30,32 @@ public:
 	template<typename T> T* GetDevice();
 
 private:
-	static Engine*								m_engine;
+	void			CreateBaseMeshs();
+	void			CalculateFrame();
 
-	DevScene									m_scene;
+private:
+	static Engine* m_engine;
+
 	std::vector<std::unique_ptr<IHCDevice>>		m_devices;
 	std::unordered_map<std::string, IHCDevice*>	m_deviceMap;
 	std::unique_ptr<HCWindow>					m_window;
-	HCGraphic*									m_graphic;
+	HCGraphic* m_graphic;
+	HCPhysics* m_physics;
+	HCTimer* m_timer;
+	HCMouse* m_mouse;
+	HCKeyboard* m_keyboard;
+	HCKoreanInput* m_koreanInput;
+
+
+	DevScene									m_scene;
 };
 
 template<typename T, typename ...Types>
-inline T* Engine::CreateDevice(const char* name,Types ...args)
+inline T* Engine::CreateDevice(const char* name, Types ...args)
 {
 	T* result = nullptr;
 	auto iter = m_deviceMap.find(name);
-	
+
 	if (iter == m_deviceMap.end())
 	{
 		m_devices.emplace_back(std::make_unique<T>(args...));

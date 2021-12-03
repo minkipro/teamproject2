@@ -50,6 +50,9 @@
     <Filter Include="Common\Graphics_Base\UI">
       <UniqueIdentifier>{33dd55ac-0a55-4b0e-a244-10b1a00e857b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Common\Scene">
+      <UniqueIdentifier>{04a5b340-9144-4c06-8969-370b29af0754}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Common\Source\Util\StringHelper.cpp">
@@ -133,9 +136,6 @@
     <ClCompile Include="..\Common\Source\Physics\Physics2D.cpp">
       <Filter>Common\Devices\Physics</Filter>
     </ClCompile>
-    <ClCompile Include="HCSceneObject.cpp">
-      <Filter>Client\Scene\SceneObject</Filter>
-    </ClCompile>
     <ClCompile Include="..\Common\Source\HC2DAnimation.cpp">
       <Filter>Common</Filter>
     </ClCompile>
@@ -145,16 +145,13 @@
     <ClCompile Include="..\Common\Source\Graphics\HXmlAnimationManager.cpp">
       <Filter>Common\Devices\Graphics_Dx11</Filter>
     </ClCompile>
+    <ClCompile Include="..\Common\Source\Scene\HCSceneObject.cpp">
+      <Filter>Common\Scene</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Common\Source\Util\StringHelper.h">
       <Filter>Common\Util</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Common\Source\Includes\GameObject.h">
-      <Filter>Common</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Common\Source\HCScene.h">
-      <Filter>Client\Scene</Filter>
     </ClInclude>
     <ClInclude Include="..\Common\Source\Includes\HCDevice.h">
       <Filter>Common\Devices</Filter>
@@ -194,12 +191,6 @@
     </ClInclude>
     <ClInclude Include="Engine.h">
       <Filter>Client</Filter>
-    </ClInclude>
-    <ClInclude Include="stdafx.h">
-      <Filter>Common\PCH</Filter>
-    </ClInclude>
-    <ClInclude Include="HCSceneObject.h">
-      <Filter>Client\Scene\SceneObject</Filter>
     </ClInclude>
     <ClInclude Include="HCCharacter.h">
       <Filter>Client\Scene\SceneObject</Filter>
@@ -260,6 +251,15 @@
     </ClInclude>
     <ClInclude Include="..\Common\Source\Graphics\HXmlAnimationManager.h">
       <Filter>Common\Devices\Graphics_Dx11</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\Source\Scene\HCScene.h">
+      <Filter>Common\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\Source\Scene\HCSceneObject.h">
+      <Filter>Common\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\Source\stdafx.h">
+      <Filter>Common\PCH</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

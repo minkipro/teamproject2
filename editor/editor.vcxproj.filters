@@ -1,57 +1,72 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="PCH">
-      <UniqueIdentifier>{e6b247f3-b6dc-4e88-a156-4d6a32893329}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Common">
-      <UniqueIdentifier>{78fe693c-a158-47ef-8848-3090f716ffd7}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Common\Window">
-      <UniqueIdentifier>{d413a997-18c8-461a-878f-4d754e70e10f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Common\Util">
-      <UniqueIdentifier>{4241e1f5-06ec-402f-bd1c-c11ec1c452ad}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Common\Devices">
-      <UniqueIdentifier>{fa10f3ef-511f-49e6-b173-207f26c089ba}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Common\Devices\Graphics_Base">
-      <UniqueIdentifier>{73bcbe2e-eed2-4732-9349-ba2097c369e4}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Common\Devices\Graphics_Dx11">
-      <UniqueIdentifier>{1bee3ecb-3f8c-4dfd-910c-93d2259d4f5f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Common\PCH">
-      <UniqueIdentifier>{e0aba0b4-477b-4704-8f5e-41485ba5ce21}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Editor">
       <UniqueIdentifier>{b3dd3dd7-6b5e-4014-aaa9-5542f0c2eb86}</UniqueIdentifier>
     </Filter>
     <Filter Include="리소스파일">
       <UniqueIdentifier>{65931e26-fe22-43ae-bedd-7b3ec9b8a039}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Common">
+      <UniqueIdentifier>{f47f96c6-8425-41c4-88e4-d7f5989b8ce7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common\Window">
+      <UniqueIdentifier>{e477b10f-979a-4ef4-b71f-8311f4671ee8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common\Devices">
+      <UniqueIdentifier>{cdc06311-6654-4442-b6e1-827e07f3313a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common\Devices\Graphics_Dx11">
+      <UniqueIdentifier>{81235217-2414-48ae-9213-8a81290df70c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common\Devices\Physics">
+      <UniqueIdentifier>{3ff1042a-5793-4b0c-a9ae-04dd1bbd3ab9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common\Util">
+      <UniqueIdentifier>{5ff4250a-9b34-43e9-adc9-37129c4a520b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common\PCH">
+      <UniqueIdentifier>{d7973fd8-f2dd-4872-ac43-159657c034ef}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Common\Externel">
-      <UniqueIdentifier>{42c6d745-b205-442c-b2c2-71032d20ee4b}</UniqueIdentifier>
+      <UniqueIdentifier>{2e502ef3-09c3-4126-bfa9-92689bb45b09}</UniqueIdentifier>
     </Filter>
     <Filter Include="Common\Externel\Xml">
-      <UniqueIdentifier>{351788bf-a3ce-44d8-a8d2-a7e2d954da59}</UniqueIdentifier>
+      <UniqueIdentifier>{2d5a465c-6c72-459e-911c-7f6a0cf0374d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Editor\SceneObject">
+    <Filter Include="Common\Graphics_Base">
+      <UniqueIdentifier>{22112ab3-be1b-4368-97cb-bb8890815750}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common\Graphics_Base\UI">
+      <UniqueIdentifier>{88e5d5dc-20b4-41c4-9101-4a18b3799a7f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Editor\Scene">
+      <UniqueIdentifier>{e8da0b19-41d1-412f-8474-7146844e4e82}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Editor\Scene\SceneObject">
       <UniqueIdentifier>{c1350b34-3309-4a0b-99b6-2c355a445c45}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common\Scene">
+      <UniqueIdentifier>{b3ce1d5e-0ba0-4d94-8e67-5391bce9d27e}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="pngEx.cpp" />
+    <ClCompile Include="Main.cpp">
+      <Filter>Editor</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine.cpp">
+      <Filter>Editor</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Common\Source\HC2DAnimation.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
     <ClCompile Include="..\Common\Source\Window\HCWindow.cpp">
       <Filter>Common\Window</Filter>
     </ClCompile>
-    <ClCompile Include="..\Common\Source\Util\StringHelper.cpp">
-      <Filter>Common\Util</Filter>
-    </ClCompile>
-    <ClCompile Include="pngEx.cpp" />
     <ClCompile Include="..\Common\Source\Device\HCKeyboard.cpp">
       <Filter>Common\Devices</Filter>
     </ClCompile>
@@ -65,7 +80,10 @@
       <Filter>Common\Devices</Filter>
     </ClCompile>
     <ClCompile Include="..\Common\Source\Graphics\HCGraphic.cpp">
-      <Filter>Common\Devices\Graphics_Base</Filter>
+      <Filter>Common\Devices</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Common\Source\Graphics\DX11TextData.cpp">
+      <Filter>Common\Devices\Graphics_Dx11</Filter>
     </ClCompile>
     <ClCompile Include="..\Common\Source\Graphics\HCFont.cpp">
       <Filter>Common\Devices\Graphics_Dx11</Filter>
@@ -79,34 +97,55 @@
     <ClCompile Include="..\Common\Source\Graphics\HCSwapchainDX11.cpp">
       <Filter>Common\Devices\Graphics_Dx11</Filter>
     </ClCompile>
-    <ClCompile Include="Main.cpp">
-      <Filter>Editor</Filter>
+    <ClCompile Include="..\Common\Source\Graphics\HXmlAnimationManager.cpp">
+      <Filter>Common\Devices\Graphics_Dx11</Filter>
     </ClCompile>
-    <ClCompile Include="Engine.cpp">
-      <Filter>Editor</Filter>
+    <ClCompile Include="..\Common\Source\Physics\Physics2D.cpp">
+      <Filter>Common\Devices\Physics</Filter>
     </ClCompile>
-    <ClCompile Include="DevScene.cpp">
-      <Filter>Editor</Filter>
+    <ClCompile Include="..\Common\Source\Util\StringHelper.cpp">
+      <Filter>Common\Util</Filter>
     </ClCompile>
     <ClCompile Include="..\Common\Source\Xml\Xml.cpp">
       <Filter>Common\Externel\Xml</Filter>
     </ClCompile>
     <ClCompile Include="..\Common\Source\Graphics\HCCameraManager.cpp">
-      <Filter>Common</Filter>
+      <Filter>Common\Graphics_Base</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Common\Source\Graphics\HCInputDataSamples.cpp">
+      <Filter>Common\Graphics_Base</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Common\Source\Graphics\HCMeshManager.cpp">
+      <Filter>Common\Graphics_Base</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Common\Source\Graphics\HCPickingTexture.cpp">
+      <Filter>Common\Graphics_Base</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Common\UI\UIObject.cpp">
+      <Filter>Common\Graphics_Base\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Common\UI\UIParam.cpp">
+      <Filter>Common\Graphics_Base\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="DevScene.cpp">
+      <Filter>Editor\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Common\Source\Scene\HCSceneObject.cpp">
+      <Filter>Common\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="HBasicSceneObject.cpp">
+      <Filter>Editor\Scene\SceneObject</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\Common\Source\Includes\GameObject.h">
+    <ClInclude Include="Engine.h">
+      <Filter>Editor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\Source\HC2DAnimation.h">
       <Filter>Common</Filter>
     </ClInclude>
     <ClInclude Include="..\Common\Source\Window\HCWindow.h">
       <Filter>Common\Window</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Common\Source\Includes\GlobalOption.h">
-      <Filter>Common\Util</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Common\Source\Util\StringHelper.h">
-      <Filter>Common\Util</Filter>
     </ClInclude>
     <ClInclude Include="..\Common\Source\Device\HCKeyboard.h">
       <Filter>Common\Devices</Filter>
@@ -117,14 +156,20 @@
     <ClInclude Include="..\Common\Source\Device\HCMouse.h">
       <Filter>Common\Devices</Filter>
     </ClInclude>
+    <ClInclude Include="..\Common\Source\Device\HCPhysics.h">
+      <Filter>Common\Devices</Filter>
+    </ClInclude>
     <ClInclude Include="..\Common\Source\Device\HCTimer.h">
+      <Filter>Common\Devices</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\Source\Graphics\HCGraphic.h">
       <Filter>Common\Devices</Filter>
     </ClInclude>
     <ClInclude Include="..\Common\Source\Includes\HCDevice.h">
       <Filter>Common\Devices</Filter>
     </ClInclude>
-    <ClInclude Include="..\Common\Source\Graphics\HCGraphic.h">
-      <Filter>Common\Devices\Graphics_Base</Filter>
+    <ClInclude Include="..\Common\Source\Graphics\DX11TextData.h">
+      <Filter>Common\Devices\Graphics_Dx11</Filter>
     </ClInclude>
     <ClInclude Include="..\Common\Source\Graphics\HCFont.h">
       <Filter>Common\Devices\Graphics_Dx11</Filter>
@@ -138,33 +183,63 @@
     <ClInclude Include="..\Common\Source\Graphics\HCSwapchainDX11.h">
       <Filter>Common\Devices\Graphics_Dx11</Filter>
     </ClInclude>
-    <ClInclude Include="..\client\stdafx.h">
-      <Filter>Common\PCH</Filter>
+    <ClInclude Include="..\Common\Source\Graphics\HXmlAnimationManager.h">
+      <Filter>Common\Devices\Graphics_Dx11</Filter>
     </ClInclude>
-    <ClInclude Include="DevScene.h">
-      <Filter>Editor</Filter>
+    <ClInclude Include="..\Common\Source\Physics\Physics2D.h">
+      <Filter>Common\Devices\Physics</Filter>
     </ClInclude>
-    <ClInclude Include="Engine.h">
-      <Filter>Editor</Filter>
+    <ClInclude Include="..\Common\Source\Includes\GlobalOption.h">
+      <Filter>Common\Util</Filter>
     </ClInclude>
-    <ClInclude Include="stdafx.h">
-      <Filter>PCH</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Common\Source\Graphics\HCInputDataSamples.h">
-      <Filter>Common\Devices\Graphics_Base</Filter>
+    <ClInclude Include="..\Common\Source\Util\StringHelper.h">
+      <Filter>Common\Util</Filter>
     </ClInclude>
     <ClInclude Include="..\Common\Source\Xml\Xml.h">
       <Filter>Common\Externel\Xml</Filter>
     </ClInclude>
     <ClInclude Include="..\Common\Source\Graphics\HCCameraManager.h">
-      <Filter>Common</Filter>
+      <Filter>Common\Graphics_Base</Filter>
     </ClInclude>
-    <ClInclude Include="HCSceneObject.h">
-      <Filter>Editor\SceneObject</Filter>
+    <ClInclude Include="..\Common\Source\Graphics\HCInputDataSamples.h">
+      <Filter>Common\Graphics_Base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\Source\Graphics\HCMeshManager.h">
+      <Filter>Common\Graphics_Base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\Source\Graphics\HCPickingTexture.h">
+      <Filter>Common\Graphics_Base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\Source\Graphics\HCRenderInfos.h">
+      <Filter>Common\Graphics_Base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\UI\UIObject.h">
+      <Filter>Common\Graphics_Base\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\UI\UIParam.h">
+      <Filter>Common\Graphics_Base\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="DevScene.h">
+      <Filter>Editor\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\Source\Scene\HCScene.h">
+      <Filter>Common\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\Source\Scene\HCSceneObject.h">
+      <Filter>Common\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="HBasicSceneObject.h">
+      <Filter>Editor\Scene\SceneObject</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\Source\stdafx.h">
+      <Filter>Common\PCH</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\Common\Shader\BaseRoot.hlsli">
+      <Filter>리소스파일</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Common\Shader\PointToPlaneSahder.hlsl">
       <Filter>리소스파일</Filter>
     </FxCompile>
   </ItemGroup>

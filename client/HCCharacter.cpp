@@ -6,7 +6,7 @@ HC2DCharacter::~HC2DCharacter()
 {
 }
 
-void HC2DCharacter::Init()
+void HC2DCharacter::Init(const wchar_t* textureName)
 {
 	auto graphic = HCDEVICE(HCGraphic);
 
@@ -74,12 +74,12 @@ void HC2DCharacter::SetSize(const DirectX::XMFLOAT2& size)
 	m_renderInfo.Size = size;
 }
 
-void HC2DCharacter::SetAnimation(HC2DAnimation* ani)
+void HC2DCharacter::SetAnimation(int index)
 {
-	if (m_currAniamtion != ani)
+	if (m_currAniamtion != index)
 	{
-		m_currAniamtion = ani;
-		ani->Start();
+		m_currAniamtion = index;
+		m_animations[m_currAniamtion].Start();
 	}
 }
 

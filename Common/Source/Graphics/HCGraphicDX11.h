@@ -23,6 +23,9 @@ class HCGraphicDX11 final : public HCGraphic
 		D3D11_SHADER_RESOURCE_VIEW_DESC							TextureDesc = {};
 		UINT													SpriteNum = 1;
 		UINT													SpriteInfoStartIndex = 0;
+		UINT													SizeX = 0;
+		UINT													SizeY = 0;
+		vector<XMFLOAT4>										SpriteUV;
 	};
 
 public:

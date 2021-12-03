@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "COMException.h"
 #include "engine.h"
-#include <png.h>
+
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	_In_opt_ HINSTANCE hPrevInstance,
 	_In_ LPWSTR    lpCmdLine,

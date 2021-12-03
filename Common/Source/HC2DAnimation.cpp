@@ -33,13 +33,14 @@ int HC2DAnimation::Update(float deltaTime)
 	return result;
 }
 
-void HC2DAnimation::SetSpriteIndices(const std::vector<UINT>& sprites, float animationTime, bool loop)
+void HC2DAnimation::SetSpriteIndices(const std::vector<UINT>& sprites,const char* animName, float animationTime, bool loop)
 {
 	for (auto& it : sprites)
 	{
-		COM_THROW_IF_FAILED(it < m_textureData.spriteNum, "Current animation's texture spriteNum is less than parameter sprite");
+		//COM_THROW_IF_FAILED(it < m_textureData.spriteNum, "Current animation's texture spriteNum is less than parameter sprite");
 	}
 
+	m_animName = animName;
 	m_spriteIndices = sprites;
 	m_animationTime = animationTime;
 	m_stockTime = 0;

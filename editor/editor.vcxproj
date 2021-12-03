@@ -168,6 +168,9 @@
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">5.0</ShaderModel>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
     </FxCompile>
+    <FxCompile Include="..\Common\Shader\PointToPlaneSahder.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </FxCompile>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
@@ -175,43 +178,70 @@
     <ClCompile Include="..\Common\Source\Device\HCKoreanInput.cpp" />
     <ClCompile Include="..\Common\Source\Device\HCMouse.cpp" />
     <ClCompile Include="..\Common\Source\Device\HCTimer.cpp" />
+    <ClCompile Include="..\Common\Source\Graphics\DX11TextData.cpp" />
     <ClCompile Include="..\Common\Source\Graphics\HCCameraManager.cpp" />
     <ClCompile Include="..\Common\Source\Graphics\HCFont.cpp" />
     <ClCompile Include="..\Common\Source\Graphics\HCGraphic.cpp" />
     <ClCompile Include="..\Common\Source\Graphics\HCGraphicDX11.cpp" />
     <ClCompile Include="..\Common\Source\Graphics\HCGraphicDX11Resources.cpp" />
+    <ClCompile Include="..\Common\Source\Graphics\HCInputDataSamples.cpp" />
+    <ClCompile Include="..\Common\Source\Graphics\HCMeshManager.cpp" />
+    <ClCompile Include="..\Common\Source\Graphics\HCPickingTexture.cpp" />
     <ClCompile Include="..\Common\Source\Graphics\HCSwapchainDX11.cpp" />
+    <ClCompile Include="..\Common\Source\Graphics\HXmlAnimationManager.cpp" />
+    <ClCompile Include="..\Common\Source\HC2DAnimation.cpp" />
+    <ClCompile Include="..\Common\Source\Physics\Physics2D.cpp" />
+    <ClCompile Include="..\Common\Source\Scene\HCSceneObject.cpp" />
     <ClCompile Include="..\Common\Source\Util\StringHelper.cpp" />
     <ClCompile Include="..\Common\Source\Window\HCWindow.cpp" />
     <ClCompile Include="..\Common\Source\Xml\Xml.cpp" />
+    <ClCompile Include="..\Common\UI\UIObject.cpp" />
+    <ClCompile Include="..\Common\UI\UIParam.cpp" />
     <ClCompile Include="DevScene.cpp" />
     <ClCompile Include="Engine.cpp" />
+    <ClCompile Include="HBasicSceneObject.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="Main.cpp" />
-    <ClCompile Include="pngEx.cpp" />
+    <ClCompile Include="pngEx.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\client\stdafx.h" />
     <ClInclude Include="..\Common\Source\Device\HCKeyboard.h" />
     <ClInclude Include="..\Common\Source\Device\HCKoreanInput.h" />
     <ClInclude Include="..\Common\Source\Device\HCMouse.h" />
+    <ClInclude Include="..\Common\Source\Device\HCPhysics.h" />
     <ClInclude Include="..\Common\Source\Device\HCTimer.h" />
+    <ClInclude Include="..\Common\Source\Graphics\DX11TextData.h" />
     <ClInclude Include="..\Common\Source\Graphics\HCCameraManager.h" />
     <ClInclude Include="..\Common\Source\Graphics\HCFont.h" />
     <ClInclude Include="..\Common\Source\Graphics\HCGraphic.h" />
     <ClInclude Include="..\Common\Source\Graphics\HCGraphicDX11.h" />
     <ClInclude Include="..\Common\Source\Graphics\HCGraphicDX11Resources.h" />
-    <ClInclude Include="..\Common\Source\Graphics\HCSwapchainDX11.h" />
     <ClInclude Include="..\Common\Source\Graphics\HCInputDataSamples.h" />
-    <ClInclude Include="..\Common\Source\Includes\GameObject.h" />
+    <ClInclude Include="..\Common\Source\Graphics\HCMeshManager.h" />
+    <ClInclude Include="..\Common\Source\Graphics\HCPickingTexture.h" />
+    <ClInclude Include="..\Common\Source\Graphics\HCRenderInfos.h" />
+    <ClInclude Include="..\Common\Source\Graphics\HCSwapchainDX11.h" />
+    <ClInclude Include="..\Common\Source\Graphics\HXmlAnimationManager.h" />
+    <ClInclude Include="..\Common\Source\HC2DAnimation.h" />
     <ClInclude Include="..\Common\Source\Includes\GlobalOption.h" />
     <ClInclude Include="..\Common\Source\Includes\HCDevice.h" />
+    <ClInclude Include="..\Common\Source\Physics\Physics2D.h" />
+    <ClInclude Include="..\Common\Source\Scene\HCScene.h" />
+    <ClInclude Include="..\Common\Source\Scene\HCSceneObject.h" />
+    <ClInclude Include="..\Common\Source\stdafx.h" />
     <ClInclude Include="..\Common\Source\Util\StringHelper.h" />
     <ClInclude Include="..\Common\Source\Window\HCWindow.h" />
     <ClInclude Include="..\Common\Source\Xml\Xml.h" />
+    <ClInclude Include="..\Common\UI\UIObject.h" />
+    <ClInclude Include="..\Common\UI\UIParam.h" />
     <ClInclude Include="DevScene.h" />
     <ClInclude Include="Engine.h" />
-    <ClInclude Include="HCSceneObject.h" />
-    <ClInclude Include="stdafx.h" />
+    <ClInclude Include="HBasicSceneObject.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+    </ClInclude>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

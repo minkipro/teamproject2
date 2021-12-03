@@ -4,8 +4,8 @@
 #include <vector>
 #include <memory>
 #include <dxgiformat.h>
-#include "GameObject.h"
 #include "HCInputDataSamples.h"
+#include <DirectXMath.h>
 
 namespace HC
 {
@@ -228,6 +228,9 @@ struct HCTextureData
 	int	 textureIndex = -1;
 	UINT spriteStartIndex = 0;
 	UINT spriteNum = 1;
+	UINT sizeX = 0;
+	UINT sizeY = 0;
+	std::vector<DirectX::XMFLOAT4> spriteUV;
 };
 
 struct HCMesh

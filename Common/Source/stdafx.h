@@ -4,9 +4,12 @@
 #include <DirectXMath.h>
 #include "COMException.h"
 #include "Engine.h"
+#include "GlobalOption.h"
 
 using namespace std;
 using namespace DirectX;
+
+#include "Util/StringHelper.h"
 inline unsigned int SizeTTransUINT(size_t size)
 {
 	assert(UINT_MAX > size);

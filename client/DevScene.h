@@ -1,7 +1,7 @@
 #pragma once
-#include "HCScene.h"
+#include "Scene/HCScene.h"
+#include "Scene/HCSceneObject.h"
 #include "Graphics/HCGraphic.h"
-#include "HCSceneObject.h"
 #include "Graphics\HCPickingTexture.h"
 
 class DevScene final : public HCScene

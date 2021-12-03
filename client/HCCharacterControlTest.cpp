@@ -2,7 +2,7 @@
 #include "HCCharacterControlTest.h"
 #include "Graphics/HXmlAnimationManager.h"
 
-void HCCharacterControlTest::Init()
+void HCCharacterControlTest::Init(const wchar_t* textureName)
 {
 	enum
 	{
@@ -21,7 +21,7 @@ void HCCharacterControlTest::Init()
 	};
 
 	m_animations.resize(ANI_COUNT);
-	HCTextureData textureData = HCDEVICE(HCGraphic)->GetTextureIndex(L"Texture/sp_cat.png");
+	HCTextureData textureData = HCDEVICE(HCGraphic)->GetTextureIndex(textureName);
 	for (auto& it : m_animations)
 	{
 		it.SetTexture(textureData);

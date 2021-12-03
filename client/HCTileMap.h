@@ -1,5 +1,5 @@
 #pragma once
-#include "HCSceneObject.h"
+#include "Scene/HCSceneObject.h"
 #include "Graphics/HCInputDataSamples.h"
 
 class HCTileMap : public HCSceneObject

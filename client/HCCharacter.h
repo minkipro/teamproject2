@@ -1,5 +1,5 @@
 #pragma once
-#include "HCSceneObject.h"
+#include "Scene/HCSceneObject.h"
 #include "HC2DAnimation.h"
 #include "Graphics/HCInputDataSamples.h"
 
@@ -9,7 +9,7 @@ public:
 	HC2DCharacter() = default;
 	virtual ~HC2DCharacter() override;
 
-	virtual void Init() override;
+	virtual void Init(const wchar_t* textureName) override;
 	virtual void Update(float deltaTime) override;
 	virtual void Render() override;
 
@@ -17,12 +17,13 @@ public:
 	void SetZ(float z);
 	void SetPos(const DirectX::XMFLOAT2& pos);
 	void SetSize(const DirectX::XMFLOAT2& size);
-	void SetAnimation(HC2DAnimation* ani);
+	void SetAnimation(int index);
 
 private:
 	HCPointRenderInfo				m_renderInfo;
 	std::shared_ptr<IHCResource>	m_renderInfoBuffer;
 	const HCMesh*					m_mesh = nullptr;
-	HC2DAnimation*					m_currAniamtion = nullptr;
+	std::vector<HC2DAnimation>	m_animations;
+	int							m_currAniamtion;
 };
 

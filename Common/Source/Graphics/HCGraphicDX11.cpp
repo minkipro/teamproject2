@@ -5,7 +5,6 @@
 #include <DirectXColors.h>
 #include <D3Dcompiler.h>
 #include <WICTextureLoader.h>
-#include "Util\StringHelper.h"
 #include "HCFont.h"
 #include "HCCameraManager.h"
 #include "Xml\Xml.h"
@@ -671,7 +670,9 @@ HCTextureData HCGraphicDX11::GetTextureIndex(const std::wstring& textureName) co
 	result.textureIndex = indexBufferIter->second;
 	result.spriteNum = currTexture.SpriteNum;
 	result.spriteStartIndex = currTexture.SpriteInfoStartIndex;
-
+	result.sizeX = currTexture.SizeX;
+	result.sizeY = currTexture.SizeY;
+	result.spriteUV = currTexture.SpriteUV;
 	return result;
 }
 
@@ -826,10 +827,20 @@ void HCGraphicDX11::CreateTextures()
 			
 			COM_HRESULT_IF_FAILED(DirectX::CreateWICTextureFromFile(m_device.Get(), it2.c_str(), nullptr, currTextureData.TextureView.GetAddressOf()),
 				StringHelper::WideToString(wstr).c_str());
-
 			currTextureData.TextureView->GetDesc(&currTextureData.TextureDesc);
 			currTextureData.SpriteInfoStartIndex = SizeTTransUINT(m_allSpriteDatas.size());
 			COM_THROW_IF_FAILED(currTextureData.TextureDesc.ViewDimension == D3D11_SRV_DIMENSION_TEXTURE2D, "This type texture is not supported");
+			
+			//텍스쳐 사이즈 구하기
+			ID3D11Texture2D* pTextureInterface = 0;
+			ID3D11Resource* res;
+			currTextureData.TextureView->GetResource(&res);
+			res->QueryInterface<ID3D11Texture2D>(&pTextureInterface);
+			D3D11_TEXTURE2D_DESC desc;
+			pTextureInterface->GetDesc(&desc);
+			currTextureData.SizeX = desc.Width;
+			currTextureData.SizeY = desc.Height;
+			//사이즈 구하기 끝
 
 			std::wstring postString = std::wstring(textureName.c_str(), HC::GO.GRAPHIC.SpriteTextureSuffix.length());
 			if (postString == HC::GO.GRAPHIC.SpriteTextureSuffix)
@@ -844,6 +855,7 @@ void HCGraphicDX11::CreateTextures()
 					locationData.EndUV = { it2.EndUV.x,  it2.EndUV.y };
 
 					m_allSpriteDatas.push_back(locationData);
+					currTextureData.SpriteUV.push_back({ it2.StartUV.x,  it2.StartUV.y, it2.EndUV.x,  it2.EndUV.y });
 				}
 			}
 			else
@@ -896,6 +908,7 @@ void HCGraphicDX11::CreateGraphicPipeLineBaseSettings()
 		"Failed to create depth stencil state.");
 
 	CD3D11_RASTERIZER_DESC rasterizerDesc(D3D11_DEFAULT);
+	rasterizerDesc.CullMode = D3D11_CULL_NONE;
 	COM_HRESULT_IF_FAILED(m_device->CreateRasterizerState(&rasterizerDesc, m_baseRasterizer.GetAddressOf()),
 		"Failed to create rasterizer state.");
 

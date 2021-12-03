@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include "HCFont.h"
-#include "Util\StringHelper.h"
 #include "GlobalOption.h"
 
 using namespace DirectX;
